@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/kamitoto/nCafe_arabica/svn/!svn/ver/447/app/Plugin/Resque/Vendor/php-resque/test/Resque/Tests
+END
+WorkerTest.php
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/kamitoto/nCafe_arabica/svn/!svn/ver/198/app/Plugin/Resque/Vendor/php-resque/test/Resque/Tests/WorkerTest.php
+END
+JobTest.php
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/kamitoto/nCafe_arabica/svn/!svn/ver/198/app/Plugin/Resque/Vendor/php-resque/test/Resque/Tests/JobTest.php
+END
+StatTest.php
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/kamitoto/nCafe_arabica/svn/!svn/ver/198/app/Plugin/Resque/Vendor/php-resque/test/Resque/Tests/StatTest.php
+END
+TestCase.php
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/kamitoto/nCafe_arabica/svn/!svn/ver/447/app/Plugin/Resque/Vendor/php-resque/test/Resque/Tests/TestCase.php
+END
+bootstrap.php
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/kamitoto/nCafe_arabica/svn/!svn/ver/198/app/Plugin/Resque/Vendor/php-resque/test/Resque/Tests/bootstrap.php
+END
+JobStatusTest.php
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/kamitoto/nCafe_arabica/svn/!svn/ver/198/app/Plugin/Resque/Vendor/php-resque/test/Resque/Tests/JobStatusTest.php
+END
+EventTest.php
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/kamitoto/nCafe_arabica/svn/!svn/ver/198/app/Plugin/Resque/Vendor/php-resque/test/Resque/Tests/EventTest.php
+END

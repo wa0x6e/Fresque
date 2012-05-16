@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/kamitoto/nCafe_arabica/svn/!svn/ver/534/app/Plugin/Resque/Vendor/php-resque/lib/Resque/Job
+END
+DontPerform.php
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/kamitoto/nCafe_arabica/svn/!svn/ver/198/app/Plugin/Resque/Vendor/php-resque/lib/Resque/Job/DontPerform.php
+END
+Status.php
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/kamitoto/nCafe_arabica/svn/!svn/ver/534/app/Plugin/Resque/Vendor/php-resque/lib/Resque/Job/Status.php
+END
+DirtyExitException.php
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/kamitoto/nCafe_arabica/svn/!svn/ver/198/app/Plugin/Resque/Vendor/php-resque/lib/Resque/Job/DirtyExitException.php
+END

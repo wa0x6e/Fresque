@@ -1,0 +1,286 @@
+PHP Warning:  require_once(Console/ShellDispatcher.php): failed to open stream: No such file or directory in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+PHP Stack trace:
+PHP   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+PHP   2. require_once() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+Warning: require_once(Console/ShellDispatcher.php): failed to open stream: No such file or directory in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+
+Call Stack:
+    0.0007     666288   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+    0.0202    1220424   2. require_once('/Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php') /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+PHP Fatal error:  require_once(): Failed opening required 'Console/ShellDispatcher.php' (include_path='.:/opt/local/lib/php:/opt/local/lib/php/pear:') in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+PHP Stack trace:
+PHP   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+PHP   2. require_once() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+Fatal error: require_once(): Failed opening required 'Console/ShellDispatcher.php' (include_path='.:/opt/local/lib/php:/opt/local/lib/php/pear:') in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+
+Call Stack:
+    0.0007     666288   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+    0.0202    1220424   2. require_once('/Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php') /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+PHP Warning:  require_once(Console/ShellDispatcher.php): failed to open stream: No such file or directory in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+PHP Stack trace:
+PHP   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+PHP   2. require_once() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+Warning: require_once(Console/ShellDispatcher.php): failed to open stream: No such file or directory in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+
+Call Stack:
+    0.0006     666288   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+    0.0042    1220424   2. require_once('/Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php') /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+PHP Fatal error:  require_once(): Failed opening required 'Console/ShellDispatcher.php' (include_path='.:/opt/local/lib/php:/opt/local/lib/php/pear:') in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+PHP Stack trace:
+PHP   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+PHP   2. require_once() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+Fatal error: require_once(): Failed opening required 'Console/ShellDispatcher.php' (include_path='.:/opt/local/lib/php:/opt/local/lib/php/pear:') in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+
+Call Stack:
+    0.0006     666288   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+    0.0042    1220424   2. require_once('/Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php') /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+PHP Warning:  require_once(Console/ShellDispatcher.php): failed to open stream: No such file or directory in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+PHP Stack trace:
+PHP   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+PHP   2. require_once() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+Warning: require_once(Console/ShellDispatcher.php): failed to open stream: No such file or directory in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+
+Call Stack:
+    0.0005     666296   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+    0.0037    1220424   2. require_once('/Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php') /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+PHP Fatal error:  require_once(): Failed opening required 'Console/ShellDispatcher.php' (include_path='.:/opt/local/lib/php:/opt/local/lib/php/pear:') in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+PHP Stack trace:
+PHP   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+PHP   2. require_once() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+Fatal error: require_once(): Failed opening required 'Console/ShellDispatcher.php' (include_path='.:/opt/local/lib/php:/opt/local/lib/php/pear:') in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+
+Call Stack:
+    0.0005     666296   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+    0.0037    1220424   2. require_once('/Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php') /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+PHP Warning:  require_once(Console/ShellDispatcher.php): failed to open stream: No such file or directory in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+PHP Stack trace:
+PHP   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+PHP   2. require_once() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+Warning: require_once(Console/ShellDispatcher.php): failed to open stream: No such file or directory in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+
+Call Stack:
+    0.0005     666312   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+    0.0042    1220424   2. require_once('/Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php') /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+PHP Fatal error:  require_once(): Failed opening required 'Console/ShellDispatcher.php' (include_path='.:/opt/local/lib/php:/opt/local/lib/php/pear:') in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+PHP Stack trace:
+PHP   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+PHP   2. require_once() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+Fatal error: require_once(): Failed opening required 'Console/ShellDispatcher.php' (include_path='.:/opt/local/lib/php:/opt/local/lib/php/pear:') in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+
+Call Stack:
+    0.0005     666312   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+    0.0042    1220424   2. require_once('/Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php') /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+PHP Warning:  require_once(Console/ShellDispatcher.php): failed to open stream: No such file or directory in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+PHP Stack trace:
+PHP   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+PHP   2. require_once() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+Warning: require_once(Console/ShellDispatcher.php): failed to open stream: No such file or directory in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+
+Call Stack:
+    0.0005     666304   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+    0.0036    1220424   2. require_once('/Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php') /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+PHP Fatal error:  require_once(): Failed opening required 'Console/ShellDispatcher.php' (include_path='.:/opt/local/lib/php:/opt/local/lib/php/pear:') in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+PHP Stack trace:
+PHP   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+PHP   2. require_once() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+Fatal error: require_once(): Failed opening required 'Console/ShellDispatcher.php' (include_path='.:/opt/local/lib/php:/opt/local/lib/php/pear:') in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+
+Call Stack:
+    0.0005     666304   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+    0.0036    1220424   2. require_once('/Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php') /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+PHP Warning:  require_once(Console/ShellDispatcher.php): failed to open stream: No such file or directory in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+PHP Stack trace:
+PHP   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+PHP   2. require_once() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+Warning: require_once(Console/ShellDispatcher.php): failed to open stream: No such file or directory in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+
+Call Stack:
+    0.0005     666288   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+    0.0037    1220424   2. require_once('/Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php') /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+PHP Fatal error:  require_once(): Failed opening required 'Console/ShellDispatcher.php' (include_path='.:/opt/local/lib/php:/opt/local/lib/php/pear:') in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+PHP Stack trace:
+PHP   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+PHP   2. require_once() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+Fatal error: require_once(): Failed opening required 'Console/ShellDispatcher.php' (include_path='.:/opt/local/lib/php:/opt/local/lib/php/pear:') in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+
+Call Stack:
+    0.0005     666288   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+    0.0037    1220424   2. require_once('/Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php') /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+PHP Warning:  require_once(Console/ShellDispatcher.php): failed to open stream: No such file or directory in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+PHP Stack trace:
+PHP   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+PHP   2. require_once() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+Warning: require_once(Console/ShellDispatcher.php): failed to open stream: No such file or directory in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+
+Call Stack:
+    0.0005     666288   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+    0.0037    1220424   2. require_once('/Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php') /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+PHP Fatal error:  require_once(): Failed opening required 'Console/ShellDispatcher.php' (include_path='.:/opt/local/lib/php:/opt/local/lib/php/pear:') in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+PHP Stack trace:
+PHP   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+PHP   2. require_once() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+Fatal error: require_once(): Failed opening required 'Console/ShellDispatcher.php' (include_path='.:/opt/local/lib/php:/opt/local/lib/php/pear:') in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+
+Call Stack:
+    0.0005     666288   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+    0.0037    1220424   2. require_once('/Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php') /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+PHP Warning:  require_once(Console/ShellDispatcher.php): failed to open stream: No such file or directory in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+PHP Stack trace:
+PHP   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+PHP   2. require_once() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+Warning: require_once(Console/ShellDispatcher.php): failed to open stream: No such file or directory in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+
+Call Stack:
+    0.0005     666296   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+    0.0036    1220424   2. require_once('/Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php') /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+PHP Fatal error:  require_once(): Failed opening required 'Console/ShellDispatcher.php' (include_path='.:/opt/local/lib/php:/opt/local/lib/php/pear:') in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+PHP Stack trace:
+PHP   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+PHP   2. require_once() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+Fatal error: require_once(): Failed opening required 'Console/ShellDispatcher.php' (include_path='.:/opt/local/lib/php:/opt/local/lib/php/pear:') in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+
+Call Stack:
+    0.0005     666296   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+    0.0036    1220424   2. require_once('/Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php') /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+PHP Warning:  require_once(Console/ShellDispatcher.php): failed to open stream: No such file or directory in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+PHP Stack trace:
+PHP   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+PHP   2. require_once() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+Warning: require_once(Console/ShellDispatcher.php): failed to open stream: No such file or directory in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+
+Call Stack:
+    0.0005     666312   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+    0.0037    1220424   2. require_once('/Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php') /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+PHP Fatal error:  require_once(): Failed opening required 'Console/ShellDispatcher.php' (include_path='.:/opt/local/lib/php:/opt/local/lib/php/pear:') in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+PHP Stack trace:
+PHP   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+PHP   2. require_once() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+Fatal error: require_once(): Failed opening required 'Console/ShellDispatcher.php' (include_path='.:/opt/local/lib/php:/opt/local/lib/php/pear:') in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+
+Call Stack:
+    0.0005     666312   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+    0.0037    1220424   2. require_once('/Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php') /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+PHP Warning:  require_once(Console/ShellDispatcher.php): failed to open stream: No such file or directory in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+PHP Stack trace:
+PHP   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+PHP   2. require_once() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+Warning: require_once(Console/ShellDispatcher.php): failed to open stream: No such file or directory in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+
+Call Stack:
+    0.0005     666304   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+    0.0042    1220424   2. require_once('/Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php') /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+PHP Fatal error:  require_once(): Failed opening required 'Console/ShellDispatcher.php' (include_path='.:/opt/local/lib/php:/opt/local/lib/php/pear:') in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+PHP Stack trace:
+PHP   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+PHP   2. require_once() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+Fatal error: require_once(): Failed opening required 'Console/ShellDispatcher.php' (include_path='.:/opt/local/lib/php:/opt/local/lib/php/pear:') in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+
+Call Stack:
+    0.0005     666304   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+    0.0042    1220424   2. require_once('/Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php') /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+PHP Warning:  require_once(Console/ShellDispatcher.php): failed to open stream: No such file or directory in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+PHP Stack trace:
+PHP   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+PHP   2. require_once() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+Warning: require_once(Console/ShellDispatcher.php): failed to open stream: No such file or directory in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+
+Call Stack:
+    0.0005     666288   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+    0.0036    1220424   2. require_once('/Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php') /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+PHP Fatal error:  require_once(): Failed opening required 'Console/ShellDispatcher.php' (include_path='.:/opt/local/lib/php:/opt/local/lib/php/pear:') in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+PHP Stack trace:
+PHP   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+PHP   2. require_once() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+Fatal error: require_once(): Failed opening required 'Console/ShellDispatcher.php' (include_path='.:/opt/local/lib/php:/opt/local/lib/php/pear:') in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+
+Call Stack:
+    0.0005     666288   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+    0.0036    1220424   2. require_once('/Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php') /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+PHP Warning:  require_once(Console/ShellDispatcher.php): failed to open stream: No such file or directory in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+PHP Stack trace:
+PHP   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+PHP   2. require_once() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+Warning: require_once(Console/ShellDispatcher.php): failed to open stream: No such file or directory in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+
+Call Stack:
+    0.0005     666288   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+    0.0135    1220424   2. require_once('/Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php') /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+PHP Fatal error:  require_once(): Failed opening required 'Console/ShellDispatcher.php' (include_path='.:/opt/local/lib/php:/opt/local/lib/php/pear:') in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+PHP Stack trace:
+PHP   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+PHP   2. require_once() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+Fatal error: require_once(): Failed opening required 'Console/ShellDispatcher.php' (include_path='.:/opt/local/lib/php:/opt/local/lib/php/pear:') in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+
+Call Stack:
+    0.0005     666288   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+    0.0135    1220424   2. require_once('/Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php') /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+PHP Warning:  require_once(Console/ShellDispatcher.php): failed to open stream: No such file or directory in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+PHP Stack trace:
+PHP   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+PHP   2. require_once() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+Warning: require_once(Console/ShellDispatcher.php): failed to open stream: No such file or directory in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+
+Call Stack:
+    0.0006     666288   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+    0.0037    1220424   2. require_once('/Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php') /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+PHP Fatal error:  require_once(): Failed opening required 'Console/ShellDispatcher.php' (include_path='.:/opt/local/lib/php:/opt/local/lib/php/pear:') in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+PHP Stack trace:
+PHP   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+PHP   2. require_once() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+
+Fatal error: require_once(): Failed opening required 'Console/ShellDispatcher.php' (include_path='.:/opt/local/lib/php:/opt/local/lib/php/pear:') in /Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php on line 22
+
+Call Stack:
+    0.0006     666288   1. {main}() /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:0
+    0.0037    1220424   2. require_once('/Volumes/Websites/www/www.neetCafe_arabica/neetCafe_Arabica/app/Plugin/Resque/Lib/ResqueBootstrap.php') /Users/kamisama/Desktop/Fresque/vendor/php-resque/resque.php:38
+

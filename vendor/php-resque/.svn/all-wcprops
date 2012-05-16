@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/kamitoto/nCafe_arabica/svn/!svn/ver/568/app/Plugin/Resque/Vendor/php-resque
+END
+LICENSE
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/kamitoto/nCafe_arabica/svn/!svn/ver/198/app/Plugin/Resque/Vendor/php-resque/LICENSE
+END
+TODO.markdown
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/kamitoto/nCafe_arabica/svn/!svn/ver/198/app/Plugin/Resque/Vendor/php-resque/TODO.markdown
+END
+phpunit.xml
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/kamitoto/nCafe_arabica/svn/!svn/ver/198/app/Plugin/Resque/Vendor/php-resque/phpunit.xml
+END
+CHANGELOG.markdown
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/kamitoto/nCafe_arabica/svn/!svn/ver/198/app/Plugin/Resque/Vendor/php-resque/CHANGELOG.markdown
+END
+resque.php
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/kamitoto/nCafe_arabica/svn/!svn/ver/534/app/Plugin/Resque/Vendor/php-resque/resque.php
+END
+README.markdown
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/kamitoto/nCafe_arabica/svn/!svn/ver/198/app/Plugin/Resque/Vendor/php-resque/README.markdown
+END
+build.xml
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/kamitoto/nCafe_arabica/svn/!svn/ver/198/app/Plugin/Resque/Vendor/php-resque/build.xml
+END

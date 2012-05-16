@@ -1,0 +1,22 @@
+#!/bin/bash
+
+ #
+ # Fresque
+ #
+ # PHP 5.3
+ # Redis 2
+ #
+ # Copyright (c) 2012, Wan Chen aka Kamisama <kami@kamisama.me>
+ #
+ # Licensed under The MIT License
+ # Redistributions of files must retain the above copyright notice.
+ #
+ # @copyright 	Copyright (c) 2012, Wan Chen aka Kamisama
+ # @link 		https://github.com/kamisama
+ # @package 	Fresque
+ # @version 	0.1
+ # @license 	MIT License (http://www.opensource.org/licenses/mit-license.php)
+ #
+
+exec php -f lib/init.php "$@"
+exit;

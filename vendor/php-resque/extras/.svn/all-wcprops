@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/kamitoto/nCafe_arabica/svn/!svn/ver/198/app/Plugin/Resque/Vendor/php-resque/extras
+END
+resque.logrotate
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/kamitoto/nCafe_arabica/svn/!svn/ver/198/app/Plugin/Resque/Vendor/php-resque/extras/resque.logrotate
+END
+sample-plugin.php
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/kamitoto/nCafe_arabica/svn/!svn/ver/198/app/Plugin/Resque/Vendor/php-resque/extras/sample-plugin.php
+END
+resque.monit
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/kamitoto/nCafe_arabica/svn/!svn/ver/198/app/Plugin/Resque/Vendor/php-resque/extras/resque.monit
+END

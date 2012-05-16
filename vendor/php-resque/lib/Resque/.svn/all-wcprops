@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/kamitoto/nCafe_arabica/svn/!svn/ver/568/app/Plugin/Resque/Vendor/php-resque/lib/Resque
+END
+Worker.php
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/kamitoto/nCafe_arabica/svn/!svn/ver/534/app/Plugin/Resque/Vendor/php-resque/lib/Resque/Worker.php
+END
+Job.php
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/kamitoto/nCafe_arabica/svn/!svn/ver/568/app/Plugin/Resque/Vendor/php-resque/lib/Resque/Job.php
+END
+Stat.php
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/kamitoto/nCafe_arabica/svn/!svn/ver/534/app/Plugin/Resque/Vendor/php-resque/lib/Resque/Stat.php
+END
+Exception.php
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/kamitoto/nCafe_arabica/svn/!svn/ver/198/app/Plugin/Resque/Vendor/php-resque/lib/Resque/Exception.php
+END
+Event.php
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/kamitoto/nCafe_arabica/svn/!svn/ver/198/app/Plugin/Resque/Vendor/php-resque/lib/Resque/Event.php
+END
+Redis.php
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/kamitoto/nCafe_arabica/svn/!svn/ver/592/app/Plugin/Resque/Vendor/php-resque/lib/Resque/Redis.php
+END
+Failure.php
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/kamitoto/nCafe_arabica/svn/!svn/ver/198/app/Plugin/Resque/Vendor/php-resque/lib/Resque/Failure.php
+END
+RedisCluster.php
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/kamitoto/nCafe_arabica/svn/!svn/ver/534/app/Plugin/Resque/Vendor/php-resque/lib/Resque/RedisCluster.php
+END
