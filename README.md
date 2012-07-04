@@ -29,6 +29,30 @@ you do
 It's more friendly, and provides more options, like `restart`, `stop`, etc …  
 Php-resque, and resque, by default doesn't provide an out-of-the-box way to stop your workers. You just kill the worker process. With Fresque, you'll enjoy stopping and restarting your workers at gogo.
 
+##Installation
+
+Clone the git repo
+
+	git clone --recursive git://github.com/kamisama/Fresque.git
+	
+###Install dependencies	
+
+####php-resque
+
+`--recursive` flag when cloning the repository is needed to download the *php-resque* vendor library. If you already have it installed elsewhere, ignore it. In that case, you'll have to configure the tool to point to its location.
+
+php-resque is not included in the package, if you opt to download the compressed file instead of cloning the repo. You can then find it [there](https://github.com/chrisboulton/php-resque/).
+
+####ZetaComponents
+
+This tool depends on [ZetaComponents](http://zetacomponents.org/) (former eZ Components).  
+Although you can download it yourself by downloading the package on their website, or by checking out their svn, I recommend the last option : installing it via PEAR, because it'll do the necessary automatically to make the component running out of the box. Using the other solutions create additional problems, since this tool run in cli mode, and autoloading class is not supported in cli mode, requiring a lot of additional steps to make the components works.
+
+To install via pear :
+
+	pear channel-discover components.ez.no
+	pear install -a ezc/eZComponents
+
 
 ##Configuration
 
@@ -282,6 +306,8 @@ A test result will looks like
 	Application autoloader ..OK
 	
 	Your settings seems ok
+	
+##Know problems
 
 ###`stop` command doesn't stop workers
 
@@ -297,6 +323,12 @@ Check them frequently, as fresque doesn't capture those errors.
 
 Fresque is a derivated works from my other plugin, [cake-resque](https://github.com/kamisama/Cake-Resque), a command line tool to manage php-resque, but inside cakephp console.  
 Very convenient, but limited to only cakephp framework. I wanted to release a tool that can work in any php environment. Fresque is more powerfull, since no more binded to a framework.
+
+##Changelog
+
+###v0.1 (2012-07-04)
+* Moving the php-resque vendor library to git submodule
+* Removing the ZetaComponent libraries, now requires that the libraries installed via pear
 
 ##Credits
 
