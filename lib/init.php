@@ -2,4 +2,4 @@
 
 	include('./lib/Fresque.php');
 	
-	$fresque = new Fresque();
+	$fresque = new Fresque\Fresque();

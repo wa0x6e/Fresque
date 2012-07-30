@@ -17,10 +17,8 @@
  * @license 	MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
-
-require_once 'ezc/Base/base.php';
-spl_autoload_register(array('ezcBase', 'autoload'));
-
+namespace Fresque;
+require 'vendor/autoload.php';
 
 /**
  * Fresque Class
@@ -41,17 +39,17 @@ class Fresque
 		$this->command = array_splice($_SERVER['argv'], 1, 1);
 		$this->command = empty($this->command) ? null : $this->command[0];
 		
-		$this->input = new ezcConsoleInput();
-		$this->output = new ezcConsoleOutput();
+		$this->input = new \ezcConsoleInput();
+		$this->output = new \ezcConsoleOutput();
 		
-		$helpOption = $this->input->registerOption(new ezcConsoleOption('h', 'help'));
+		$helpOption = $this->input->registerOption(new \ezcConsoleOption('h', 'help'));
 		$helpOption->isHelpOption = true;
 		
 		$this->input->registerOption(
-				new ezcConsoleOption(
+				new \ezcConsoleOption(
 						't',
 						'tail',
-						ezcConsoleInput::TYPE_NONE,
+						\ezcConsoleInput::TYPE_NONE,
 						null,
 						false,
 						'Display the tail onscreen',
@@ -63,10 +61,10 @@ class Fresque
 		);
 		
 		$this->input->registerOption(
-				new ezcConsoleOption(
+				new \ezcConsoleOption(
 						'u',
 						'user',
-						ezcConsoleInput::TYPE_STRING,
+						\ezcConsoleInput::TYPE_STRING,
 						null,
 						false,
 						'User running the workers',
@@ -75,10 +73,10 @@ class Fresque
 		);
 		
 		$this->input->registerOption(
-				new ezcConsoleOption(
+				new \ezcConsoleOption(
 						'q',
 						'queue',
-						ezcConsoleInput::TYPE_STRING,
+						\ezcConsoleInput::TYPE_STRING,
 						null,
 						false,
 						'Name of the queue. If multiple queues, separate with comma.',
@@ -87,10 +85,10 @@ class Fresque
 		);
 		
 		$this->input->registerOption(
-				new ezcConsoleOption(
+				new \ezcConsoleOption(
 						'i',
 						'interval',
-						ezcConsoleInput::TYPE_INT,
+						\ezcConsoleInput::TYPE_INT,
 						null,
 						false,
 						'Pause time in seconds between each worker round',
@@ -99,10 +97,10 @@ class Fresque
 		);
 		
 		$this->input->registerOption(
-				new ezcConsoleOption(
+				new \ezcConsoleOption(
 						'n',
 						'workers',
-						ezcConsoleInput::TYPE_INT,
+						\ezcConsoleInput::TYPE_INT,
 						null,
 						false,
 						'Number of workers to create',
@@ -111,10 +109,10 @@ class Fresque
 		);
 		
 		$this->input->registerOption(
-				new ezcConsoleOption(
+				new \ezcConsoleOption(
 						'f',
 						'force',
-						ezcConsoleInput::TYPE_NONE,
+						\ezcConsoleInput::TYPE_NONE,
 						null,
 						false,
 						'Force workers shutdown, forcing all the current jobs to finish (and fail)',
@@ -123,10 +121,10 @@ class Fresque
 		);
 		
 		$this->input->registerOption(
-				new ezcConsoleOption(
+				new \ezcConsoleOption(
 						's',
 						'host',
-						ezcConsoleInput::TYPE_STRING,
+						\ezcConsoleInput::TYPE_STRING,
 						null,
 						false,
 						'Redis server hostname',
@@ -135,10 +133,10 @@ class Fresque
 		);
 		
 		$this->input->registerOption(
-				new ezcConsoleOption(
+				new \ezcConsoleOption(
 						'p',
 						'port',
-						ezcConsoleInput::TYPE_INT,
+						\ezcConsoleInput::TYPE_INT,
 						null,
 						false,
 						'Redis server port',
@@ -147,10 +145,10 @@ class Fresque
 		);
 		
 		$this->input->registerOption(
-				new ezcConsoleOption(
+				new \ezcConsoleOption(
 						'l',
 						'log',
-						ezcConsoleInput::TYPE_STRING,
+						\ezcConsoleInput::TYPE_STRING,
 						null,
 						false,
 						'Log file path',
@@ -159,10 +157,10 @@ class Fresque
 		);
 		
 		$this->input->registerOption(
-				new ezcConsoleOption(
+				new \ezcConsoleOption(
 						'b',
 						'lib',
-						ezcConsoleInput::TYPE_STRING,
+						\ezcConsoleInput::TYPE_STRING,
 						null,
 						false,
 						'PHPresque library path',
@@ -171,10 +169,10 @@ class Fresque
 		);
 		
 		$this->input->registerOption(
-				new ezcConsoleOption(
+				new \ezcConsoleOption(
 						'a',
 						'autoloader',
-						ezcConsoleInput::TYPE_STRING,
+						\ezcConsoleInput::TYPE_STRING,
 						null,
 						false,
 						'Application autoloader path',
@@ -183,10 +181,10 @@ class Fresque
 		);
 		
 		$this->input->registerOption(
-				new ezcConsoleOption(
+				new \ezcConsoleOption(
 						'c',
 						'config',
-						ezcConsoleInput::TYPE_STRING,
+						\ezcConsoleInput::TYPE_STRING,
 						null, //
 						false,
 						'Configuration file path',
@@ -210,7 +208,7 @@ class Fresque
 		{
 			$this->input->process();
 		}
-		catch (ezcConsoleException $e)
+		catch (\ezcConsoleException $e)
 		{
 			die($e->getMessage());
 		}
@@ -223,7 +221,7 @@ class Fresque
 		$globalOptions = array('s' => 'host', 'p' => 'port', 'b' => 'path', 'c' => 'path', 'a' => 'path');
 		$commandTree = array(
 				'start' => array(
-						'help' => 'Start a new worker',
+						'help' => 'Start a new \worker',
 						'options' => array('u' => 'username', 'q' => 'queue name', 'i' => 'num', 'n' => 'num', 't', 'l' => 'path')
 						),
 				'stop' => array(
@@ -243,7 +241,7 @@ class Fresque
 						'options' => array()
 						),
 				'enqueue' => array(
-						'help' => 'Enqueue a new job (for testing purpose only)',
+						'help' => 'Enqueue a new \job (for testing purpose only)',
 						'options' => array()
 						),
 				'stats' => array(
@@ -343,7 +341,7 @@ class Fresque
 		$interval 	= isset($params['interval']) ? (int) $params['interval'] : $this->settings['Default']['interval'];
 		$count 		= isset($params['workers']) ? (int) $params['workers'] : $this->settings['Default']['workers'];
 
-		$this->output->outputText("Forking new PHP Resque worker service (");
+		$this->output->outputText("Forking new \PHP Resque worker service (");
 		$this->output->outputText('queue:', 'highlight');
 		$this->output->outputText($queue);
 		$this->output->outputText(' user:', 'highlight');
@@ -476,7 +474,7 @@ class Fresque
 			{
 				$this->output->outputLine("\tWorker : " . $worker, 'bold');
 				$this->output->outputLine("\t - Started on     : " . Resque::Redis()->get('worker:' . $worker . ':started'));
-				$this->output->outputLine("\t - Uptime         : " . formatDateDiff(new DateTime(Resque::Redis()->get('worker:' . $worker . ':started'))));
+				$this->output->outputLine("\t - Uptime         : " . formatDateDiff(new \DateTime(Resque::Redis()->get('worker:' . $worker . ':started'))));
 				$this->output->outputLine("\t - Processed Jobs : " . $worker->getStat('processed'));
 				$worker->getStat('failed') == 0
 				? $this->output->outputLine("\t - Failed Jobs    : " . $worker->getStat('failed'))
@@ -564,17 +562,17 @@ class Fresque
 			if(file_exists($this->runtime['Fresque']['lib'] . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'Resque' . DIRECTORY_SEPARATOR.'Redis.php'))
 			{
 				require_once($this->runtime['Fresque']['lib'] . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'Resque' . DIRECTORY_SEPARATOR.'Redis.php');
-				$redis = @new Resque_Redis($this->runtime['Redis']['host'], (int) $this->runtime['Redis']['port']);
+				$redis = @new \Resque_Redis($this->runtime['Redis']['host'], (int) $this->runtime['Redis']['port']);
 				
 			}
 			elseif (class_exists('Redis'))
 			{
-				$redis = new Redis();
+				$redis = new \Redis();
 				@$redis->connect($this->runtime['Redis']['host'], (int) $this->runtime['Redis']['port']);
 			}
 			elseif(class_exists('Redisent'))
 			{
-				$redis = @new Redisent($this->runtime['Redis']['host'], (int) $this->runtime['Redis']['port']);
+				$redis = @new \Redisent($this->runtime['Redis']['host'], (int) $this->runtime['Redis']['port']);
 			}
 			else
 			{
@@ -724,15 +722,15 @@ class Fresque
  */
 function formatDateDiff($start, $end=null) {
 	if(!($start instanceof DateTime)) {
-		$start = new DateTime($start);
+		$start = new \DateTime($start);
 	}
 	 
 	if($end === null) {
-		$end = new DateTime();
+		$end = new \DateTime();
 	}
 	 
 	if(!($end instanceof DateTime)) {
-		$end = new DateTime($start);
+		$end = new \DateTime($start);
 	}
 	 
 	$interval = $end->diff($start);
