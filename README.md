@@ -45,14 +45,17 @@ php-resque is not included in the package, if you opt to download the compressed
 
 ####ZetaComponents
 
-This tool depends on [ZetaComponents](http://zetacomponents.org/) (former eZ Components).  
-Although you can download it yourself by downloading the package on their website, or by checking out their svn, I recommend the last option : installing it via PEAR, because it'll do the necessary automatically to make the component running out of the box. Using the other solutions create additional problems, since this tool run in cli mode, and autoloading class is not supported in cli mode, requiring a lot of additional steps to make the components works.
+[Composer](http://getcomposer.org/) will install it for you. `cd` to the Fresque folder you just cloned
 
-To install via pear :
+	cd the/fresque/folder/you/just/cloned
+	
+Then download Composer
 
-	pear channel-discover components.ez.no
-	pear install -a ezc/eZComponents
+	curl -s https://getcomposer.org/installer | php
+	
+Finally, install dependencies
 
+	php composer.phar install
 
 ##Configuration
 
@@ -284,7 +287,7 @@ This will test the minimum requirements to run fresque :
 * The path to the php-resque libraries is valid
 * The path to your application autoloader is valid
 
-This will not test the content of your application autoloader, so if there's something inside triggering a fatal error, fresque will not know, and return a *success**, but the worker will fail to start, like we just said above.
+This will not test the content of your application autoloader, so if there's something inside triggering a fatal error, fresque will not know, and return a *success*, but the worker will fail to start, like we just said above.
 
 You can test more than the settings inside your config file, by passing options. An option will override the setting defined in the config
 
@@ -324,11 +327,6 @@ Check them frequently, as fresque doesn't capture those errors.
 Fresque is a derivated works from my other plugin, [cake-resque](https://github.com/kamisama/Cake-Resque), a command line tool to manage php-resque, but inside cakephp console.  
 Very convenient, but limited to only cakephp framework. I wanted to release a tool that can work in any php environment. Fresque is more powerfull, since no more binded to a framework.
 
-##Changelog
-
-###v0.1 (2012-07-04)
-* Moving the php-resque vendor library to git submodule
-* Removing the ZetaComponent libraries, now requires that the libraries installed via pear
 
 ##Credits
 
