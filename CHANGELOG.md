@@ -1,5 +1,9 @@
 ##Changelog
 
+###v0.2.1 (2012-08-01)
+
+* Add php-resque as a Composer dependency
+
 ###v0.2.0 (2012-07-30)
 
 * Code now follows PSR-2 Standard

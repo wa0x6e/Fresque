@@ -33,19 +33,9 @@ Php-resque, and resque, by default doesn't provide an out-of-the-box way to stop
 
 Clone the git repo
 
-	git clone --recursive git://github.com/kamisama/Fresque.git
+	git clone git://github.com/kamisama/Fresque.git
 	
-###Install dependencies	
-
-####php-resque
-
-`--recursive` flag when cloning the repository is needed to download the *php-resque* vendor library. If you already have it installed elsewhere, ignore it. In that case, you'll have to configure the tool to point to its location.
-
-php-resque is not included in the package, if you opt to download the compressed file instead of cloning the repo. You can then find it [there](https://github.com/chrisboulton/php-resque/).
-
-####ZetaComponents
-
-[Composer](http://getcomposer.org/) will install it for you. `cd` to the Fresque folder you just cloned
+ `cd` to the Fresque folder you just cloned
 
 	cd the/fresque/folder/you/just/cloned
 	
@@ -56,6 +46,8 @@ Then download Composer
 Finally, install dependencies
 
 	php composer.phar install
+	
+*NB: Official php-resque use redisent as redis api. If you want php-redis instead, take a look at my [fork](https://github.com/kamisama/php-resque).*
 
 ##Configuration
 
