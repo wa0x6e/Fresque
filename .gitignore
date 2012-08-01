@@ -1,5 +1,3 @@
-vendor/zetacomponents/
-vendor/composer/
 composer.phar
 composer.lock
-vendor/autoload.php
+vendor/
