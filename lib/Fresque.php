@@ -28,7 +28,6 @@ define('DS', DIRECTORY_SEPARATOR);
  */
 class Fresque
 {
-
     protected $input;
     protected $output;
     
@@ -202,8 +201,7 @@ class Fresque
         }
         
         $settings = $this->loadSettings();
-        
-        
+
         $args = $this->input->getArguments();
         
         $globalOptions = array('s' => 'host', 'p' => 'port', 'b' => 'path', 'c' => 'path', 'a' => 'path');
@@ -303,7 +301,6 @@ class Fresque
         }
     }
 
-    
     protected function start($params = null)
     {
         if ($params === null) {
@@ -315,7 +312,11 @@ class Fresque
         $interval     = isset($params['interval']) ? (int) $params['interval'] : $this->settings['Default']['interval'];
         $count        = isset($params['workers'])  ? (int) $params['workers'] : $this->settings['Default']['workers'];
 
-        $this->output->outputText("Forking new \PHP Resque worker service (");
+        if($count == 1) {
+            $this->output->outputText("Forking 1 new PHP Resque worker service (");
+        } else {
+            $this->output->outputText("Forking " . $count . " new PHP Resque worker services (");
+        }
         $this->output->outputText('queue:', 'highlight');
         $this->output->outputText($queue);
         $this->output->outputText(' user:', 'highlight');
@@ -346,7 +347,7 @@ class Fresque
         $force = $this->input->getOption('force');
         
         $this->output->outputLine('Shutting down Resque Worker complete', 'failure');
-        $workers = Resque_Worker::all();
+        $workers = \Resque_Worker::all();
         if (empty($workers)) {
             $this->output->outputLine('   There were no active workers to kill ...');
         } else {
@@ -403,13 +404,12 @@ class Fresque
     protected function enqueue()
     {
         $args = $this->input->getArguments();
-        
-        
+
         if (count($args) >= 2) {
             $queue = array_shift($args);
             $class = array_shift($args);
             
-            Resque::enqueue($queue, $class, $args);
+            \Resque::enqueue($queue, $class, $args);
             $this->output->outputLine('The job was successfully enqueued', 'success');
         } else {
             $this->output->outputLine('Enqueue takes at least 2 arguments', 'failure');
@@ -422,21 +422,21 @@ class Fresque
         
         $this->output->outputLine();
         $this->output->outputLine('Jobs Stats', 'subtitle');
-        $this->output->outputLine("   Processed Jobs : " . Resque_Stat::get('processed'));
-        $this->output->outputLine("   Failed Jobs    : " . Resque_Stat::get('failed'), 'failure');
+        $this->output->outputLine("   Processed Jobs : " . \Resque_Stat::get('processed'));
+        $this->output->outputLine("   Failed Jobs    : " . \Resque_Stat::get('failed'), 'failure');
         $this->output->outputLine();
         $this->output->outputLine('Workers Stats', 'subtitle');
-        $workers = Resque_Worker::all();
+        $workers = \Resque_Worker::all();
         $this->output->outputLine("   Active Workers : " . count($workers));
         
         if (!empty($workers)) {
             foreach ($workers as $worker) {
                 $this->output->outputLine("\tWorker : " . $worker, 'bold');
                 $this->output->outputLine(
-                        "\t - Started on     : " . Resque::Redis()->get('worker:' . $worker . ':started'));
+                        "\t - Started on     : " . \Resque::Redis()->get('worker:' . $worker . ':started'));
                 $this->output->outputLine(
                         "\t - Uptime         : " .
-                        formatDateDiff(new \DateTime(Resque::Redis()->get('worker:' . $worker . ':started'))));
+                        $this->formatDateDiff(new \DateTime(\Resque::Redis()->get('worker:' . $worker . ':started'))));
                 $this->output->outputLine("\t - Processed Jobs : " . $worker->getStat('processed'));
                 $worker->getStat('failed') == 0
                     ? $this->output->outputLine("\t - Failed Jobs    : " . $worker->getStat('failed'))
@@ -446,8 +446,7 @@ class Fresque
         
         $this->output->outputLine("\n");
     }
-    
-    
+
     public function test()
     {
         $this->output->outputLine('Testing configuration', 'title');
@@ -496,7 +495,6 @@ class Fresque
                 'PHPResque library' => null,
                 'Application autoloader' => null
                 );
-        
 
         if (!isset($this->runtime['Redis']['host']) || !isset($this->runtime['Redis']['port'])) {
             $results['Redis configuration'] = 'Unable to read redis server configuration';
@@ -522,7 +520,7 @@ class Fresque
             } else {
                 $results['Redis server'] = 'Unable to find Redis Api';
             }
-        } catch (RedisException $e) {
+        } catch (\RedisException $e) {
             $results['Redis server'] = 'Unable to connect to Redis server at '
                 . $this->runtime['Redis']['host'] . ':' . $this->runtime['Redis']['port'];
         }
@@ -568,12 +566,12 @@ class Fresque
     
     private function addWorker($args)
     {
-        Resque::Redis()->sAdd('ResqueWorker', serialize($args));
+        \Resque::Redis()->sAdd('ResqueWorker', serialize($args));
     }
     
     private function getWorkers()
     {
-        $workers = Resque::Redis()->sMembers('ResqueWorker');
+        $workers = \Resque::Redis()->sMembers('ResqueWorker');
         if (empty($workers)) {
             return false;
         } else {
@@ -584,10 +582,10 @@ class Fresque
             return $temp;
         }
     }
-    
+
     private function clearWorker()
     {
-        Resque::Redis()->del('ResqueWorker');
+        \Resque::Redis()->del('ResqueWorker');
     }
     
     private function loadSettings()
@@ -599,11 +597,9 @@ class Fresque
             $this->output->outputLine("The config file '$config' was not found", 'failure');
             die();
         }
-        
-        
+
         $this->settings = $this->runtime = parse_ini_file($config, true);
-        
-        
+
         $this->runtime['Redis']['host'] = isset($options['host']) ? $options['host'] : $this->settings['Redis']['host'];
         $this->runtime['Redis']['port'] = isset($options['port']) ? $options['port'] : $this->settings['Redis']['port'];
         
@@ -639,70 +635,69 @@ class Fresque
             }
         }
     }
-}
 
-
-/**
- * A sweet interval formatting, will use the two biggest interval parts.
- * On small intervals, you get minutes and seconds.
- * On big intervals, you get months and days.
- * Only the two biggest parts are used.
- *
- * @param DateTime $start
- * @param DateTime|null $end
- * @link http://www.php.net/manual/en/dateinterval.format.php
- * @return string
- */
-function formatDateDiff($start, $end=null)
-{
-    if (!($start instanceof DateTime)) {
-        $start = new \DateTime($start);
-    }
-     
-    if ($end === null) {
-        $end = new \DateTime();
-    }
-     
-    if (!($end instanceof DateTime)) {
-        $end = new \DateTime($start);
-    }
-     
-    $interval = $end->diff($start);
-    $doPlural = function($nb,$str){
-        return $nb>1?$str.'s':$str;
-    }; // adds plurals
-     
-    $format = array();
-    if ($interval->y !== 0) {
-        $format[] = "%y ".$doPlural($interval->y, "year");
-    }
-    if ($interval->m !== 0) {
-        $format[] = "%m ".$doPlural($interval->m, "month");
-    }
-    if ($interval->d !== 0) {
-        $format[] = "%d ".$doPlural($interval->d, "day");
-    }
-    if ($interval->h !== 0) {
-        $format[] = "%h ".$doPlural($interval->h, "hour");
-    }
-    if ($interval->i !== 0) {
-        $format[] = "%i ".$doPlural($interval->i, "minute");
-    }
-    if ($interval->s !== 0) {
-        if (!count($format)) {
-            return "less than a minute";
-        } else {
-            $format[] = "%s ".$doPlural($interval->s, "second");
+    /**
+     * A sweet interval formatting, will use the two biggest interval parts.
+     * On small intervals, you get minutes and seconds.
+     * On big intervals, you get months and days.
+     * Only the two biggest parts are used.
+     *
+     * @param \DateTime $start
+     * @param \DateTime|null $end
+     * @link http://www.php.net/manual/en/dateinterval.format.php
+     * @return string
+     */
+    private function formatDateDiff($start, $end=null)
+    {
+        if (!($start instanceof \DateTime)) {
+            $start = new \DateTime($start);
         }
+
+        if ($end === null) {
+            $end = new \DateTime();
+        }
+
+        if (!($end instanceof \DateTime)) {
+            $end = new \DateTime($start);
+        }
+
+        $interval = $end->diff($start);
+        $doPlural = function($nb,$str){
+            return $nb>1?$str.'s':$str;
+        }; // adds plurals
+
+        $format = array();
+        if ($interval->y !== 0) {
+            $format[] = "%y ".$doPlural($interval->y, "year");
+        }
+        if ($interval->m !== 0) {
+            $format[] = "%m ".$doPlural($interval->m, "month");
+        }
+        if ($interval->d !== 0) {
+            $format[] = "%d ".$doPlural($interval->d, "day");
+        }
+        if ($interval->h !== 0) {
+            $format[] = "%h ".$doPlural($interval->h, "hour");
+        }
+        if ($interval->i !== 0) {
+            $format[] = "%i ".$doPlural($interval->i, "minute");
+        }
+        if ($interval->s !== 0) {
+            if (!count($format)) {
+                return "less than a minute";
+            } else {
+                $format[] = "%s ".$doPlural($interval->s, "second");
+            }
+        }
+
+        // We use the two biggest parts
+        if (count($format) > 1) {
+            $format = array_shift($format)." and ".array_shift($format);
+        } else {
+            $format = array_pop($format);
+        }
+
+        // Prepend 'since ' or whatever you like
+        return $interval->format($format);
     }
-     
-    // We use the two biggest parts
-    if (count($format) > 1) {
-        $format = array_shift($format)." and ".array_shift($format);
-    } else {
-        $format = array_pop($format);
-    }
-     
-    // Prepend 'since ' or whatever you like
-    return $interval->format($format);
 }
