@@ -20,11 +20,11 @@ I'll assume in this tutorial that you have sufficient knowledge to start a worke
 Fresque is a command line tool.
 But instead of starting a worker with
 	
-	QUEUE=file_serve php resque.php
+	$ QUEUE=file_serve php resque.php
 	
 you do
 
-	fresque start -q file_serve
+	$ fresque start -q file_serve
 	
 It's more friendly, and provides more options, like `restart`, `stop`, etc …  
 Php-resque, and resque, by default doesn't provide an out-of-the-box way to stop your workers. You just kill the worker process. With Fresque, you'll enjoy stopping and restarting your workers at gogo.
@@ -33,19 +33,19 @@ Php-resque, and resque, by default doesn't provide an out-of-the-box way to stop
 
 Clone the git repo
 
-	git clone git://github.com/kamisama/Fresque.git
+	$ git clone git://github.com/kamisama/Fresque.git
 	
  `cd` to the Fresque folder you just cloned
 
-	cd the/fresque/folder/you/just/cloned
+	$ cd the/fresque/folder/you/just/cloned
 	
 Then download Composer
 
-	curl -s https://getcomposer.org/installer | php
+	$ curl -s https://getcomposer.org/installer | php
 	
 Finally, install dependencies
 
-	php composer.phar install
+	$ php composer.phar install
 	
 *NB: Official php-resque use redisent as redis api. If you want php-redis instead, take a look at my [fork](https://github.com/kamisama/php-resque).*
 
@@ -62,12 +62,12 @@ it's well documented, and you shouldn't have difficulties filling it.
 It's often wise to start by adding the fresque executable to your system path.
 You then just call 
 
-	fresque <command>
+	$ fresque <command>
 	
 Or if you didn't add it,
 
-	cd /path/to/the/resque/executable
-	./fresque <command>
+	$ cd /path/to/the/resque/executable
+	$ ./fresque <command>
 	
 
 	
@@ -145,27 +145,27 @@ Finally, there's some global options, that can be used for all commands. Default
 
 Let's start a worker with the default settings defined in the config file (fresque.ini)
 
-	fresque start
+	$ fresque start
 
 Let's start another worker, named *activity*, with a pooling frequency of 1 second. Also. I want two workers working on this queue.
 
-	fresque start -q activity -i 1 -n 2
+	$ fresque start -q activity -i 1 -n 2
 
 Then, I want another worker, that will work on the queues *default* and *activity* at the same time.
 
-	fresque start -q default,activity
+	$ fresque start -q default,activity
 	
 Oh wait, I have another resque on another redis server. I want to log its activities in an other log file : remote.log
 
-	fresque start -s 192.168.1.26 -p 6390 -q myspecialqueue -l /path/to/remote.log
+	$ fresque start -s 192.168.1.26 -p 6390 -q myspecialqueue -l /path/to/remote.log
 	
 If you have your config file elsewhere, and your php-resque lib elsewhere also
 
-	fresque start -c /path/to/my-config.ini -b /path/to/my/custom/php-resque
+	$ fresque start -c /path/to/my-config.ini -b /path/to/my/custom/php-resque
 
 To view stats of your workers (to know how many you have, processed/failed jobs count, uptime)
 
-	fresque stats
+	$ fresque stats
 	
 It should output something like that 
 
@@ -212,10 +212,10 @@ It's wise to do a `stats` after doing a `start`, to ensure that your workers has
 
 Remember that you can use the global options (-s, -p etc …) with any command
 
-	fresque stop -c /path/to/my-config.ini -s 192.168.1.26		
+	$ fresque stop -c /path/to/my-config.ini -s 192.168.1.26		
 Let's enqueue a job to the *activity* queue
 
-	fresque enqueue activity PageVisit 5 /index.php 158745693
+	$ fresque enqueue activity PageVisit 5 /index.php 158745693
 	
 php-resque will then run this job, by instanciating the class PageVisit, then calling the `perform()` method with the arguments 5, /index.php and 158745693.
 In order to instanciate the PageVisit class, php-resque should know where to find it. That should be done with you application autoloader (`--include`)
@@ -223,11 +223,11 @@ In order to instanciate the PageVisit class, php-resque should know where to fin
 
 Oh, and if you want to restart all your workers for whatever reasons
 
-	fresque restart
+	$ fresque restart
 	
 If you're finished, just
 
-	fresque stop
+	$ fresque stop
 	
 It'll spout something like that
 
@@ -248,7 +248,7 @@ We've just created 6 workers, calling `start` 5 times (remember, the second `sta
 
 Just set all your workers settings in the config file in the [Queues] section (walkthrough available in the config file), then start all of them with
 
-	fresque load
+	$ fresque load
 	
 
 ##Notes
@@ -283,13 +283,13 @@ This will not test the content of your application autoloader, so if there's som
 
 You can test more than the settings inside your config file, by passing options. An option will override the setting defined in the config
 
-	fresque test -s 195.168.1.26 -p 6890
+	$ fresque test -s 195.168.1.26 -p 6890
 	
 This will test your config file, but with the specified redis hostname and port.
 
 You can also test an other config file
 
-	fresque test -c /my/other/config/file.ini
+	$ fresque test -c /my/other/config/file.ini
 
 A test result will looks like
 

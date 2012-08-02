@@ -1,5 +1,9 @@
 ##Changelog
 
+###v0.2.2 (2012-08-01)
+
+* Remove php-resque submodule
+
 ###v0.2.1 (2012-08-01)
 
 * Add php-resque as a Composer dependency
