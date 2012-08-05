@@ -566,12 +566,13 @@ class Fresque
     
     private function addWorker($args)
     {
-        \Resque::Redis()->sAdd('ResqueWorker', serialize($args));
+        \Resque::Redis()->rpush('ResqueWorker', serialize($args));
     }
     
     private function getWorkers()
     {
-        $workers = \Resque::Redis()->sMembers('ResqueWorker');
+        $listLength = \Resque::Redis()->llen('ResqueWorker');
+        $workers = \Resque::Redis()->lrange('ResqueWorker', 0, $listLength-1);
         if (empty($workers)) {
             return false;
         } else {
