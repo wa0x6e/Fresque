@@ -525,6 +525,10 @@ class Fresque
                 . $this->runtime['Redis']['host'] . ':' . $this->runtime['Redis']['port'];
         }
         
+        // Make log absolute to cwd
+        if (substr($this->runtime['Fresque']['log'], 0, 2) == '.' . DS) {
+            $this->runtime['Fresque']['log'] = getcwd() . DS . $this->runtime['Fresque']['log'];
+        }
         
         $logPath = pathinfo($this->runtime['Fresque']['log'], PATHINFO_DIRNAME);
         if (!is_dir($logPath)) {
@@ -556,6 +560,11 @@ class Fresque
             $results['PHPResque library'] = 'Unable to find PHPResque library';
         }
         
+        
+        // Make autoloader absolute to cwd
+        if (substr($this->runtime['Fresque']['include'], 0, 2) == '.' . DS) {
+            $this->runtime['Fresque']['include'] = getcwd() . DS . $this->runtime['Fresque']['include'];
+        }
         
         if (!file_exists($this->runtime['Fresque']['include'])) {
             $results['Application autoloader'] = 'Your application autoloader file was not found';
