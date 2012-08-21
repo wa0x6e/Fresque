@@ -1,5 +1,22 @@
 ##Changelog
 
+###v0.2.6 (2012-08-21)
+
+* Code formatted to PSR2 standard
+* 
+
+###v0.2.5 (2012-08-21)
+
+* Demote php-resque to suggest on Composer
+
+###v0.2.4 (2012-08-05)
+
+* Fix restart now working properply
+
+###v0.2.3 (2012-08-05)
+
+* Bugfixes
+
 ###v0.2.2 (2012-08-01)
 
 * Remove php-resque submodule

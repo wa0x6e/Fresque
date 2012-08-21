@@ -19,6 +19,6 @@
 		"zetacomponents/base" : ">=1.8"
 	},
 	"suggest": {
-		"kamisama/php-resque-ex": "*"
+		"kamisama/php-resque-ex": "PHP port of Resque, with phpredis support, and more logging options"
 	}
 }
