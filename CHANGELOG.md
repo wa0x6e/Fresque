@@ -3,7 +3,8 @@
 ###v0.2.6 (2012-08-21)
 
 * Code formatted to PSR2 standard
-* 
+* Support use of relatives and absolute path everywhere
+* Add `--loghandler` and `handlertarget` options, for [php-resque-ex](https://github.com/kamisama/php-resque-ex)
 
 ###v0.2.5 (2012-08-21)
 
