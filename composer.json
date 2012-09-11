@@ -1,15 +1,13 @@
 {
 	"name": "fresque/fresque",
 	"description" : "A command line tool to manage your php-resque workers",
-	"keywords": ["php-resque", "resque", "cli"],
+	"keywords": ["php-resque", "resque", "cli", "redis"],
 	"homepage": "http://kamisama.github.com/Fresque/",
-	"bin": ["fresque"],
 	"authors": [
 		{
 			"name": "Wan Chen",
 			"email": "kami@kamisama.me",
-			"homepage": "http://www.kamisama.me",
-			"role": "Developer"
+			"homepage": "http://www.kamisama.me"
 		}
 	],
 	"license": "MIT",
@@ -20,5 +18,10 @@
 	},
 	"suggest": {
 		"kamisama/php-resque-ex": "PHP port of Resque, with phpredis support, and more logging options"
+	},
+	"support": {
+		"email": "kami@kamisama.me",
+		"issues": "https://github.com/kamisama/Fresque/issues",
+		"source": "https://github.com/kamisama/Fresque"
 	}
 }
