@@ -93,17 +93,18 @@ For creating multiple queues with different options, just run `start` again.
 
 * **stop**
 
-To shutdown all resque workers. Will wait for all jobs to finish, then shutdown all workers.
+To shutdown worker. Will wait for all jobs to finish, then shutdown the worker. If more than one worker is running, you'll have to choose the worker to stop from a worker menu.
 
 > `-f` or `--force` : Force shutdown, without waiting for the jobs to finish. All jobs will fail.
+> `-w` or `--all` : Stop all workers, skipping the worker menu.
 
 * **restart**
 
-To restart all the workers, with their previous settings.
+To restart all the workers, keeping their settings.
 
 * **load**
 
-To start a batch of pre-defined queues (set in your configuration file). See fresque.ini for more informations.
+To start a batch of pre-defined workers (set in your configuration file). See fresque.ini for more informations.
 
 * **stats**
 
@@ -111,22 +112,24 @@ Display total number of failed/processed jobs, as well as various stats for each
 
 * **tail**
 
-Tail the workers' logs.
+Tail the workers' logs. If you have more than one log file, you'll have to choose the log to tail from a log file menu.
 
 * **enqueue**
 
-Enqueue a job. Should be used for testing purpose only. Takes 3 arguments :
+Add a job to a queue. Takes 3 arguments :
  
 > **queuename**  : Name of the queue you will enqueue this job to  
 > **jobclass** : Name of the class that will perform the job, and that your application autoloader will have to load.  
-> **arguments** : Other arguments you want to pass to your jobs.
+> **arguments** : comma separated list of arguments, passed to the job.
 
-*Successfully enqueuing a job does not means it will perform it successfully. See notes*
+Will print the **Job ID** if the job is successfully enqueued.
+
+*Successfully enqueuing a job does not means it will perform it successfully*
 
 
 * **test**
 
-Test your configuration. If no options provided, it will test you fresque.ini. It accepts all options, to let you test them.
+Test your configuration. If no options are provided, it will test you *fresque.ini*. It accepts all options, to let you test them.
 
 Finally, there's some global options, that can be used for all commands. Default value in your config file will be used unless you use these.
 
@@ -169,7 +172,7 @@ To view stats of your workers (to know how many you have, processed/failed jobs 
 	
 It should output something like that 
 
-	PHPResque Statistics
+	Worker statistics
 
 	Jobs Stats
 	   Processed Jobs : 18617
@@ -208,7 +211,6 @@ It should output something like that
 		 - Processed Jobs : 0
 		 - Failed Jobs    : 0
 		 
-It's wise to do a `stats` after doing a `start`, to ensure that your workers has been successfully created.  [See Notes]
 
 Remember that you can use the global options (-s, -p etc …) with any command
 
@@ -217,28 +219,28 @@ Let's enqueue a job to the *activity* queue
 
 	$ fresque enqueue activity PageVisit 5 /index.php 158745693
 	
-php-resque will then run this job, by instanciating the class PageVisit, then calling the `perform()` method with the arguments 5, /index.php and 158745693.
-In order to instanciate the PageVisit class, php-resque should know where to find it. That should be done with you application autoloader (`--include`)
+php-resque will then run this job, by instantiating the class `PageVisit`, then calling the `perform()` method with the arguments `5`, `/index.php` and `158745693`.
+In order to instantiate the PageVisit class, php-resque should know where to find it. That should be done with you application autoloader (`--include`)
 
 
 Oh, and if you want to restart all your workers for whatever reasons
 
 	$ fresque restart
 	
-If you're finished, just
+If you're finished, and want to stop all workers, just
 
-	$ fresque stop
+	$ fresque stop --all
 	
 It'll spout something like that
 
 	Shutting down Resque Worker complete
 	Killing 6 workers ...
-	Killing 33197
-	Killing 33207
-	Killing 33215
-	Killing 33232
-	Killing 33233
-	Killing 33223
+	Killing 33197 … Done
+	Killing 33207 … Done
+	Killing 33215 … Done
+	Killing 33232 … Done
+	Killing 33233 … Done
+	Killing 33223 … Done
 	
 See notes if it says **There were no active workers to kill …** but you're sure there are some.
 	
@@ -253,22 +255,7 @@ Just set all your workers settings in the config file in the [Queues] section (w
 
 ##Notes
 
-###Always confirm your `start` command with `stats`
-
-Starting a worker with fresque just send a start command to php-resque, which will be running in another process. Thus, any error occuring with php-resque will not be escalated to fresque.
-
-This happens when :
-
-* The user (`--user`) does not exists
-* The user doesn't have sufficient permissions
-* There's something wrong (fatal error) in your application autoloader
-
-These errors occured within php-resque in another process and can't be detected with fresque, which will still returned a *success* command. A way to confirm that your workers were successfully created is to call `stats`, which will display a list of workers.
-
-You can also read your logs, they give you more details as to where the script hanged.
-
 ###You can test your config with `test`
-
 
 A testing tool for testing your configuration file is provided, just call `test`.  
 This will test the minimum requirements to run fresque :
@@ -302,11 +289,21 @@ A test result will looks like
 	
 	Your settings seems ok
 	
-##Know problems
+##Known issues
 
 ###`stop` command doesn't stop workers
 
-This happens when you try to stop your workers, but it says **There were no active workers to kill …**. And a look with `stats` will tell you that there are. This occurs when the `--user` doesn't have sufficient permissions to kill the workers processes.
+This happens when you try to stop your workers, but it says **There were no active workers to kill …**. And a look with `stats` will tell you that there are. This occurs when the `--user` doesn't have sufficient permissions to kill the worker process, or the worker PID was 'changed'. In some weird case, the worker fork a child to execute the job, but doesn't switch back to the parent job after. The child become the parent worker, but doesn't notify Resque, and the worker list is outdated.
+
+The only way to kill these 'stray' worker are to find their pid and kill them manually.
+
+		ps aux | grep resque.php
+		
+It will print a list a process. Find the PID of the stray workers and kill them
+		
+		sudo kill YOUR_PID
+
+##Notes
 
 ###Consult your logs
 
@@ -317,11 +314,10 @@ Check them frequently, as fresque doesn't capture those errors.
 ##Background
 
 Fresque is a derivated works from my other plugin, [cake-resque](https://github.com/kamisama/Cake-Resque), a command line tool to manage php-resque, but inside cakephp console.  
-Very convenient, but limited to only cakephp framework. I wanted to release a tool that can work in any php environment. Fresque is more powerfull, since no more binded to a framework.
-
+Very convenient, but limited to only cakephp framework. I wanted to release a tool that can work in any php environment. 
 
 ##Credits
 
 * [PHP-Resque](https://github.com/chrisboulton/php-resque) is written by Chris Boulton 
 * Based on [Resque](https://github.com/defunkt/resque) by defunkt
-* Fresque by Wan Chen (kamisama)
+* Fresque by Wan Qi Chen (kamisama)

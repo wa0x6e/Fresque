@@ -11,8 +11,8 @@
  * @copyright     Copyright 2012, Wan Qi Chen <kami@kamisama.me>
  * @link          https://github.com/kamisama/Fresque
  * @package       Fresque
- * @subpackage	  Fresque.lib
- * @since         1.0.0
+ * @subpackage    Fresque.lib
+ * @since         0.1.0
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
@@ -24,7 +24,7 @@ define('DS', DIRECTORY_SEPARATOR);
  * Fresque Class
  *
  * @package Fresque.lib
- * @since 	1.0.0
+ * @since   0.1.0
  */
 class Fresque
 {
@@ -34,7 +34,7 @@ class Fresque
     protected $settings;
     protected $runtime;
 
-    const VERSION = '0.2.6';
+    const VERSION = '1.0.0';
 
     public function __construct()
     {
@@ -46,21 +46,6 @@ class Fresque
 
         $helpOption = $this->input->registerOption(new \ezcConsoleOption('h', 'help'));
         $helpOption->isHelpOption = true;
-
-        $this->input->registerOption(
-            new \ezcConsoleOption(
-                't',
-                'tail',
-                \ezcConsoleInput::TYPE_NONE,
-                null,
-                false,
-                'Display the tail onscreen',
-                'Display the tail onscreen',
-                array(),
-                array(),
-                false
-            )
-        );
 
         $this->input->registerOption(
             new \ezcConsoleOption(
@@ -218,6 +203,18 @@ class Fresque
             )
         );
 
+        $this->input->registerOption(
+            new \ezcConsoleOption(
+                'w',
+                'all',
+                \ezcConsoleInput::TYPE_NONE,
+                null,
+                false,
+                'Stop all workers',
+                'Stop all workers'
+            )
+        );
+
         $this->output->formats->title->color = 'yellow';
         $this->output->formats->title->style = 'bold';
 
@@ -230,25 +227,33 @@ class Fresque
 
         $this->output->formats->highlight->color = 'blue';
 
+        $this->output->formats->success->color = 'green';
+        $this->output->formats->success->style = 'normal';
+
         try {
             $this->input->process();
         } catch (\ezcConsoleException $e) {
-            die($e->getMessage());
+            $this->output->outputLine($e->getMessage() . "\n", 'failure');
+            die();
+
         }
 
         $settings = $this->loadSettings();
 
         $args = $this->input->getArguments();
 
-        $globalOptions = array('s' => 'host', 'p' => 'port', 'b' => 'path', 'c' => 'path', 'a' => 'path', 'd' => 'handler', 'r' => 'args,');
+        $globalOptions = array('s' => 'host', 'p' => 'port', 'b' => 'path',
+            'c' => 'path', 'a' => 'path', 'd' => 'handler', 'r' => 'args,'
+        );
+
         $commandTree = array(
                 'start' => array(
-                        'help' => 'Start a new \worker',
+                        'help' => 'Start a new worker',
                         'options' => array('u' => 'username', 'q' => 'queue name',
-                                'i' => 'num', 'n' => 'num', 't', 'l' => 'path')),
+                                'i' => 'num', 'n' => 'num', 'l' => 'path')),
                 'stop' => array(
                         'help' => 'Shutdown all workers',
-                        'options' => array('f')),
+                        'options' => array('f', 'w')),
                 'restart' => array(
                         'help' => 'Restart all workers',
                         'options' => array()),
@@ -256,10 +261,10 @@ class Fresque
                         'help' => 'Load workers defined in your configuration file',
                         'options' => array('l')),
                 'tail' => array(
-                        'help' => 'Tail the log',
+                        'help' => 'Monitor the log file',
                         'options' => array()),
                 'enqueue' => array(
-                        'help' => 'Enqueue a new \job (for testing purpose only)',
+                        'help' => 'Enqueue a new job',
                         'options' => array()),
                 'stats' => array(
                         'help' => 'Display resque statistics',
@@ -271,12 +276,10 @@ class Fresque
                 );
 
         if ($this->command === null || !method_exists($this, $this->command)) {
-            $this->output->outputLine('------------------', 'success');
-            $this->output->outputLine('Welcome to Fresque', 'success');
-            $this->output->outputLine('------------------', 'success');
+            $this->outputTitle('Welcome to Fresque');
             $this->output->outputLine('Fresque '. Fresque::VERSION.' by Wan Chen (Kamisama) (2012)');
 
-            if (!method_exists($this, $this->command)) {
+            if (!method_exists($this, $this->command) && $this->command !== null) {
                 $this->output->outputLine("\nUnrecognized command : " . $this->command, 'failure');
             }
 
@@ -300,7 +303,9 @@ class Fresque
 
                     foreach ($commandTree[$this->command]['options'] as $name => $arg) {
                         $opt = $this->input->getOption(is_numeric($name) ? $arg : $name);
-                        $o = '-' . $opt->short . ' ' . (is_numeric($name) ? '' : '<'.$arg. '>');
+                        $o = (!empty($opt->short)
+                            ? '-' . $opt->short : '  ') . ' ' . (is_numeric($name) ? ''
+                            : '<'.$arg. '>');
 
                         $this->output->outputLine(
                             $o . str_repeat(' ', 15 - strlen($o)) . " --"
@@ -346,114 +351,258 @@ class Fresque
                         'warning'
                     );
                 }
+                \Resque::setBackend(
+                    $this->runtime['Redis']['host'] . ':' . $this->runtime['Redis']['port'],
+                    $this->runtime['Redis']['database'],
+                    $this->runtime['Redis']['namespace']
+                );
                 $this->{$this->command}();
             }
         }
     }
 
-    protected function start($params = null)
+
+    /**
+     * Start workers
+     */
+    protected function start($args = null, $new = true)
     {
-        if ($params === null) {
-            $params = $this->input->getOptionValues(true);
-        }
-
-        $queue        = isset($params['queue'])    ? $params['queue'] : $this->settings['Default']['queue'];
-        $user         = isset($params['user'])     ? $params['user'] : get_current_user();
-        $interval     = isset($params['interval']) ? (int) $params['interval'] : $this->settings['Default']['interval'];
-        $count        = isset($params['workers'])  ? (int) $params['workers'] : $this->settings['Default']['workers'];
-
-        if ($count == 1) {
-            $this->output->outputText("Forking 1 new PHP Resque worker service (");
+        if ($args === null) {
+            $this->outputTitle('Creating workers');
         } else {
-            $this->output->outputText("Forking " . $count . " new PHP Resque worker services (");
+            $this->runtime = $args;
         }
-        $this->output->outputText('queue:', 'highlight');
-        $this->output->outputText($queue);
-        $this->output->outputText(' user:', 'highlight');
-        $this->output->outputText($user . ")\n");
 
-
-        $cmd = 'nohup sudo -u '.$user.' bash -c "cd ' .
+        $cmd = 'nohup sudo -u '. escapeshellarg($this->runtime['Default']['user']) . ' bash -c "cd ' .
         escapeshellarg($this->runtime['Fresque']['lib']) . '; VVERBOSE=true' .
-        ' QUEUE=' . escapeshellarg($queue) .
+        ' QUEUE=' . escapeshellarg($this->runtime['Default']['queue']) .
         ' APP_INCLUDE=' . escapeshellarg($this->runtime['Fresque']['include']) .
-        ' INTERVAL=' . escapeshellarg($interval) .
+        ' INTERVAL=' . escapeshellarg($this->runtime['Default']['interval']) .
         ' REDIS_BACKEND=' . escapeshellarg($this->runtime['Redis']['host'] . ':' . $this->runtime['Redis']['port']) .
-        ' COUNT=' . $count .
+        ' REDIS_DATABASE=' . escapeshellarg($this->runtime['Redis']['database']) .
+        ' REDIS_NAMESPACE=' . escapeshellarg($this->runtime['Redis']['namespace']) .
+        ' COUNT=' . $this->runtime['Default']['workers'] .
         ' LOGHANDLER=' . escapeshellarg($this->runtime['Log']['handler']) .
         ' LOGHANDLERTARGET=' . escapeshellarg($this->runtime['Log']['target']) .
         ' php ./resque.php';
         $cmd .= ' >> '. escapeshellarg($this->runtime['Log']['filename']).' 2>&1" >/dev/null 2>&1 &';
 
+        $workersCountBefore = \Resque::Redis()->scard('workers');
         passthru($cmd);
 
-        if (isset($params['tail'])) {
-            sleep(3); // give it time to output to the log for the first time
-            $this->tail();
+        $this->output->outputText('Starting worker ');
+        for ($i = 0; $i < 3; $i++) {
+            $this->output->outputText(".", 0);
+            usleep(150000);
         }
 
-        $this->addWorker($params);
+        $workersCountAfter = \Resque::Redis()->scard('workers');
+        if (($workersCountBefore + $this->runtime['Default']['workers']) == $workersCountAfter) {
+            if ($args === null || $new === true) {
+                $this->addWorker($this->runtime);
+            }
+            $this->output->outputLine(
+                ' Done' . (($this->runtime['Default']['workers'] == 1)
+                    ? ''
+                    : ' x' . $
+                    $this->runtime['Default']['workers']
+                ),
+                'success'
+            );
+        } else {
+            $this->output->outputLine(' Fail', 'failure');
+        }
+
+        if ($args === null) {
+            $this->output->outputLine();
+        }
     }
 
-    protected function stop($shutdown = true)
-    {
-        $force = $this->input->getOption('force');
 
-        $this->output->outputLine('Shutting down Resque Worker complete', 'failure');
+    /**
+     * Stop workers
+     */
+    protected function stop($shutdown = true, $restart = false)
+    {
+        $force = $this->input->getOption('force')->value;
+        $all = $this->input->getOption('all')->value;
+
+        $this->outputTitle('Stopping Workers', $shutdown);
         $workers = \Resque_Worker::all();
+        sort($workers);
         if (empty($workers)) {
-            $this->output->outputLine('   There were no active workers to kill ...');
+            $this->output->outputLine('There is no active workers to kill ...', 'failure');
         } else {
-            $this->output->outputLine('Killing '.count($workers).' workers ...');
-            foreach ($workers as $w) {
-                $force->value ? $w->shutDownNow() : $w->shutDown();               // Send signal to stop processing jobs
-                $w->unregisterWorker();                                           // Remove jobs from resque environment
-                list($hostname, $pid, $queue) = explode(':', (string) $w);
-                $this->output->outputLine('Killing ' . $pid);
-                exec('kill -9 '.$pid);                                            // Kill all remaining system process
+
+            $workersToKill = array();
+
+            if (!$all && !$restart) {
+                $i = 1;
+                $menuItems = array();
+                foreach ($workers as $worker) {
+                    $menuItems[$i++] = sprintf(
+                        "%s, started %s ago",
+                        $worker,
+                        $this->formatDateDiff(\Resque::Redis()->get('worker:' . $worker . ':started'))
+                    );
+                }
+
+
+                if (count($menuItems) > 1) {
+                    $menuItems['all'] = 'Kill all workers';
+
+                    $menuOptions = new \ezcConsoleMenuDialogOptions(
+                        array(
+                            'text' => 'Active workers list',
+                            'selectText' => 'Worker to kill :',
+                            'validator' => new DialogMenuValidator($menuItems)
+                        )
+                    );
+                    $menuDialog = new \ezcConsoleMenuDialog($this->output, $menuOptions);
+                    do {
+                        $menuDialog->display();
+                    } while ($menuDialog->hasValidResult() === false);
+
+                    $menuDialog->getResult();
+
+                    if ($menuDialog->getResult() == 'all') {
+                        $workerIndex = range(1, count($workers));
+                    } else {
+                        $workerIndex[] = $menuDialog->getResult();
+                    }
+                } else {
+                    $workerIndex[] = 1;
+                }
+
+            } else {
+                $workerIndex = range(1, count($workers));
+            }
+
+            foreach ($workerIndex as $index) {
+
+                $worker = $workers[$index- 1];
+
+                list($hostname, $pid, $queue) = explode(':', (string)$worker);
+                $this->output->outputText('Killing ' . $pid . ' ... ');
+                isset($options['force']) ? $worker->shutDownNow() : $worker->shutDown();
+                $worker->unregisterWorker();
+
+                $output = array();
+                $message = exec('kill -9 ' . $pid . ' 2>&1', $output, $code);
+
+                if ($code == 0) {
+                    $this->output->outputLine('Done', 'success');
+                } else {
+                    $this->output->outputLine($message, 'failure');
+                }
             }
         }
 
         if ($shutdown) {
             $this->clearWorker();
         }
+
+        $this->output->outputLine();
     }
 
+
+    /**
+     * Load workers from configuration
+     */
     protected function load()
     {
-        if (!isset($this->settings['Queues'])) {
-            $this->output->outputLine('   You have no configured queues to load.');
+        $this->outputTitle('Loading workers');
+
+        if (!isset($this->settings['Queues']) || empty($this->settings['Queues'])) {
+            $this->output->outputLine("You have no configured workers to load.\n", 'failure');
         } else {
+            $this->output->outputLine(sprintf('Loading %s workers', count($this->settings['Queues'])));
             foreach ($this->settings['Queues'] as $queue) {
-                $this->start($queue);
+                $this->loadSettings($queue);
+                $this->start($this->runtime);
             }
         }
+
+        $this->output->outputLine();
     }
 
+
+    /**
+     * Restart all workers
+     */
     protected function restart()
     {
-        $this->stop(false);
-
         if (false !== $workers = $this->getWorkers()) {
+            $this->stop(false, true);
+            $this->outputTitle('Restarting workers', false);
             foreach ($workers as $worker) {
-                $this->start($worker);
+                $this->start($worker, false);
             }
         } else {
-            $this->start();
+            $this->output->outputLine('No workers to restart', 'failure');
         }
+
+        $this->output->outputLine();
     }
 
+
+    /**
+     * Tail a log file
+     *
+     * If more than one log file exists, will display a menu dialog with a list
+     * of log files to choose from.
+     */
     protected function tail()
     {
-        $log = $this->runtime['Fresque']['log'];
+        $logs = array();
+        $i = 1;
+        $workers = (array)$this->getWorkers();
 
-        if (file_exists($log)) {
-            passthru('sudo tail -f ' . escapeshellarg($log));
-        } else {
-            $this->output->outputLine('Log file does not exist. Is the service running?');
+        foreach ($workers as $worker) {
+            if ($worker['Log']['filename'] != '') {
+                $logs[] = $worker['Log']['filename'];
+            }
+            if ($worker['Log']['handler'] == 'RotatingFile') {
+                $fileInfo = pathinfo($worker['Log']['target']);
+                $pattern = $fileInfo['dirname'] . DS . $fileInfo['filename'] . '-*' .
+                (!empty($fileInfo['extension']) ? '.' . $fileInfo['extension'] : '');
+
+                $logs = array_merge($logs, glob($pattern));
+            }
         }
+
+        $logs = array_values(array_unique($logs));
+
+        $this->outputTitle('Tailing log file');
+        if (empty($logs)) {
+            $this->output->outputLine('No log file to tail', 'failure');
+            return;
+        } elseif (count($logs) == 1) {
+            $index = 1;
+        } else {
+            $menuOptions = new \ezcConsoleMenuDialogOptions(
+                array(
+                    'text' => 'Log files list',
+                    'selectText' => 'Log to tail :',
+                    'validator' => new DialogMenuValidator(array_combine(range(1, count($logs)), $logs))
+                )
+            );
+            $menuDialog = new \ezcConsoleMenuDialog($this->output, $menuOptions);
+            do {
+                $menuDialog->display();
+            } while ($menuDialog->hasValidResult() === false);
+
+            $index = $menuDialog->getResult();
+        }
+
+        $this->output->outputLine('Tailing ' . $logs[$index - 1], 'subtitle');
+        passthru('tail -f ' . escapeshellarg($logs[$index - 1]));
     }
 
+
+    /**
+     * Add a job to a queue
+     */
     protected function enqueue()
     {
         $args = $this->input->getArguments();
@@ -462,16 +611,26 @@ class Fresque
             $queue = array_shift($args);
             $class = array_shift($args);
 
-            \Resque::enqueue($queue, $class, $args);
-            $this->output->outputLine('The job was successfully enqueued', 'success');
+            $result = \Resque::enqueue($queue, $class, $args);
+            $this->output->outputLine("The job was enqueued successfully", 'success');
+            $this->output->outputLine('Job ID : #' . $result . "\n");
         } else {
             $this->output->outputLine('Enqueue takes at least 2 arguments', 'failure');
+            $this->output->outputLine('Usage : enqueue <queue> <job> <args>');
+            $this->output->outputLine('   queue <string>  Name of the queue');
+            $this->output->outputLine('   job   <string>  Job class name');
+            $this->output->outputLine('   args  <string>  Comma separated list of arguments');
+            $this->output->outputLine();
         }
     }
 
+
+    /**
+     * Print some stats about the workers
+     */
     protected function stats()
     {
-        $this->output->outputLine('PHPResque Statistics', 'title');
+        $this->outputTitle('Workers statistics');
 
         $this->output->outputLine();
         $this->output->outputLine('Jobs Stats', 'subtitle');
@@ -502,9 +661,13 @@ class Fresque
         $this->output->outputLine("\n");
     }
 
+
+    /**
+     * Test and validate the configuration file
+     */
     public function test()
     {
-        $this->output->outputLine('Testing configuration', 'title');
+        $this->outputTitle('Testing configuration');
 
         $results = $this->testConfig(true);
         foreach ($results as $name => $r) {
@@ -596,6 +759,12 @@ class Fresque
             $results['Log File'] = 'The directory for the log file is not writable';
         }
 
+        $output = array();
+        exec('id ' . $this->runtime['Default']['user'] . ' 2>&1', $output, $status);
+        if ($status != 0) {
+            $results['user'] = sprintf('User %s does not exists', $this->runtime['Default']['user']);
+        }
+
         $resqueFiles = array(
                 'lib'.DS.'Resque.php',
                 'lib'.DS.'Resque'.DS.'Stat.php',
@@ -617,7 +786,7 @@ class Fresque
 
         if (!empty($this->runtime['Fresque']['lib']) && $found) {
             foreach ($resqueFiles as $file) {
-                require($this->runtime['Fresque']['lib'] . DS . $file);
+                require_once $this->runtime['Fresque']['lib'] . DS . $file;
             }
         } else {
             $results['PHPResque library'] = 'Unable to find PHPResque library';
@@ -660,9 +829,13 @@ class Fresque
         \Resque::Redis()->del('ResqueWorker');
     }
 
-    private function loadSettings()
+    /**
+     * Convert options from various source to formatted options
+     * understandable by Fresque
+     */
+    private function loadSettings($args = null)
     {
-        $options = $this->input->getOptionValues(true);
+        $options = ($args === null) ? $this->input->getOptionValues(true) : $args;
 
         $config = isset($options['config']) ? $options['config'] : '.'.DS.'fresque.ini';
         if (!file_exists($config)) {
@@ -674,6 +847,8 @@ class Fresque
 
         $this->runtime['Redis']['host'] = isset($options['host']) ? $options['host'] : $this->settings['Redis']['host'];
         $this->runtime['Redis']['port'] = isset($options['port']) ? $options['port'] : $this->settings['Redis']['port'];
+        $this->runtime['Redis']['database'] = $this->settings['Redis']['database'];
+        $this->runtime['Redis']['namespace'] = $this->settings['Redis']['namespace'];
 
         $this->runtime['Log']['filename'] = isset($options['log'])
             ? $options['log']
@@ -694,6 +869,15 @@ class Fresque
         $this->runtime['Default']['user'] = isset($options['user'])
             ? $options['user'] : $this->settings['Default']['user'];
 
+        $this->runtime['Default']['queue'] = isset($options['queue'])
+            ? $options['queue'] : $this->settings['Default']['queue'];
+
+        $this->runtime['Default']['workers'] = isset($options['workers'])
+         ? $options['workers'] : $this->settings['Default']['workers'];
+
+        $this->runtime['Default']['interval'] = isset($options['interval'])
+            ? $options['interval'] : $this->settings['Default']['interval'];
+
         if (isset($this->settings['Queues']) && !empty($this->settings['Queues'])) {
             foreach ($this->settings['Queues'] as $name => $options) {
                 $this->settings['Queues'][$name]['queue'] = $name;
@@ -713,9 +897,30 @@ class Fresque
                 }
 
                 if ($fail) {
+                    $this->output->outputLine();
                     exit(1);
                 }
             }
+        }
+    }
+
+
+    /**
+     * Print a pretty title
+     *
+     * @param string    $title      The title to print
+     * @param bool      $primary    True to print a big title, else print a small title
+     * @since 1.0.0
+     */
+    public function outputTitle($title, $primary = true)
+    {
+        $l = strlen($title);
+        if ($primary) {
+            $this->output->outputLine(str_repeat('-', $l), 'title');
+        }
+        $this->output->outputLine($title, $primary ? 'title' : 'subtitle');
+        if ($primary) {
+            $this->output->outputLine(str_repeat('-', $l), 'title');
         }
     }
 
@@ -785,6 +990,44 @@ class Fresque
 
         // Prepend 'since ' or whatever you like
         return $interval->format($format);
+    }
+}
+
+
+/**
+ * DialogMenuValidator Class
+ *
+ * ezComponent class for validating dialog menu input
+ *
+ * @since 1.0.0
+ */
+class DialogMenuValidator implements \ezcConsoleMenuDialogValidator
+{
+    protected $elements = array();
+
+    public function __construct($elements)
+    {
+        $this->elements = $elements;
+    }
+
+    public function fixup($result)
+    {
+        return (string)$result;
+    }
+
+    public function getElements()
+    {
+        return $this->elements;
+    }
+
+    public function getResultString()
+    {
+
+    }
+
+    public function validate($result)
+    {
+        return in_array($result, array_keys($this->elements));
     }
 }
 
