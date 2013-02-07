@@ -388,28 +388,43 @@ class Fresque
         $cmd .= ' >> '. escapeshellarg($this->runtime['Log']['filename']).' 2>&1" >/dev/null 2>&1 &';
 
         $workersCountBefore = \Resque::Redis()->scard('workers');
+        $workersCountAfter = 0;
         passthru($cmd);
 
         $this->output->outputText('Starting worker ');
-        for ($i = 0; $i < 3; $i++) {
-            $this->output->outputText(".", 0);
-            usleep(150000);
+
+
+        $success = false;
+        $attempt = 7;
+        while ($attempt-- > 0) {
+            for ($i = 0; $i < 3; $i++) {
+                $this->output->outputText(".", 0);
+                usleep(150000);
+            }
+
+            if (($workersCountBefore + $this->runtime['Default']['workers']) == ($workersCountAfter = \Resque::Redis()->scard('workers'))) {
+                if ($args === null || $new === true) {
+                    $this->addWorker($this->runtime);
+                }
+                $this->output->outputLine(
+                    ' Done' . (($this->runtime['Default']['workers'] == 1)
+                        ? ''
+                        : ' x' . $this->runtime['Default']['workers']
+                    ),
+                    'success'
+                );
+                $success = true;
+                break;
+            }
         }
 
-        $workersCountAfter = \Resque::Redis()->scard('workers');
-        if (($workersCountBefore + $this->runtime['Default']['workers']) == $workersCountAfter) {
-            if ($args === null || $new === true) {
-                $this->addWorker($this->runtime);
+        if (!$success) {
+            if ($workersCountBefore === $workersCountAfter) {
+                $this->output->outputLine(' Fail', 'failure');
+            } else {
+                $this->output->outputLine(sprintf(' Error, could not start %s workers', (($workersCountBefore + $this->runtime['Default']['workers']) - $workersCountAfter)), 'warning');
             }
-            $this->output->outputLine(
-                ' Done' . (($this->runtime['Default']['workers'] == 1)
-                    ? ''
-                    : ' x' . $this->runtime['Default']['workers']
-                ),
-                'success'
-            );
-        } else {
-            $this->output->outputLine(' Fail', 'failure');
+
         }
 
         if ($args === null) {
