@@ -1,6 +1,16 @@
 ##Changelog
 
-###v1.0.0 (2012-09-11)
+###v1.1.2 (2013-02-07)
+
+* [fix] Fix error while starting multiple workers
+* [change] More accurate way of checking started workers
+* [change] More descriptive error message when starting workers
+
+###v1.1.2 (2013-01-22)
+
+* [fix] Update missing composer library
+
+###v1.1.0 (2012-09-11)
 
 * [new] `stop` now stop individual workers. Will display a workers menu to select from. Use `--all` to skip the menu and stop all workers at once.
 * [new] `tail` can now tail other logs if exists. Will display a log file menu to select from
