@@ -404,8 +404,7 @@ class Fresque
             $this->output->outputLine(
                 ' Done' . (($this->runtime['Default']['workers'] == 1)
                     ? ''
-                    : ' x' . $
-                    $this->runtime['Default']['workers']
+                    : ' x' . $this->runtime['Default']['workers']
                 ),
                 'success'
             );
