@@ -14,10 +14,10 @@
 	"require": {
 		"php": ">=5.3.0",
 		"zetacomponents/console-tools" : ">=1.6",
-		"zetacomponents/base" : ">=1.8",
-		"chrisboulton/php-resque" : ">=1.2"
+		"zetacomponents/base" : ">=1.8"
 	},
 	"suggest": {
+		"chrisboulton/php-resque" : "PHP port of resque (Workers and Queueing) "
 		"kamisama/php-resque-ex": "PHP port of Resque, with phpredis support, and more logging options"
 	},
 	"support": {
