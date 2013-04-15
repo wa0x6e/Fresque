@@ -18,5 +18,5 @@
  # @license 	MIT License (http://www.opensource.org/licenses/mit-license.php)
  #
 LIB=${0/%fresque/}
-exec php -f ${LIB}/lib/init.php "$@"
+exec php -q ${LIB}/lib/init.php "$@"
 exit;
