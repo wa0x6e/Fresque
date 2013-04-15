@@ -1,5 +1,10 @@
 ##Changelog
 
+###v1.1.3 (2013-04-14)
+
+* [fix] Add log verbose option
+* [fix] `--help` only, without arguments will display the global help/usage
+
 ###v1.1.2 (2013-02-07)
 
 * [fix] Fix error while starting multiple workers
