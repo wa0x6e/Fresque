@@ -19,6 +19,7 @@
 namespace Fresque;
 
 define('DS', DIRECTORY_SEPARATOR);
+include __DIR__ . DS . 'DialogMenuValidator.php';
 
 /**
  * Fresque Class
@@ -1017,43 +1018,5 @@ class Fresque
 
         // Prepend 'since ' or whatever you like
         return $interval->format($format);
-    }
-}
-
-
-/**
- * DialogMenuValidator Class
- *
- * ezComponent class for validating dialog menu input
- *
- * @since 1.0.0
- */
-class DialogMenuValidator implements \ezcConsoleMenuDialogValidator
-{
-    protected $elements = array();
-
-    public function __construct($elements)
-    {
-        $this->elements = $elements;
-    }
-
-    public function fixup($result)
-    {
-        return (string)$result;
-    }
-
-    public function getElements()
-    {
-        return $this->elements;
-    }
-
-    public function getResultString()
-    {
-
-    }
-
-    public function validate($result)
-    {
-        return in_array($result, array_keys($this->elements));
     }
 }
