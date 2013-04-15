@@ -34,7 +34,7 @@ class Fresque
     protected $settings;
     protected $runtime;
 
-    const VERSION = '1.1.2';
+    const VERSION = '1.1.3';
 
     public function __construct()
     {
@@ -104,6 +104,18 @@ class Fresque
                 false,
                 'Force workers shutdown, forcing all the current jobs to finish (and fail)',
                 'Force workers shutdown, forcing all the current jobs to finish (and fail)'
+            )
+        );
+
+        $this->input->registerOption(
+            new \ezcConsoleOption(
+                'v',
+                'verbose',
+                \ezcConsoleInput::TYPE_NONE,
+                null,
+                false,
+                'Log more verbose informations',
+                'Log more verbose informations'
             )
         );
 
@@ -250,7 +262,7 @@ class Fresque
                 'start' => array(
                         'help' => 'Start a new worker',
                         'options' => array('u' => 'username', 'q' => 'queue name',
-                                'i' => 'num', 'n' => 'num', 'l' => 'path')),
+                                'i' => 'num', 'n' => 'num', 'l' => 'path', 'v')),
                 'stop' => array(
                         'help' => 'Shutdown all workers',
                         'options' => array('f', 'w')),
@@ -277,9 +289,9 @@ class Fresque
 
         if ($this->command === null || !method_exists($this, $this->command)) {
             $this->outputTitle('Welcome to Fresque');
-            $this->output->outputLine('Fresque '. Fresque::VERSION.' by Wan Chen (Kamisama) (2012)');
+            $this->output->outputLine('Fresque '. Fresque::VERSION.' by Wan Chen (Kamisama) (2013)');
 
-            if (!method_exists($this, $this->command) && $this->command !== null) {
+            if (!method_exists($this, $this->command) && $this->command !== null && $this->command !== '--help') {
                 $this->output->outputLine("\nUnrecognized command : " . $this->command, 'failure');
             }
 
@@ -374,7 +386,8 @@ class Fresque
         }
 
         $cmd = 'nohup sudo -u '. escapeshellarg($this->runtime['Default']['user']) . ' bash -c "cd ' .
-        escapeshellarg($this->runtime['Fresque']['lib']) . '; VVERBOSE=true' .
+        escapeshellarg($this->runtime['Fresque']['lib']) . '; ' .
+        (($this->runtime['Default']['verbose']) ? 'VVERBOSE' : 'VERBOSE') . '=true '.
         ' QUEUE=' . escapeshellarg($this->runtime['Default']['queue']) .
         ' APP_INCLUDE=' . escapeshellarg($this->runtime['Fresque']['include']) .
         ' INTERVAL=' . escapeshellarg($this->runtime['Default']['interval']) .
@@ -742,12 +755,10 @@ class Fresque
                 require_once($this->runtime['Fresque']['lib'] . DS . 'lib' . DS . 'Resque' . DS.'Redis.php');
                 $redis = @new \Resque_Redis($this->runtime['Redis']['host'], (int) $this->runtime['Redis']['port']);
 
-            }
-            elseif (class_exists('Redis')) {
+            } elseif (class_exists('Redis')) {
                 $redis = new \Redis();
                 @$redis->connect($this->runtime['Redis']['host'], (int) $this->runtime['Redis']['port']);
-            }
-            elseif (class_exists('Redisent')) {
+            } elseif (class_exists('Redisent')) {
                 $redis = @new \Redisent($this->runtime['Redis']['host'], (int) $this->runtime['Redis']['port']);
             } else {
                 $results['Redis server'] = 'Unable to find Redis Api';
@@ -768,8 +779,7 @@ class Fresque
         $logPath = pathinfo($this->runtime['Log']['filename'], PATHINFO_DIRNAME);
         if (!is_dir($logPath)) {
             $results['Log File'] = 'The directory for the log file does not exists';
-        }
-        elseif (!is_writable($logPath)) {
+        } elseif (!is_writable($logPath)) {
             $results['Log File'] = 'The directory for the log file is not writable';
         }
 
@@ -897,6 +907,9 @@ class Fresque
                 $this->settings['Queues'][$name]['queue'] = $name;
             }
         }
+
+        $this->runtime['Default']['verbose'] = ($this->input->getOption('verbose')->value)
+            ? $this->input->getOption('verbose')->value : $this->settings['Default']['verbose'];
 
         if ($this->command != 'test') {
             $results = $this->testConfig();
@@ -1044,4 +1057,3 @@ class DialogMenuValidator implements \ezcConsoleMenuDialogValidator
         return in_array($result, array_keys($this->elements));
     }
 }
-
