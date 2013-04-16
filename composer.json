@@ -17,7 +17,7 @@
 		"zetacomponents/base" : ">=1.8"
 	},
 	"suggest": {
-		"chrisboulton/php-resque" : "PHP port of resque (Workers and Queueing) "
+		"chrisboulton/php-resque" : "PHP port of resque (Workers and Queueing)",
 		"kamisama/php-resque-ex": "PHP port of Resque, with phpredis support, and more logging options"
 	},
 	"support": {
