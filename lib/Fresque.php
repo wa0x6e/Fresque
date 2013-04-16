@@ -398,7 +398,7 @@ class Fresque
         ' COUNT=' . $this->runtime['Default']['workers'] .
         ' LOGHANDLER=' . escapeshellarg($this->runtime['Log']['handler']) .
         ' LOGHANDLERTARGET=' . escapeshellarg($this->runtime['Log']['target']) .
-        ' php .' . (file_exists('./bin/resque') ? './bin/resque' : './resque.php');
+        ' php .' . $this->getResqueBinFile($this->runtime['Fresque']['lib']);
         $cmd .= ' >> '. escapeshellarg($this->runtime['Log']['filename']).' 2>&1" >/dev/null 2>&1 &';
 
         $workersCountBefore = \Resque::Redis()->scard('workers');
@@ -1015,6 +1015,28 @@ class Fresque
         } elseif (substr($path, 0, 1) !== '/' || substr($path, 0, 3) == '../') {
             $path = dirname(__DIR__) . DS . $path;
         }
-        return $path;
+        return rtrim($path, DS);
+    }
+
+
+    /**
+     * Return the php-resque executable file
+     *
+     * Maintain backward compatibility, as newer version of
+     * php-resque has that file in another location
+     *
+     * @since  1.1.6
+     * @param  String $base Php-resque folder path
+     * @return String Relative path to php-resque executable file
+     */
+    private function getResqueBinFile($base)
+    {
+        if (file_exists($base . DS . 'bin' . DS . 'resque')) {
+            return '.' . DS . 'bin' . DS .'resque';
+        } elseif (file_exists($base .'bin' . DS . 'resque.php')) {
+            return '.' . DS . 'bin' . DS .'resque.php';
+        } else {
+            return '.' . DS .'resque.php';
+        }
     }
 }
