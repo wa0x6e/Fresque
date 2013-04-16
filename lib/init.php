@@ -18,11 +18,29 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
-if (file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'autoload.php')) {
-    require dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'autoload.php';
-} else {
-    require dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+// Find and initialize Composer
+$files = array(
+    __DIR__ . '/../../vendor/autoload.php',
+    __DIR__ . '/../../../autoload.php',
+    __DIR__ . '/../../../../autoload.php',
+    __DIR__ . '/../vendor/autoload.php',
+);
+
+foreach ($files as $file) {
+    if (file_exists($file)) {
+        require_once $file;
+        break;
+    }
 }
+
+if (!class_exists('Composer\Autoload\ClassLoader', false)) {
+    die(
+        'You need to set up the project dependencies using the following commands:' . PHP_EOL .
+        'curl -s http://getcomposer.org/installer | php' . PHP_EOL .
+        'php composer.phar install' . PHP_EOL
+    );
+}
+
 require __DIR__ . DIRECTORY_SEPARATOR . 'Fresque.php';
 
 $fresque = new Fresque\Fresque();
