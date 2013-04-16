@@ -407,7 +407,6 @@ class Fresque
 
         $this->output->outputText('Starting worker ');
 
-
         $success = false;
         $attempt = 7;
         while ($attempt-- > 0) {
@@ -806,14 +805,9 @@ class Fresque
             }
         }
 
-        if (!empty($this->runtime['Fresque']['lib']) && $found) {
-            foreach ($resqueFiles as $file) {
-                require_once $this->runtime['Fresque']['lib'] . DS . $file;
-            }
-        } else {
+        if (!$found) {
             $results['PHPResque library'] = 'Unable to find PHPResque library';
         }
-
 
         $this->runtime['Fresque']['include'] = $this->absolutePath($this->runtime['Fresque']['include']);
         if (!file_exists($this->runtime['Fresque']['include'])) {
