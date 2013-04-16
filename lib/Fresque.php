@@ -545,7 +545,10 @@ class Fresque
             $this->output->outputLine("You have no configured workers to load.\n", 'failure');
         } else {
             $this->output->outputLine(sprintf('Loading %s workers', count($this->settings['Queues'])));
+
+            $config = $this->config;
             foreach ($this->settings['Queues'] as $queue) {
+                $queue['config'] = $config;
                 $this->loadSettings($queue);
                 $this->start($this->runtime);
             }
@@ -746,6 +749,8 @@ class Fresque
             $results['Redis configuration'] = 'Unable to read redis server configuration';
         }
 
+        $this->runtime['Fresque']['lib'] = $this->absolutePath($this->runtime['Fresque']['lib']);
+
         if (!is_dir($this->runtime['Fresque']['lib']) || !is_dir($this->runtime['Fresque']['lib'])) {
             $results['PHPResque library'] =
                 'Unable to found PHP Resque library. Check that the path is valid, and directory is readable';
@@ -770,12 +775,7 @@ class Fresque
         }
 
 
-        if (substr($this->runtime['Log']['filename'], 0, 2) == './') {
-            $this->runtime['Log']['filename'] = dirname(__DIR__) . DS .
-                substr($this->runtime['Log']['filename'], 2);
-        } elseif (substr($this->runtime['Log']['filename'], 0, 1) != '/') {
-            $this->runtime['Log']['filename'] = dirname(__DIR__) . DS . $this->runtime['Log']['filename'];
-        }
+        $this->runtime['Log']['filename'] = $this->absolutePath($this->runtime['Log']['filename']);
 
         $logPath = pathinfo($this->runtime['Log']['filename'], PATHINFO_DIRNAME);
         if (!is_dir($logPath)) {
@@ -796,10 +796,7 @@ class Fresque
                 'lib'.DS.'Resque'.DS.'Worker.php'
         );
 
-        if (substr($this->runtime['Fresque']['lib'], 0, 2) == './') {
-            $this->runtime['Fresque']['lib'] = dirname(__DIR__) . DS .
-            substr($this->runtime['Fresque']['lib'], 2);
-        }
+
 
         $found = true;
         foreach ($resqueFiles as $file) {
@@ -818,10 +815,7 @@ class Fresque
         }
 
 
-        if (substr($this->runtime['Fresque']['include'], 0, 2) == './') {
-            $this->runtime['Fresque']['include'] = dirname(__DIR__) . DS .
-            substr($this->runtime['Fresque']['include'], 2);
-        }
+        $this->runtime['Fresque']['include'] = $this->absolutePath($this->runtime['Fresque']['include']);
         if (!file_exists($this->runtime['Fresque']['include'])) {
             $results['Application autoloader'] = 'Your application autoloader file was not found';
         }
@@ -862,13 +856,13 @@ class Fresque
     {
         $options = ($args === null) ? $this->input->getOptionValues(true) : $args;
 
-        $config = isset($options['config']) ? $options['config'] : '.'.DS.'fresque.ini';
-        if (!file_exists($config)) {
-            $this->output->outputLine("The config file '$config' was not found", 'failure');
+        $this->config = isset($options['config']) ? $options['config'] : '.'.DS.'fresque.ini';
+        if (!file_exists($this->config)) {
+            $this->output->outputLine("The config file '$this->config' was not found", 'failure');
             die();
         }
 
-        $this->settings = $this->runtime = parse_ini_file($config, true);
+        $this->settings = $this->runtime = parse_ini_file($this->config, true);
 
         $this->runtime['Redis']['host'] = isset($options['host']) ? $options['host'] : $this->settings['Redis']['host'];
         $this->runtime['Redis']['port'] = isset($options['port']) ? $options['port'] : $this->settings['Redis']['port'];
@@ -1018,5 +1012,15 @@ class Fresque
 
         // Prepend 'since ' or whatever you like
         return $interval->format($format);
+    }
+
+    private function absolutePath($path)
+    {
+        if (substr($path, 0, 2) == './') {
+            $path = dirname(__DIR__) . DS . substr($path, 2);
+        } elseif (substr($path, 0, 1) !== '/' || substr($path, 0, 3) == '../') {
+            $path = dirname(__DIR__) . DS . $path;
+        }
+        return $path;
     }
 }
