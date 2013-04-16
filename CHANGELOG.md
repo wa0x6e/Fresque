@@ -1,5 +1,9 @@
 ##Changelog
 
+###v1.1.5 (2013-04-15)
+
+* [fix] Fix composer
+
 ###v1.1.4 (2013-04-15)
 
 * [fix] Move php-resque library to suggest, to avoid conflict when using a forked php-resque

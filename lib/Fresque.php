@@ -35,7 +35,7 @@ class Fresque
     protected $settings;
     protected $runtime;
 
-    const VERSION = '1.1.3';
+    const VERSION = '1.1.5';
 
     public function __construct()
     {
