@@ -398,7 +398,7 @@ class Fresque
         ' COUNT=' . $this->runtime['Default']['workers'] .
         ' LOGHANDLER=' . escapeshellarg($this->runtime['Log']['handler']) .
         ' LOGHANDLERTARGET=' . escapeshellarg($this->runtime['Log']['target']) .
-        ' php ./resque.php';
+        ' php .' . (file_exists('./bin/resque') ? './bin/resque' : './resque.php');
         $cmd .= ' >> '. escapeshellarg($this->runtime['Log']['filename']).' 2>&1" >/dev/null 2>&1 &';
 
         $workersCountBefore = \Resque::Redis()->scard('workers');
