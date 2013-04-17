@@ -122,6 +122,18 @@ class Fresque
 
         $this->input->registerOption(
             new \ezcConsoleOption(
+                'g',
+                'debug',
+                \ezcConsoleInput::TYPE_NONE,
+                null,
+                false,
+                'Print debug informations',
+                'Print debug informations'
+            )
+        );
+
+        $this->input->registerOption(
+            new \ezcConsoleOption(
                 's',
                 'host',
                 \ezcConsoleInput::TYPE_STRING,
@@ -263,10 +275,10 @@ class Fresque
                 'start' => array(
                         'help' => 'Start a new worker',
                         'options' => array('u' => 'username', 'q' => 'queue name',
-                                'i' => 'num', 'n' => 'num', 'l' => 'path', 'v')),
+                                'i' => 'num', 'n' => 'num', 'l' => 'path', 'v', 'g')),
                 'stop' => array(
                         'help' => 'Shutdown all workers',
-                        'options' => array('f', 'w')),
+                        'options' => array('f', 'w', 'g')),
                 'restart' => array(
                         'help' => 'Restart all workers',
                         'options' => array()),
@@ -386,20 +398,25 @@ class Fresque
             $this->runtime = $args;
         }
 
-        $cmd = 'nohup sudo -u '. escapeshellarg($this->runtime['Default']['user']) . ' bash -c "cd ' .
-        escapeshellarg($this->runtime['Fresque']['lib']) . '; ' .
-        (($this->runtime['Default']['verbose']) ? 'VVERBOSE' : 'VERBOSE') . '=true '.
-        ' QUEUE=' . escapeshellarg($this->runtime['Default']['queue']) .
-        ' APP_INCLUDE=' . escapeshellarg($this->runtime['Fresque']['include']) .
-        ' INTERVAL=' . escapeshellarg($this->runtime['Default']['interval']) .
-        ' REDIS_BACKEND=' . escapeshellarg($this->runtime['Redis']['host'] . ':' . $this->runtime['Redis']['port']) .
-        ' REDIS_DATABASE=' . escapeshellarg($this->runtime['Redis']['database']) .
-        ' REDIS_NAMESPACE=' . escapeshellarg($this->runtime['Redis']['namespace']) .
-        ' COUNT=' . $this->runtime['Default']['workers'] .
-        ' LOGHANDLER=' . escapeshellarg($this->runtime['Log']['handler']) .
-        ' LOGHANDLERTARGET=' . escapeshellarg($this->runtime['Log']['target']) .
-        ' php ' . $this->getResqueBinFile($this->runtime['Fresque']['lib']);
+        $cmd = 'nohup sudo -u '. escapeshellarg($this->runtime['Default']['user']) . " \\\n".
+        'bash -c "cd ' .
+        escapeshellarg($this->runtime['Fresque']['lib']) . '; ' . " \\\n".
+        (($this->runtime['Default']['verbose']) ? 'VVERBOSE' : 'VERBOSE') . '=true ' . " \\\n".
+        'QUEUE=' . escapeshellarg($this->runtime['Default']['queue']) . " \\\n".
+        'APP_INCLUDE=' . escapeshellarg($this->runtime['Fresque']['include']) . " \\\n".
+        'INTERVAL=' . escapeshellarg($this->runtime['Default']['interval']) . " \\\n".
+        'REDIS_BACKEND=' . escapeshellarg($this->runtime['Redis']['host'] . ':' . $this->runtime['Redis']['port']) . " \\\n".
+        'REDIS_DATABASE=' . escapeshellarg($this->runtime['Redis']['database']) . " \\\n".
+        'REDIS_NAMESPACE=' . escapeshellarg($this->runtime['Redis']['namespace']) . " \\\n".
+        'COUNT=' . $this->runtime['Default']['workers'] . " \\\n".
+        'LOGHANDLER=' . escapeshellarg($this->runtime['Log']['handler']) . " \\\n".
+        'LOGHANDLERTARGET=' . escapeshellarg($this->runtime['Log']['target']) . " \\\n".
+        'php ' . $this->getResqueBinFile($this->runtime['Fresque']['lib']) . " \\\n";
         $cmd .= ' >> '. escapeshellarg($this->runtime['Log']['filename']).' 2>&1" >/dev/null 2>&1 &';
+
+        if ($this->debug) {
+            $this->output->outputLine("[DEBUG] Running command :\n\t" . str_replace("\n", "\n\t", $cmd), 'success');
+        }
 
         $workersCountBefore = \Resque::Redis()->scard('workers');
         $workersCountAfter = 0;
@@ -454,12 +471,32 @@ class Fresque
         $force = $this->input->getOption('force')->value;
         $all = $this->input->getOption('all')->value;
 
+        if ($this->debug) {
+            if ($force) {
+                $this->output->outputLine("[DEBUG] 'Force' option detected, will force shutdown workers", 'success');
+            }
+
+            if ($all) {
+                $this->output->outputLine("[DEBUG] 'All' option detected, will shutdown all workers", 'success');
+            }
+
+        }
+
         $this->outputTitle('Stopping Workers', $shutdown);
+
+        if ($this->debug) {
+            $this->output->outputLine("[DEBUG] Searching for active workers", 'success');
+        }
+
         $workers = \Resque_Worker::all();
         sort($workers);
         if (empty($workers)) {
             $this->output->outputLine('There is no active workers to kill ...', 'failure');
         } else {
+
+            if ($this->debug) {
+                $this->output->outputLine("[DEBUG] Found " . count($workers) . " active workers", 'success');
+            }
 
             $workersToKill = array();
 
@@ -546,8 +583,11 @@ class Fresque
             $this->output->outputLine(sprintf('Loading %s workers', count($this->settings['Queues'])));
 
             $config = $this->config;
+            $debug = $this->debug;
+
             foreach ($this->settings['Queues'] as $queue) {
                 $queue['config'] = $config;
+                $queue['debug'] = $debug;
                 $this->loadSettings($queue);
                 $this->start($this->runtime);
             }
@@ -855,6 +895,8 @@ class Fresque
             $this->output->outputLine("The config file '$this->config' was not found", 'failure');
             die();
         }
+
+        $this->debug = isset($options['debug']) ? true : false;
 
         $this->settings = $this->runtime = parse_ini_file($this->config, true);
 
