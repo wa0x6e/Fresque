@@ -7,13 +7,14 @@
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
- * @author        Wan Qi Chen <kami@kamisama.me>
- * @copyright     Copyright 2012, Wan Qi Chen <kami@kamisama.me>
- * @link          https://github.com/kamisama/Fresque
- * @package       Fresque
- * @subpackage    Fresque.lib
- * @since         0.1.0
- * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
+ * @link       https://github.com/kamisama/Fresque
+ * @since      0.1.0
+ * @package    Fresque
+ * @subpackage Fresque.lib
+ * @author     Wan Qi Chen <kami@kamisama.me>
+ * @copyright  Copyright 2012, Wan Qi Chen <kami@kamisama.me>
+ *
+ * @license    MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
 namespace Fresque;
@@ -29,8 +30,8 @@ include __DIR__ . DS . 'DialogMenuValidator.php';
  */
 class Fresque
 {
-    protected $input;
-    protected $output;
+    public $input;
+    public $output;
 
     protected $settings;
     protected $runtime;
@@ -41,8 +42,6 @@ class Fresque
     {
         $this->command = array_splice($_SERVER['argv'], 1, 1);
         $this->command = empty($this->command) ? null : $this->command[0];
-
-        $this->ResqueStatus = new \ResqueStatus\ResqueStatus(\Resque::Redis());
 
         $this->input = new \ezcConsoleInput();
         $this->output = new \ezcConsoleOutput();
@@ -265,6 +264,11 @@ class Fresque
 
         }
 
+        $this->callCommand();
+    }
+
+    public function callCommand()
+    {
         $settings = $this->loadSettings();
 
         $args = $this->input->getArguments();
@@ -273,7 +277,7 @@ class Fresque
             'c' => 'path', 'a' => 'path', 'd' => 'handler', 'r' => 'args,'
         );
 
-        $commandTree = array(
+        $this->commandTree = array(
                 'start' => array(
                         'help' => 'Start a new worker',
                         'options' => array('u' => 'username', 'q' => 'queue name',
@@ -302,33 +306,17 @@ class Fresque
                                 'i' => 'num', 'n' => 'num', 'l' => 'path'))
                 );
 
-        if ($this->command === null || !method_exists($this, $this->command)) {
-            $this->outputTitle('Welcome to Fresque');
-            $this->output->outputLine('Fresque '. Fresque::VERSION.' by Wan Chen (Kamisama) (2013)');
-
-            if (!method_exists($this, $this->command) && $this->command !== null && $this->command !== '--help') {
-                $this->output->outputLine("\nUnrecognized command : " . $this->command, 'failure');
-            }
-
-            $this->output->outputLine();
-            $this->output->outputLine("Available commands\n", 'subtitle');
-
-            foreach ($commandTree as $name => $opt) {
-                $this->output->outputText($name . str_repeat(' ', 15 - strlen($name)), 'bold');
-                $this->output->outputText($opt['help'] . "\n");
-            }
-
-            $this->output->outputLine("\nUse <command> --help to get more infos about a command\n");
-
+        if (($this->command === null || !method_exists($this, $this->command) && getenv('ENV') !== 'tests')) {
+            $this->help();
         } else {
             if ($helpOption->value === true) {
                 $this->output->outputLine();
-                $this->output->outputLine($commandTree[$this->command]['help']);
+                $this->output->outputLine($this->commandTree[$this->command]['help']);
 
-                if (!empty($commandTree[$this->command]['options'])) {
+                if (!empty($this->commandTree[$this->command]['options'])) {
                     $this->output->outputLine("\nAvailable options\n", 'subtitle');
 
-                    foreach ($commandTree[$this->command]['options'] as $name => $arg) {
+                    foreach ($this->commandTree[$this->command]['options'] as $name => $arg) {
                         $opt = $this->input->getOption(is_numeric($name) ? $arg : $name);
                         $o = (!empty($opt->short)
                             ? '-' . $opt->short : '  ') . ' ' . (is_numeric($name) ? ''
@@ -356,7 +344,7 @@ class Fresque
                 $this->output->outputLine();
 
             } else {
-                $allowed = array_merge($commandTree[$this->command]['options'], $globalOptions);
+                $allowed = array_merge($this->commandTree[$this->command]['options'], $globalOptions);
                 foreach ($allowed as $name => &$arg) {
                     if (!is_numeric($name)) {
                         $arg = $name;
@@ -383,6 +371,8 @@ class Fresque
                     $this->runtime['Redis']['database'],
                     $this->runtime['Redis']['namespace']
                 );
+
+                $this->ResqueStatus = new \ResqueStatus\ResqueStatus(\Resque::Redis());
                 $this->{$this->command}();
             }
         }
@@ -401,7 +391,7 @@ class Fresque
         }
 
         $pidFile = __DIR__ . 'tmp' . DS . str_replace('.', '', microtime(true));
-        $count = $this->runtime['Default']['workers']
+        $count = $this->runtime['Default']['workers'];
 
         $this->debug('Will start ' . $count . ' workers');
 
@@ -482,10 +472,7 @@ class Fresque
             $this->debug("'All' option detected, will shutdown all workers");
         }
 
-
-
         $this->outputTitle('Stopping Workers', $shutdown);
-
 
         $this->debug("Searching for active workers");
 
@@ -667,7 +654,7 @@ class Fresque
         }
 
         $this->output->outputLine('Tailing ' . $logs[$index - 1], 'subtitle');
-        $this->tail($logs[$index - 1]);
+        $this->tailCommand($logs[$index - 1]);
     }
 
 
@@ -858,12 +845,6 @@ class Fresque
         return $results;
     }
 
-
-    private function clearWorker()
-    {
-        \Resque::Redis()->del('ResqueWorker');
-    }
-
     /**
      * Convert options from various source to formatted options
      * understandable by Fresque
@@ -942,6 +923,26 @@ class Fresque
                 }
             }
         }
+    }
+
+    public function help()
+    {
+        $this->outputTitle('Welcome to Fresque');
+        $this->output->outputLine('Fresque '. Fresque::VERSION.' by Wan Chen (Kamisama) (2013)');
+
+        if (!method_exists($this, $this->command) && $this->command !== null && $this->command !== '--help') {
+            $this->output->outputLine("\nUnrecognized command : " . $this->command, 'failure');
+        }
+
+        $this->output->outputLine();
+        $this->output->outputLine("Available commands\n", 'subtitle');
+
+        foreach ($this->commandTree as $name => $opt) {
+            $this->output->outputText($name . str_repeat(' ', 15 - strlen($name)), 'bold');
+            $this->output->outputText($opt['help'] . "\n");
+        }
+
+        $this->output->outputLine("\nUse <command> --help to get more infos about a command\n");
     }
 
 
@@ -1042,7 +1043,14 @@ class Fresque
         return rtrim($path, DS);
     }
 
-    public function debug($string) {
+    /**
+     * Print debugging information
+     *
+     * @param string $string Information to print
+     * @return void
+     */
+    public function debug($string)
+    {
         if ($this->debug) {
             $this->output->outputLine('[DEBUG] ' . $string, 'success');
         }
@@ -1074,11 +1082,23 @@ class Fresque
         return '.' . DS . 'resque.php';
     }
 
-    protected function tail($path) {
+    /**
+     * @codeCoverageIgnore
+     * @param  [type] $path [description]
+     * @return [type]       [description]
+     */
+    protected function tailCommand($path)
+    {
         passthru('tail -f ' . escapeshellarg($path));
     }
 
-    protected function exec($cmd) {
+    /**
+     * @codeCoverageIgnore
+     * @param  [type] $cmd [description]
+     * @return [type]      [description]
+     */
+    protected function exec($cmd)
+    {
         passthru($cmd);
     }
 }
