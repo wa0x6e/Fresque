@@ -1,9 +1,10 @@
 <?php
+namespace Fresque\Test;
 
 // Used to mock the filesystem
 use org\bovigo\vfs\vfsStream;
 
-class FresqueTest extends PHPUnit_Framework_TestCase
+class FresqueTest extends \PHPUnit_Framework_TestCase
 {
 
     public function setUp()
@@ -13,11 +14,11 @@ class FresqueTest extends PHPUnit_Framework_TestCase
         $this->output = $this->getMock('\ezcConsoleOutput');
         $this->input = $this->getMock('\ezcConsoleInput');
 
-        $this->shell = $this->getMock('\Fresque\Fresque', array('callCommand', 'outputTitle'));
+        $this->shell = $this->getMock('\Fresque\Fresque', array('callCommand', 'outputTitle', 'kill'));
         $this->shell->output = $this->output;
         $this->shell->input = $this->input;
 
-        $this->shell->ResqueStatus = $this->ResqueStatus = $this->getMock('\ResqueStatus\ResqueStatus', array(), array(new stdClass()));
+        $this->shell->ResqueStatus = $this->ResqueStatus = $this->getMock('\ResqueStatus\ResqueStatus', array(), array(new \stdClass()));
 
         $this->startArgs = array(
 
@@ -80,7 +81,7 @@ class FresqueTest extends PHPUnit_Framework_TestCase
      */
     public function testGetResqueBin()
     {
-        $method = new ReflectionMethod('\Fresque\Fresque', 'getResqueBinFile');
+        $method = new \ReflectionMethod('\Fresque\Fresque', 'getResqueBinFile');
         $method->setAccessible(true);
 
         $root = vfsStream::setup('resque');
@@ -101,7 +102,7 @@ class FresqueTest extends PHPUnit_Framework_TestCase
      */
     public function testGetResqueBinWithExtension()
     {
-        $method = new ReflectionMethod('\Fresque\Fresque', 'getResqueBinFile');
+        $method = new \ReflectionMethod('\Fresque\Fresque', 'getResqueBinFile');
         $method->setAccessible(true);
 
         $root = vfsStream::setup('resque');
@@ -121,7 +122,7 @@ class FresqueTest extends PHPUnit_Framework_TestCase
      */
     public function testGetResqueBinFallbackInRoot()
     {
-        $method = new ReflectionMethod('\Fresque\Fresque', 'getResqueBinFile');
+        $method = new \ReflectionMethod('\Fresque\Fresque', 'getResqueBinFile');
         $method->setAccessible(true);
 
         $root = vfsStream::setup('resque');
@@ -191,7 +192,7 @@ class FresqueTest extends PHPUnit_Framework_TestCase
         $this->ResqueStatus = $this->getMock(
             'ResqueStatus\ResqueStatus',
             array('isRunningSchedulerWorker', 'addWorker'),
-            array(new stdClass())
+            array(new \stdClass())
         );
 
         $this->ResqueStatus->expects($this->once())->method('addWorker');
@@ -382,8 +383,7 @@ class FresqueTest extends PHPUnit_Framework_TestCase
         $this->output->expects($this->at(1))->method('outputLine')->with($this->stringContains('Unrecognized command : hello'));
 
         $this->shell->commandTree = array();
-        $this->shell->command = 'hello';
-        $this->shell->help();
+        $this->shell->help('hello');
     }
 
     public function testStopWhenNoWorkers()
@@ -393,7 +393,7 @@ class FresqueTest extends PHPUnit_Framework_TestCase
 
         $Resque_Worker::staticExpects($this->once())->method('all')->will($this->returnValue(array()));
 
-        $option = new stdClass();
+        $option = new \stdClass();
         $option->value = false;
         $this->input->expects($this->exactly(2))->method('getOption')->will($this->returnValue($option));
 
@@ -405,4 +405,133 @@ class FresqueTest extends PHPUnit_Framework_TestCase
         $this->shell->stop();
     }
 
+    public function testStopWhenOnlyOneWorker()
+    {
+        $shell = $this->shell;
+        $shell::$Resque_Worker = $Resque_Worker = $this->getMockClass('\Resque_Worker', array('all'));
+
+        $Resque_Worker::staticExpects($this->once())->method('all')->will($this->returnValue(array('host:100:queue')));
+
+        $option = new \stdClass();
+        $option->value = false;
+        $this->input->expects($this->exactly(2))->method('getOption')->will($this->returnValue($option));
+
+        $this->shell->expects($this->once())->method('outputTitle')->with($this->stringContains('Stopping workers'));
+        $this->output->expects($this->at(0))->method('outputText')->with($this->stringContains('stopping 100 ...'));
+        $this->output->expects($this->at(2))->method('outputLine')->will($this->returnValue('done'));
+        $this->output->expects($this->exactly(2))->method('outputLine');
+
+        $this->shell->expects($this->once())->method('kill')->will($this->returnValue(array('code' => 0, 'message' => '')));
+        $this->ResqueStatus->expects($this->once())->method('removeWorker')->with($this->equalTo('100'));
+
+        $this->shell->debug = false;
+        $this->shell->stop();
+    }
+
+    public function testStopAllWorkersWithAllOption()
+    {
+        $shell = $this->shell;
+        $shell::$Resque_Worker = $Resque_Worker = $this->getMockClass('\Resque_Worker', array('all'));
+
+        $workers = array(
+            'host:100:queue',
+            'host:101:queue',
+            'host:102:queue'
+        );
+
+        $Resque_Worker::staticExpects($this->once())->method('all')->will($this->returnValue($workers));
+
+        $option = new \stdClass();
+        $option->value = false;
+        $this->input->expects($this->at(0))->method('getOption')->with($this->equalTo('force'))->will($this->returnValue($option));
+        $option->value = true;
+        $this->input->expects($this->at(1))->method('getOption')->with($this->equalTo('all'))->will($this->returnValue($option));
+
+        $this->shell->expects($this->once())->method('outputTitle')->with($this->stringContains('Stopping workers'));
+        $this->output->expects($this->at(0))->method('outputText')->with($this->stringContains('stopping 100 ...'));
+        $this->output->expects($this->at(1))->method('outputLine')->will($this->returnValue('done'));
+        $this->output->expects($this->at(2))->method('outputText')->with($this->stringContains('stopping 101 ...'));
+        $this->output->expects($this->at(3))->method('outputLine')->will($this->returnValue('done'));
+        $this->output->expects($this->at(4))->method('outputText')->with($this->stringContains('stopping 102 ...'));
+        $this->output->expects($this->at(5))->method('outputLine')->will($this->returnValue('done'));
+        $this->output->expects($this->exactly(4))->method('outputLine');
+
+        $this->shell->expects($this->exactly(3))->method('kill')->will($this->returnValue(array('code' => 0, 'message' => '')));
+        $this->ResqueStatus->expects($this->exactly(3))->method('removeWorker');
+
+        $this->shell->debug = false;
+        $this->shell->stop();
+    }
+
+    public function testStopAllWorkersWithAllInput()
+    {
+        $shell = $this->shell;
+        $shell::$Resque_Worker = $Resque_Worker = $this->getMockClass('\Resque_Worker', array('all'));
+
+        $Resque_Worker::staticExpects($this->once())->method('all')->will($this->returnValue(array('host:100:queue')));
+
+        $option = new \stdClass();
+        $option->value = false;
+        $this->input->expects($this->exactly(2))->method('getOption')->will($this->returnValue($option));
+
+        $this->markTestIncomplete();
+    }
+
+    /**
+     * @covers \Fresque\Fresque::stats
+     */
+    public function testStats()
+    {
+        $this->shell->expects($this->once())->method('outputTitle')->with($this->stringContains('workers statistics'));
+
+        $this->shell->stats();
+        $this->markTestIncomplete();
+    }
+
+    public function testTest()
+    {
+        $this->shell->expects($this->once())->method('outputTitle')->with($this->stringContains('testing configuration'));
+
+        // $this->shell->test();
+        $this->markTestIncomplete();
+    }
+
+    public function testTestConfig()
+    {
+        //$this->shell->testConfig();
+        $this->markTestIncomplete();
+    }
+
+    public function testCallCommandWithValidCommand()
+    {
+        $shell = $this->shell;
+        $shell::$Resque = $Resque = $this->getMockClass('\Resque', array('setBackend'));
+
+        $Resque::staticExpects($this->once())->method('setBackend');
+
+
+        $this->shell = $this->getMock('\Fresque\Fresque', array('start', 'help', 'loadSettings', 'registerHelpOption'));
+        $this->shell->output = $this->output;
+        $this->shell->input = $this->input;
+
+        $helpOption = new \StdClass();
+        $helpOption->value = false;
+
+        $this->shell->expects($this->once())->method('registerHelpOption')->will($this->returnValue($helpOption));
+        $this->input->expects($this->once())->method('getOptionValues')->will($this->returnValue(array()));
+        $this->shell->expects($this->once())->method('start');
+
+        $this->shell->callCommand('start');
+    }
+
+    public function testCallCommandWithInvalidCommand()
+    {
+        $this->shell = $this->getMock('\Fresque\Fresque', array('help', 'loadSettings', 'registerHelpOption'));
+        $this->shell->output = $this->output;
+        $this->shell->input = $this->input;
+
+        $this->shell->expects($this->never())->method('command');
+        $this->shell->expects($this->once())->method('help')->with('command');
+        $this->shell->callCommand('command');
+    }
 }

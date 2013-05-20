@@ -36,6 +36,8 @@ class Fresque
     public $settings;
     public $runtime;
 
+    public $debug = false;
+
     /**
      * @var Resque Classname
      */
@@ -49,8 +51,8 @@ class Fresque
 
     public function __construct()
     {
-        $this->command = array_splice($_SERVER['argv'], 1, 1);
-        $this->command = empty($this->command) ? null : $this->command[0];
+        $command = array_splice($_SERVER['argv'], 1, 1);
+        $command = empty($command) ? null : $command[0];
 
         $this->input = new \ezcConsoleInput();
         $this->output = new \ezcConsoleOutput();
@@ -270,7 +272,13 @@ class Fresque
 
         }
 
-        $this->callCommand();
+        $this->callCommand($command);
+    }
+
+    protected function registerHelpOption()
+    {
+        $helpOption = $this->input->registerOption(new \ezcConsoleOption('h', 'help'));
+        $helpOption->isHelpOption = true;
     }
 
     /**
@@ -278,10 +286,9 @@ class Fresque
      * @since  2.0.0
      * @return  void
      */
-    public function callCommand()
+    public function callCommand($command)
     {
-        $helpOption = $this->input->registerOption(new \ezcConsoleOption('h', 'help'));
-        $helpOption->isHelpOption = true;
+        $helpOption = $this->registerHelpOption();
 
         $settings = $this->loadSettings();
 
@@ -323,17 +330,17 @@ class Fresque
                     'options' => array()),
         );
 
-        if (($this->command === null || !method_exists($this, $this->command) && getenv('ENV') !== 'tests')) {
-            $this->help();
+        if ($command === null || !array_key_exists($command, $this->commandTree)) {
+            $this->help($command);
         } else {
             if ($helpOption->value === true) {
                 $this->output->outputLine();
-                $this->output->outputLine($this->commandTree[$this->command]['help']);
+                $this->output->outputLine($this->commandTree[$command]['help']);
 
-                if (!empty($this->commandTree[$this->command]['options'])) {
+                if (!empty($this->commandTree[$command]['options'])) {
                     $this->output->outputLine("\nAvailable options\n", 'subtitle');
 
-                    foreach ($this->commandTree[$this->command]['options'] as $name => $arg) {
+                    foreach ($this->commandTree[$command]['options'] as $name => $arg) {
                         $opt = $this->input->getOption(is_numeric($name) ? $arg : $name);
                         $o = (!empty($opt->short)
                             ? '-' . $opt->short : '  ') . ' ' . (is_numeric($name) ? ''
@@ -361,7 +368,7 @@ class Fresque
                 $this->output->outputLine();
 
             } else {
-                $allowed = array_merge($this->commandTree[$this->command]['options'], $globalOptions);
+                $allowed = array_merge($this->commandTree[$command]['options'], $globalOptions);
                 foreach ($allowed as $name => &$arg) {
                     if (!is_numeric($name)) {
                         $arg = $name;
@@ -383,14 +390,17 @@ class Fresque
                         'warning'
                     );
                 }
-                \Resque::setBackend(
-                    $this->runtime['Redis']['host'] . ':' . $this->runtime['Redis']['port'],
-                    $this->runtime['Redis']['database'],
-                    $this->runtime['Redis']['namespace']
+                call_user_func_array(
+                    self::$Resque . '::setBackend',
+                    array(
+                        $this->runtime['Redis']['host'] . ':' . $this->runtime['Redis']['port'],
+                        $this->runtime['Redis']['database'],
+                        $this->runtime['Redis']['namespace']
+                    )
                 );
 
                 $this->ResqueStatus = new \ResqueStatus\ResqueStatus(\Resque::Redis());
-                $this->{$this->command}();
+                $this->{$command}();
             }
         }
     }
@@ -505,7 +515,7 @@ class Fresque
 
             $workersToKill = array();
 
-            if (!$all) {
+            if (!$all && count($workers) > 1) {
                 $i = 1;
                 $menuItems = array();
                 foreach ($workers as $worker) {
@@ -936,7 +946,7 @@ class Fresque
         $this->runtime['Default']['verbose'] = ($this->input->getOption('verbose')->value)
             ? $this->input->getOption('verbose')->value : $this->settings['Default']['verbose'];
 
-        if ($this->command != 'test') {
+        if ($command != 'test') {
             $results = $this->testConfig();
             if (!empty($results)) {
                 $fail = false;
@@ -962,16 +972,16 @@ class Fresque
      * @since  2.0.0
      * @return void
      */
-    public function help()
+    public function help($command = null)
     {
         $this->outputTitle('Welcome to Fresque');
         $this->output->outputLine('Fresque '. Fresque::VERSION.' by Wan Chen (Kamisama) (2013)');
 
-        if (!method_exists($this, $this->command)
-            && $this->command !== null
-            && ($this->command !== '--help' && $this->command !== '-h')
+        if (!array_key_exists($command, $this->commandTree)
+            && $command !== null
+            && ($command !== '--help' && $command !== '-h')
         ) {
-            $this->output->outputLine("\nUnrecognized command : " . $this->command, 'failure');
+            $this->output->outputLine("\nUnrecognized command : " . $command, 'failure');
         }
 
         $this->output->outputLine();
@@ -1168,6 +1178,8 @@ class Fresque
      *
      * @param  String $signal Signal to send
      * @param  int    $pid    PID of the process
+     *
+     * @codeCoverageIgnore
      * @return array with the code and message returned by the command
      */
     protected function kill($signal, $pid)
@@ -1177,7 +1189,8 @@ class Fresque
         return array('code' => $code, 'message' => $message);
     }
 
-    protected function checkStartedWorker($pidFile) {
+    protected function checkStartedWorker($pidFile)
+    {
         $pid = false;
         if (file_exists($pidFile) && false !== $pid = file_get_contents($pidFile)) {
             unlink($pidFile);
