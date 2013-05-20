@@ -1,0 +1,24 @@
+language: php
+
+php:
+  - 5.3
+  - 5.4
+  - 5.5
+
+matrix:
+  allow_failures:
+    - php: 5.5
+
+before_script:
+  - composer self-update
+  - composer install --prefer-source --dev
+  - pear channel-discover pear.bovigo.org
+  - pear install bovigo/vfsStream-beta
+  - phpenv rehash
+
+script:
+  - mkdir -p build/logs
+  - phpunit tests
+
+after_script:
+  - php vendor/bin/coveralls -v
