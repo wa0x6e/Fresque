@@ -249,6 +249,8 @@ class Fresque
             )
         );
 
+        $this->input->registerOption(new \ezcConsoleOption('h', 'help'));
+
         $this->output->formats->title->color = 'yellow';
         $this->output->formats->title->style = 'bold';
 
@@ -271,32 +273,6 @@ class Fresque
             die();
 
         }
-
-        $this->callCommand($command);
-    }
-
-    protected function registerHelpOption()
-    {
-        $helpOption = $this->input->registerOption(new \ezcConsoleOption('h', 'help'));
-        $helpOption->isHelpOption = true;
-    }
-
-    /**
-     *
-     * @since  2.0.0
-     * @return  void
-     */
-    public function callCommand($command)
-    {
-        $helpOption = $this->registerHelpOption();
-
-        $settings = $this->loadSettings();
-
-        $args = $this->input->getArguments();
-
-        $globalOptions = array('s' => 'host', 'p' => 'port', 'b' => 'path',
-            'c' => 'path', 'a' => 'path', 'd' => 'handler', 'r' => 'args,'
-        );
 
         $this->commandTree = array(
             'start' => array(
@@ -330,10 +306,28 @@ class Fresque
                     'options' => array()),
         );
 
+        $this->callCommand($command);
+    }
+
+    /**
+     *
+     * @since  2.0.0
+     * @return  void
+     */
+    public function callCommand($command)
+    {
+        $settings = $this->loadSettings($command);
+
+        $args = $this->input->getArguments();
+
+        $globalOptions = array('s' => 'host', 'p' => 'port', 'b' => 'path',
+            'c' => 'path', 'a' => 'path', 'd' => 'handler', 'r' => 'args,'
+        );
+
         if ($command === null || !array_key_exists($command, $this->commandTree)) {
             $this->help($command);
         } else {
-            if ($helpOption->value === true) {
+            if ($this->input->getOption('help')->value === true) {
                 $this->output->outputLine();
                 $this->output->outputLine($this->commandTree[$command]['help']);
 
@@ -346,10 +340,7 @@ class Fresque
                             ? '-' . $opt->short : '  ') . ' ' . (is_numeric($name) ? ''
                             : '<'.$arg. '>');
 
-                        $this->output->outputLine(
-                            $o . str_repeat(' ', 15 - strlen($o)) . " --"
-                            . $opt->long . str_repeat(' ', 15 - strlen($opt->long)) . " {$opt->longhelp}"
-                        );
+                        $this->output->outputLine(sprintf('%-15s --%-15s %s', $o, $opt->long, $opt->longhelp));
                     }
                 }
 
@@ -359,10 +350,7 @@ class Fresque
                     $opt = $this->input->getOption(is_numeric($name) ? $arg : $name);
                     $o = '-' . $opt->short . ' ' . (is_numeric($name) ? '' : '<'.$arg. '>');
 
-                    $this->output->outputLine(
-                        $o . str_repeat(' ', 15 - strlen($o)) . " --"
-                        . $opt->long . str_repeat(' ', 15 - strlen($opt->long)) . " {$opt->longhelp}"
-                    );
+                    $this->output->outputLine(sprintf('%-15s --%-15s %s', $o, $opt->long, $opt->longhelp));
                 }
 
                 $this->output->outputLine();
@@ -491,86 +479,111 @@ class Fresque
      */
     public function stop()
     {
-        $this->outputTitle('Stopping Workers');
+        $ResqueStatus = $this->ResqueStatus;
+
+        $this->debug("Searching for active workers");
+        $options = array(
+            'title' => 'Stopping workers',
+            'noWorkersMessage' => 'There is no workers to stop',
+            'allOption' => 'Stop all workers',
+            'selectMessage' => 'Worker to stop',
+            'actionMessage' => 'stopping',
+            'workers' => call_user_func(self::$Resque_Worker. '::all'),
+            'signal' => $this->input->getOption('force')->value === true ? 'TERM' : 'QUIT',
+            'successCallback' => function ($pid) use ($ResqueStatus) {
+                $ResqueStatus->removeWorker($pid);
+            }
+        );
+
+        $this->sendSignal($options);
+    }
+
+
+    /**
+     * Send a Signal to a worker system process
+     *
+     * @return void
+     */
+    public function sendSignal($options)
+    {
+        if (!function_exists('pcntl_signal')) {
+            return $this->output->outputLine('This function requires the PCNTL extension', 'failure');
+        }
+
+        $this->outputTitle($options['title']);
 
         $force = $this->input->getOption('force')->value;
         $all = $this->input->getOption('all')->value;
 
         if ($force) {
-            $this->debug("'Force' option detected, will force shutdown workers");
+            $this->debug("'FORCE' option detected");
         }
 
         if ($all) {
-            $this->debug("'All' option detected, will shutdown all workers");
+            $this->debug("'ALL' option detected");
         }
 
-        $this->debug("Searching for active workers");
+        if (!isset($options['formatListItem'])) {
+            $options['formatListItem'] = function ($worker) {
+                return sprintf(
+                    "%s, started %s ago",
+                    $worker,
+                    $this->formatDateDiff(\Resque::Redis()->get('worker:' . $worker . ':started'))
+                );
+            };
+        }
 
-        $workers = call_user_func(self::$Resque_Worker. '::all');
-        sort($workers);
-        if (empty($workers)) {
-            $this->output->outputLine('There is no active workers to stop ...', 'failure');
+        if (!isset($options['listTitle'])) {
+            $options['listTitle'] = 'Workers list';
+        }
+
+        sort($options['workers']);
+        if (empty($options['workers'])) {
+            $this->output->outputLine($options['noWorkersMessage'], 'failure');
         } else {
-            $this->debug("Found " . count($workers) . " active workers");
+            $this->debug("Found " . count($options['workers']) . " workers");
 
-            $workersToKill = array();
-
-            if (!$all && count($workers) > 1) {
+            $workerIndex = array();
+            if (!$all && count($options['workers']) > 1) {
                 $i = 1;
                 $menuItems = array();
-                foreach ($workers as $worker) {
-                    $menuItems[$i++] = sprintf(
-                        "%s, started %s ago",
-                        $worker,
-                        $this->formatDateDiff(\Resque::Redis()->get('worker:' . $worker . ':started'))
-                    );
+                foreach ($options['workers'] as $worker) {
+                    $menuItems[$i++] = $options['formatListItem']($worker);
                 }
 
-                if (count($menuItems) > 1) {
-                    $menuItems['all'] = 'Stop all workers';
+                $menuItems['all'] = $options['allOption'];
 
-                    $menuOptions = new \ezcConsoleMenuDialogOptions(
-                        array(
-                            'text' => 'Active workers list',
-                            'selectText' => 'Worker to stop :',
-                            'validator' => new DialogMenuValidator($menuItems)
-                        )
-                    );
-                    $menuDialog = new \ezcConsoleMenuDialog($this->output, $menuOptions);
-                    do {
-                        $menuDialog->display();
-                    } while ($menuDialog->hasValidResult() === false);
+                $index = $this->getUserChoice(
+                    $options['listTitle'],
+                    $options['selectMessage'] . ':',
+                    $menuItems
+                );
 
-                    $menuDialog->getResult();
-
-                    if ($menuDialog->getResult() == 'all') {
-                        $workerIndex = range(1, count($workers));
-                    } else {
-                        $workerIndex[] = $menuDialog->getResult();
-                    }
+                if ($index === 'all') {
+                    $workerIndex = range(1, count($options['workers']));
                 } else {
-                    $workerIndex[] = 1;
+                    $workerIndex[] = $index;
                 }
 
             } else {
-                $workerIndex = range(1, count($workers));
+                $workerIndex = range(1, count($options['workers']));
             }
 
             foreach ($workerIndex as $index) {
-
-                $worker = $workers[$index- 1];
+                $worker = $options['workers'][$index - 1];
 
                 list($hostname, $pid, $queue) = explode(':', (string)$worker);
-                $this->output->outputText('Stopping ' . $pid . ' ... ');
-                $signal = $force ? 'TERM' : 'QUIT';
 
-                $killResponse = $this->kill($signal, $pid);
-                $this->ResqueStatus->removeWorker($pid);
+                $this->output->outputText($options['actionMessage'] . ' ' . $pid . ' ... ');
+
+                $this->debug('Sending -' . $options['signal'] . ' signal to process ID ' . $pid);
+                $killResponse = $this->kill($options['signal'], $pid);
+                $options['successCallback']($pid);
 
                 if ($killResponse['code'] === 0) {
                     $this->output->outputLine('Done', 'success');
                 } else {
-                    $this->output->outputLine($message, 'failure');
+                    $this->output->outputLine($killResponse['message'], 'failure');
                 }
             }
         }
@@ -599,7 +612,7 @@ class Fresque
             foreach ($this->settings['Queues'] as $queue) {
                 $queue['config'] = $config;
                 $queue['debug'] = $debug;
-                $this->loadSettings($queue);
+                $this->loadSettings('load', $queue);
                 $this->start($this->runtime);
             }
         }
@@ -769,7 +782,7 @@ class Fresque
         $results = $this->testConfig(true);
         foreach ($results as $name => $r) {
             $this->output->outputText($name . ' ' . str_repeat('.', 24 - strlen($name)));
-            if ($r === null) {
+            if ($r) {
                 $this->output->outputText("OK\n", 'success');
             } else {
                 $this->output->outputText($r . "\n", 'failure');
@@ -890,7 +903,7 @@ class Fresque
      *
      * @return  void
      */
-    public function loadSettings($args = null)
+    public function loadSettings($command, $args = null)
     {
         $options = ($args === null) ? $this->input->getOptionValues(true) : $args;
 
@@ -900,7 +913,7 @@ class Fresque
             die();
         }
 
-        $this->debug = isset($options['debug']) ? true : false;
+        $this->debug = isset($options['debug']) ? $options['debug'] : false;
 
         $this->settings = $this->runtime = parse_ini_file($this->config, true);
 
@@ -946,7 +959,8 @@ class Fresque
         $this->runtime['Default']['verbose'] = ($this->input->getOption('verbose')->value)
             ? $this->input->getOption('verbose')->value : $this->settings['Default']['verbose'];
 
-        if ($command != 'test') {
+        // Shutdown application if there is error in the config
+        if ($command !== 'test') {
             $results = $this->testConfig();
             if (!empty($results)) {
                 $fail = false;
@@ -1026,6 +1040,7 @@ class Fresque
      * @param \DateTime $start
      * @param \DateTime|null $end
      *
+     * @codeCoverageIgnore
      * @link http://www.php.net/manual/en/dateinterval.format.php
      * @return string
      */
@@ -1180,6 +1195,7 @@ class Fresque
      * @param  int    $pid    PID of the process
      *
      * @codeCoverageIgnore
+     * @since  2.0.0
      * @return array with the code and message returned by the command
      */
     protected function kill($signal, $pid)
@@ -1189,6 +1205,16 @@ class Fresque
         return array('code' => $code, 'message' => $message);
     }
 
+    /**
+     * Check the content of the PID file created by the worker
+     * to retrieve its process PID
+     *
+     * @param  string $path Path to the PID file
+     *
+     * @codeCoverageIgnore
+     * @since  2.0.0
+     * @return false|int The worker process ID, or false if error
+     */
     protected function checkStartedWorker($pidFile)
     {
         $pid = false;
@@ -1197,5 +1223,34 @@ class Fresque
             return (int)$pid;
         }
         return false;
+    }
+
+    /**
+     * Display a Dialog menu, and retrieve the user selection
+     *
+     * @param  string $listTitle     Title of the menu dialog
+     * @param  string $selectMessage Select option message
+     * @param  array  $menuItems     The menu contents
+     *
+     * @codeCoverageIgnore
+     * @since  2.0.0
+     * @return int The index in the menu that was selected
+     */
+    protected function getUserChoice($listTitle, $selectMessage, $menuItems)
+    {
+        $menuOptions = new \ezcConsoleMenuDialogOptions(
+            array(
+                'text' => $listTitle,
+                'selectText' => $selectMessage,
+                'validator' => new DialogMenuValidator($menuItems)
+            )
+        );
+
+        $menuDialog = new \ezcConsoleMenuDialog($this->output, $menuOptions);
+        do {
+            $menuDialog->display();
+        } while ($menuDialog->hasValidResult() === false);
+
+        return $menuDialog->getResult();
     }
 }
