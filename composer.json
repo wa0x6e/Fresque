@@ -16,15 +16,14 @@
 		"zetacomponents/console-tools" : ">=1.6",
 		"zetacomponents/base" : ">=1.8",
         "kamisama/resque-status": ">=0.0.1",
-        "kamisama/php-resque-ex": ">=1.0.0"
+        "kamisama/php-resque-ex": ">=1.2.4"
 	},
     "require-dev": {
         "satooshi/php-coveralls": "dev-master",
         "mikey179/vfsStream": ">=1.2.0"
     },
 	"suggest": {
-		"chrisboulton/php-resque" : "PHP port of resque (Workers and Queueing)",
-		"kamisama/php-resque-ex": "PHP port of Resque, with phpredis support, and more logging options"
+		"chrisboulton/php-resque" : "PHP port of resque (Workers and Queueing)"
 	},
 	"support": {
 		"email": "kami@kamisama.me",

@@ -11,7 +11,7 @@ matrix:
 
 before_script:
   - composer self-update
-  - composer install --prefer-source --dev
+  - composer install --dev
 
 script:
   - mkdir -p build/logs
