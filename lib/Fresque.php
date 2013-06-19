@@ -663,15 +663,15 @@ class Fresque
     {
         $this->outputTitle('Loading predefined workers');
 
-        if (!isset($this->settings['Queues']) || empty($this->settings['Queues'])) {
+        if (!isset($this->runtime['Queues']) || empty($this->runtime['Queues'])) {
             $this->output->outputLine("You have no configured workers to load.\n", 'failure');
         } else {
-            $this->output->outputLine(sprintf('Loading %s workers', count($this->settings['Queues'])));
+            $this->output->outputLine(sprintf('Loading %s workers', count($this->runtime['Queues'])));
 
             $config = $this->config;
             $debug = $this->debug;
 
-            foreach ($this->settings['Queues'] as $queue) {
+            foreach ($this->runtime['Queues'] as $queue) {
                 $queue['config'] = $config;
                 $queue['debug'] = $debug;
                 $this->loadSettings('load', $queue);
@@ -988,44 +988,31 @@ class Fresque
 
         $this->debug = isset($options['debug']) ? $options['debug'] : false;
 
-        $this->settings = $this->runtime = parse_ini_file($this->config, true);
+        $this->runtime = parse_ini_file($this->config, true);
 
-        $this->runtime['Redis']['host'] = isset($options['host']) ? $options['host'] : $this->settings['Redis']['host'];
-        $this->runtime['Redis']['port'] = isset($options['port']) ? $options['port'] : $this->settings['Redis']['port'];
-        $this->runtime['Redis']['database'] = $this->settings['Redis']['database'];
-        $this->runtime['Redis']['namespace'] = $this->settings['Redis']['namespace'];
+        $settings = array(
+            $this->runtime['Redis']['host'] => 'host',
+            $this->runtime['Redis']['port'] => 'port',
+            $this->runtime['Log']['filename'] => 'log',
+            $this->runtime['Log']['handler'] => 'loghandler',
+            $this->runtime['Log']['target'] => 'handlertarget',
+            $this->runtime['Fresque']['lib'] => 'lib',
+            $this->runtime['Fresque']['include'] => 'autoloader',
+            $this->runtime['Default']['user'] => 'user',
+            $this->runtime['Default']['queue'] => 'queue',
+            $this->runtime['Default']['workers'] => 'workers',
+            $this->runtime['Default']['interval'] => 'interval'
+        );
 
-        $this->runtime['Log']['filename'] = isset($options['log'])
-            ? $options['log']
-            : $this->settings['Log']['filename'];
+        foreach ($settings as $runtime => $option) {
+            if (isset($options[$option])) {
+                $runtime = $options[$option];
+            }
+        }
 
-        $this->runtime['Log']['handler'] = isset($options['loghandler'])
-            ? $options['loghandler']
-            : $this->settings['Log']['handler'];
-
-        $this->runtime['Log']['target'] = isset($options['handlertarget'])
-            ? $options['handlertarget']
-            : $this->settings['Log']['target'];
-
-        $this->runtime['Fresque']['lib'] = isset($options['lib']) ? $options['lib'] : $this->settings['Fresque']['lib'];
-        $this->runtime['Fresque']['include'] = isset($options['autoloader'])
-            ? $options['autoloader'] : $this->settings['Fresque']['include'];
-
-        $this->runtime['Default']['user'] = isset($options['user'])
-            ? $options['user'] : $this->settings['Default']['user'];
-
-        $this->runtime['Default']['queue'] = isset($options['queue'])
-            ? $options['queue'] : $this->settings['Default']['queue'];
-
-        $this->runtime['Default']['workers'] = isset($options['workers'])
-         ? $options['workers'] : $this->settings['Default']['workers'];
-
-        $this->runtime['Default']['interval'] = isset($options['interval'])
-            ? $options['interval'] : $this->settings['Default']['interval'];
-
-        if (isset($this->settings['Queues']) && !empty($this->settings['Queues'])) {
-            foreach ($this->settings['Queues'] as $name => $options) {
-                $this->settings['Queues'][$name]['queue'] = $name;
+        if (isset($this->runtime['Queues']) && !empty($this->runtime['Queues'])) {
+            foreach ($this->runtime['Queues'] as $name => $options) {
+                $this->runtime['Queues'][$name]['queue'] = $name;
             }
         }
 

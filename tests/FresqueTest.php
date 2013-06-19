@@ -261,7 +261,7 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
         $this->output->expects($this->exactly(2))->method('outputLine');
 
         $this->shell->ResqueStatus = $this->ResqueStatus;
-        $this->shell->setttings['Queues'] = array();
+        $this->shell->runtime['Queues'] = array();
         $this->shell->load();
     }
 
@@ -284,7 +284,7 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
             'config' => '',
             'debug' => false
         );
-        $this->shell->settings['Queues'] = array($queue, $queue);
+        $this->shell->runtime['Queues'] = array($queue, $queue);
         $this->shell->load();
     }
 
