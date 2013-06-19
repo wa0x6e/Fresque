@@ -5,6 +5,9 @@
             <exclude>
                 <directory suffix=".php">./vendor/</directory>
                 <directory suffix=".php">./tests</directory>
+                <file>./lib/init.php</file>
+                <file>./lib/DialogMenuValidator.php</file>
+                <file>./lib/SendSignalCommandOptions.php</file>
             </exclude>
         </whitelist>
     </filter>
