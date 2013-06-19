@@ -113,8 +113,8 @@ class Fresque
                 \ezcConsoleInput::TYPE_NONE,
                 null,
                 false,
-                'Force workers shutdown, forcing all the current jobs to finish (and fail)',
-                'Force workers shutdown, forcing all the current jobs to finish (and fail)'
+                'Force workers stopping, forcing all the current jobs to finish (and fail)',
+                'Force workers stopping, forcing all the current jobs to finish (and fail)'
             )
         );
 
@@ -281,7 +281,7 @@ class Fresque
                     'options' => array('u' => 'username', 'q' => 'queue name',
                             'i' => 'num', 'n' => 'num', 'l' => 'path', 'v', 'g')),
             'stop' => array(
-                    'help' => 'Shutdown workers',
+                    'help' => 'Stop workers',
                     'options' => array('f', 'w', 'g')),
             'pause' => array(
                     'help' => 'Pause workers',
@@ -309,7 +309,7 @@ class Fresque
                     'options' => array('u' => 'username', 'q' => 'queue name',
                             'i' => 'num', 'n' => 'num', 'l' => 'path')),
             'reset' => array(
-                    'help' => 'Reset worker statuses',
+                    'help' => 'Clear all workers saved statuses',
                     'options' => array()),
             'help' => array(
                     'help' => 'Print help',
