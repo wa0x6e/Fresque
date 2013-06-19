@@ -21,6 +21,7 @@ namespace Fresque;
 
 define('DS', DIRECTORY_SEPARATOR);
 include __DIR__ . DS . 'DialogMenuValidator.php';
+include __DIR__ . DS . 'SendSignalCommandOptions.php';
 
 /**
  * Fresque Class
@@ -280,8 +281,14 @@ class Fresque
                     'options' => array('u' => 'username', 'q' => 'queue name',
                             'i' => 'num', 'n' => 'num', 'l' => 'path', 'v', 'g')),
             'stop' => array(
-                    'help' => 'Shutdown all workers',
+                    'help' => 'Shutdown workers',
                     'options' => array('f', 'w', 'g')),
+            'pause' => array(
+                    'help' => 'Pause workers',
+                    'options' => array('w', 'g')),
+            'resume' => array(
+                    'help' => 'Resume paused workers',
+                    'options' => array('w', 'g')),
             'restart' => array(
                     'help' => 'Restart all workers',
                     'options' => array()),
@@ -301,6 +308,9 @@ class Fresque
                     'help' => 'Test your fresque configuration file',
                     'options' => array('u' => 'username', 'q' => 'queue name',
                             'i' => 'num', 'n' => 'num', 'l' => 'path')),
+            'reset' => array(
+                    'help' => 'Reset worker statuses',
+                    'options' => array()),
             'help' => array(
                     'help' => 'Print help',
                     'options' => array()),
@@ -482,18 +492,76 @@ class Fresque
         $ResqueStatus = $this->ResqueStatus;
 
         $this->debug("Searching for active workers");
-        $options = array(
-            'title' => 'Stopping workers',
-            'noWorkersMessage' => 'There is no workers to stop',
-            'allOption' => 'Stop all workers',
-            'selectMessage' => 'Worker to stop',
-            'actionMessage' => 'stopping',
-            'workers' => call_user_func(self::$Resque_Worker. '::all'),
-            'signal' => $this->input->getOption('force')->value === true ? 'TERM' : 'QUIT',
-            'successCallback' => function ($pid) use ($ResqueStatus) {
-                $ResqueStatus->removeWorker($pid);
+        $options = new SendSignalCommandOptions();
+        $options->title = 'Stopping workers';
+        $options->noWorkersMessage = 'There is no workers to stop';
+        $options->allOption = 'Stop all workers';
+        $options->selectMessage = 'Worker to stop';
+        $options->actionMessage = 'stopping';
+        $options->workers = call_user_func(self::$Resque_Worker. '::all');
+        $options->signal = $this->input->getOption('force')->value === true ? 'TERM' : 'QUIT';
+        $options->successCallback = function ($pid, $workerName) use ($ResqueStatus) {
+            $ResqueStatus->removeWorker($pid);
+        };
+
+        $this->sendSignal($options);
+    }
+
+    /**
+     * Pause workers
+     *
+     * @return  void
+     */
+    public function pause()
+    {
+        $ResqueStatus = $this->ResqueStatus;
+
+        $activeWorkers = call_user_func(self::$Resque_Worker . '::all');
+        array_walk(
+            $activeWorkers,
+            function (&$worker) {
+                return $worker = (string)$worker;
             }
         );
+        $pausedWorkers = call_user_func(array($this->ResqueStatus, 'getPausedWorker'));
+
+        $this->debug("Searching for active workers");
+        $options = new SendSignalCommandOptions();
+        $options->title = 'Pausing workers';
+        $options->noWorkersMessage = 'There is no workers to pause';
+        $options->allOption = 'Pause all workers';
+        $options->selectMessage = 'Worker to pause';
+        $options->actionMessage = 'pausing';
+        $options->workers = array_diff($activeWorkers, $pausedWorkers);
+        $options->signal = 'USR2';
+        $options->successCallback = function ($pid, $workerName) use ($ResqueStatus) {
+            $ResqueStatus->setPausedWorker($workerName);
+        };
+
+        $this->sendSignal($options);
+    }
+
+    /**
+     * Resume workers
+     *
+     * @return  void
+     */
+    public function resume()
+    {
+        $ResqueStatus = $this->ResqueStatus;
+
+        $this->debug('Searching for paused workers');
+        $options = new SendSignalCommandOptions();
+        $options->title = 'Resuming workers';
+        $options->noWorkersMessage = 'There is no paused workers to resume';
+        $options->allOption = 'Resume all workers';
+        $options->selectMessage = 'Worker to resume';
+        $options->actionMessage = 'resuming';
+        $options->workers = call_user_func(array($this->ResqueStatus, 'getPausedWorker'));
+        $options->signal = 'CONT';
+        $options->successCallback = function ($pid, $workerName) use ($ResqueStatus) {
+            $ResqueStatus->setPausedWorker($workerName, false);
+        };
 
         $this->sendSignal($options);
     }
@@ -510,7 +578,7 @@ class Fresque
             return $this->output->outputLine('This function requires the PCNTL extension', 'failure');
         }
 
-        $this->outputTitle($options['title']);
+        $this->outputTitle($options->title);
 
         $force = $this->input->getOption('force')->value;
         $all = $this->input->getOption('all')->value;
@@ -523,62 +591,64 @@ class Fresque
             $this->debug("'ALL' option detected");
         }
 
-        if (!isset($options['formatListItem'])) {
-            $options['formatListItem'] = function ($worker) {
+        if (!isset($options->formatListItem)) {
+            $listFormatter = function ($worker) {
                 return sprintf(
                     "%s, started %s ago",
                     $worker,
                     $this->formatDateDiff(\Resque::Redis()->get('worker:' . $worker . ':started'))
                 );
             };
-        }
-
-        if (!isset($options['listTitle'])) {
-            $options['listTitle'] = 'Workers list';
-        }
-
-        sort($options['workers']);
-        if (empty($options['workers'])) {
-            $this->output->outputLine($options['noWorkersMessage'], 'failure');
         } else {
-            $this->debug("Found " . count($options['workers']) . " workers");
+            $listFormatter = $option->formatListItem;
+        }
+
+        if (!isset($options->listTitle)) {
+            $options->listTitle = 'Workers list';
+        }
+
+        sort($options->workers);
+        if (empty($options->workers)) {
+            $this->output->outputLine($options->noWorkersMessage, 'failure');
+        } else {
+            $this->debug("Found " . count($options->workers) . " workers");
 
             $workerIndex = array();
-            if (!$all && count($options['workers']) > 1) {
+            if (!$all && count($options->workers) > 1) {
                 $i = 1;
                 $menuItems = array();
-                foreach ($options['workers'] as $worker) {
-                    $menuItems[$i++] = $options['formatListItem']($worker);
+                foreach ($options->workers as $worker) {
+                    $menuItems[$i++] = $listFormatter($worker);
                 }
 
-                $menuItems['all'] = $options['allOption'];
+                $menuItems['all'] = $options->allOption;
 
                 $index = $this->getUserChoice(
-                    $options['listTitle'],
-                    $options['selectMessage'] . ':',
+                    $options->listTitle,
+                    $options->selectMessage . ':',
                     $menuItems
                 );
 
                 if ($index === 'all') {
-                    $workerIndex = range(1, count($options['workers']));
+                    $workerIndex = range(1, count($options->workers));
                 } else {
                     $workerIndex[] = $index;
                 }
 
             } else {
-                $workerIndex = range(1, count($options['workers']));
+                $workerIndex = range(1, count($options->workers));
             }
 
             foreach ($workerIndex as $index) {
-                $worker = $options['workers'][$index - 1];
+                $worker = $options->workers[$index - 1];
 
                 list($hostname, $pid, $queue) = explode(':', (string)$worker);
 
-                $this->output->outputText($options['actionMessage'] . ' ' . $pid . ' ... ');
+                $this->debug('Sending -' . $options->signal . ' signal to process ID ' . $pid);
+                $this->output->outputText($options->actionMessage . ' ' . $pid . ' ... ');
 
-                $this->debug('Sending -' . $options['signal'] . ' signal to process ID ' . $pid);
-                $killResponse = $this->kill($options['signal'], $pid);
-                $options['successCallback']($pid);
+                $killResponse = $this->kill($options->signal, $pid);
+                $options->onSuccess($pid, (string)$worker);
 
                 if ($killResponse['code'] === 0) {
                     $this->output->outputLine('Done', 'success');
@@ -767,6 +837,17 @@ class Fresque
         }
 
         $this->output->outputLine("\n");
+    }
+
+    /**
+     * Reset worker statuses
+     *
+     * @return void
+     */
+    public function reset()
+    {
+        $this->ResqueStatus->clearWorkers();
+        $this->ResqueStatus->unregisterSchedulerWorker();
     }
 
 
