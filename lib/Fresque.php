@@ -570,6 +570,7 @@ class Fresque
     /**
      * Send a Signal to a worker system process
      *
+     * @since  2.0.0
      * @return void
      */
     public function sendSignal($options)
@@ -808,12 +809,20 @@ class Fresque
         $this->output->outputLine("   Failed Jobs    : " . \Resque_Stat::get('failed'), 'failure');
         $this->output->outputLine();
         $this->output->outputLine('Workers Stats', 'subtitle');
-        $workers = \Resque_Worker::all();
+        $workers = call_user_func(self::$Resque_Worker . '::all');
         $this->output->outputLine("   Active Workers : " . count($workers));
 
         if (!empty($workers)) {
+
+            $pausedWorkers = call_user_func(array($this->ResqueStatus, 'getPausedWorker'));
+
             foreach ($workers as $worker) {
-                $this->output->outputLine("    Worker : " . $worker, 'bold');
+                $this->output->outputText("    Worker : " . $worker, 'bold');
+                if (in_array((string)$worker, $pausedWorkers)) {
+                    $this->output->outputText(' (Paused)', 'success');
+                }
+                $this->output->outputText("\n");
+
                 $this->output->outputLine(
                     "     - Started on     : " . \Resque::Redis()->get('worker:' . $worker . ':started')
                 );
@@ -834,6 +843,7 @@ class Fresque
     /**
      * Reset worker statuses
      *
+     * @since  2.0.0
      * @return void
      */
     public function reset()
@@ -1026,7 +1036,7 @@ class Fresque
                 $fail = false;
 
                 foreach ($results as $name => $mess) {
-                    if ($mess !== null) {
+                    if ($mess !== true) {
                         $fail = true;
                         $this->output->outputLine($mess, 'failure');
                     }
