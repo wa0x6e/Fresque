@@ -574,10 +574,6 @@ class Fresque
      */
     public function sendSignal($options)
     {
-        if (!function_exists('pcntl_signal')) {
-            return $this->output->outputLine('This function requires the PCNTL extension', 'failure');
-        }
-
         $this->outputTitle($options->title);
 
         $force = $this->input->getOption('force')->value;
@@ -603,18 +599,14 @@ class Fresque
             $listFormatter = $option->formatListItem;
         }
 
-        if (!isset($options->listTitle)) {
-            $options->listTitle = 'Workers list';
-        }
-
-        sort($options->workers);
         if (empty($options->workers)) {
             $this->output->outputLine($options->noWorkersMessage, 'failure');
         } else {
-            $this->debug("Found " . count($options->workers) . " workers");
+            sort($options->workers);
+            $this->debug("Found " . $options->getWorkersCount() . " workers");
 
             $workerIndex = array();
-            if (!$all && count($options->workers) > 1) {
+            if (!$all && $options->getWorkersCount() > 1) {
                 $i = 1;
                 $menuItems = array();
                 foreach ($options->workers as $worker) {
@@ -630,13 +622,13 @@ class Fresque
                 );
 
                 if ($index === 'all') {
-                    $workerIndex = range(1, count($options->workers));
+                    $workerIndex = range(1, $options->getWorkersCount());
                 } else {
                     $workerIndex[] = $index;
                 }
 
             } else {
-                $workerIndex = range(1, count($options->workers));
+                $workerIndex = range(1, $options->getWorkersCount());
             }
 
             foreach ($workerIndex as $index) {
@@ -862,15 +854,15 @@ class Fresque
 
         $results = $this->testConfig(true);
         foreach ($results as $name => $r) {
-            $this->output->outputText($name . ' ' . str_repeat('.', 24 - strlen($name)));
-            if ($r) {
+            $this->output->outputText($name . ' ' . str_repeat('.', 24 - strlen($name)) . ' ');
+            if ($r === true) {
                 $this->output->outputText("OK\n", 'success');
             } else {
                 $this->output->outputText($r . "\n", 'failure');
             }
         }
 
-        if (array_filter(array_values($results)) === array()) {
+        if (array_filter(array_values($results), function ($val) { return $val !== true; }) === array()) {
             $this->output->outputLine("\nYour settings seems ok", 'success');
         } else {
             $this->output->outputLine("\nError detected in your settings", 'failure');
@@ -898,12 +890,12 @@ class Fresque
     public function testConfig($test = false)
     {
         $results = array(
-                'Redis configuration' => null,
-                'Redis server' => null,
-                'Log File' => null,
-                'PHPResque library' => null,
-                'Application autoloader' => null
-                );
+            'Redis configuration' => true,
+            'Redis server' => true,
+            'Log File' => true,
+            'PHPResque library' => true,
+            'Application autoloader' => true
+        );
 
         if (!isset($this->runtime['Redis']['host']) || !isset($this->runtime['Redis']['port'])) {
             $results['Redis configuration'] = 'Unable to read redis server configuration';

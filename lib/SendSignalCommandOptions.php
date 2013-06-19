@@ -30,6 +30,7 @@ class SendSignalCommandOptions
     public $title = '';
     public $noWorkersMessage = '';
     public $allOption = '';
+    public $listTitle = 'Workers list';
     public $selectMessage = '';
     public $actionMessage = '';
     public $workers = array();
@@ -40,5 +41,10 @@ class SendSignalCommandOptions
     {
         $callback = $this->successCallback;
         return $callback($pid, $workerName);
+    }
+
+    public function getWorkersCount()
+    {
+        return count($this->workers);
     }
 }
