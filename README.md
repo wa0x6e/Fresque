@@ -5,11 +5,12 @@
 ##Prerequisites
 
 If you don't know what is *resque* or *redis*, take a look at their official website :
+
 - Redis : http://redis.io/
 - Resque : https://github.com/defunkt/resque/
 - Php-Resque : https://github.com/chrisboulton/php-resque/
 
-This tool is intended to facilitate your life by making interfacing with php-resque more easier and more friendly.
+This tool is intended to facilitate your life by making interfacing with php-resque more easier and more friendly.  
 You should already have some knowledge about php-resque, and have php-resque installed and running.
 I'll assume in this tutorial that you have sufficient knowledge to start a worker normally with php-resque.
 
@@ -24,7 +25,7 @@ Fresque is a command line tool to manage your php-resque workers
     # Starting a worker with fresque
     $ fresque start -q file_serve
 
-It's more friendly, and provides more options, like `restart`, `stop`, etc …
+It's more friendly, and provides more options, like `restart`, `stop`, etc …  
 Php-resque, and resque, by default doesn't provide an out-of-the-box way to stop your workers. You have to directly kill the worker process. With Fresque, you'll enjoy stopping and restarting your workers at gogo. No more system process handling!
 
 ##Installation
@@ -62,7 +63,7 @@ it's well documented, and you shouldn't have difficulties editing it.
 
 ##Usage
 
-For convenience, you should add the fresque bin (located in Fresque/fresque) to your system path.
+For convenience, you should add the fresque executable to your system path.
 You can just then call fresque with
 
 	$ fresque <command>
@@ -92,7 +93,8 @@ To start a new resque worker. By default, it will use the default configuration 
 
 > `-n` or `--workers` : Number of workers working on the same queues.
 
-> `-l` or `--log` : Absolute or relative path to the log file. You can set a different log for each worker. The `--user` must have permission to read and write to that file (and the parent folder, since the file will be created if non-existent).
+> `-l` or `--log` : Absolute or relative path to the log file. You can set a different log for each worker. 
+> The `--user` must have permission to read and write to that file (and the parent folder, since the file will be created if non-existent).
 > Relative path is relative to the fresque folder.
 
 
@@ -135,8 +137,8 @@ Tail a worker's log. If you have more than one log file, you'll be prompted with
 
 Add a job to a queue. Takes 3 arguments :
 
-> **queuename**  : Name of the queue you will enqueue this job to
-> **jobclass** : Name of the class that will perform the job, and that your application autoloader will have to load.
+> **queuename**  : Name of the queue you will enqueue this job to  
+> **jobclass** : Name of the class that will perform the job, and that your application autoloader will have to load.  
 > **arguments** : comma separated list of arguments, passed to the job.
 
 Will print the **Job ID** if the job is successfully enqueued.
