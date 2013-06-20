@@ -1,5 +1,11 @@
 ##Changelog
 
+###v1.2.0 (2013-06-xx)
+
+* [new] Add `pause` and `resume` commands
+* [new] Add `--debug` option
+*
+
 ###v1.1.5 (2013-04-15)
 
 * [fix] Fix composer

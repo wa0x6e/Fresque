@@ -49,7 +49,7 @@ class Fresque
 
     public static $checkStartedWorkerBufferTime = 100000;
 
-    const VERSION = '2.0.0';
+    const VERSION = '1.2.0';
 
     public function __construct()
     {
@@ -322,7 +322,7 @@ class Fresque
 
     /**
      *
-     * @since  2.0.0
+     * @since  1.2.0
      * @return  void
      */
     public function callCommand($command)
@@ -572,7 +572,7 @@ class Fresque
     /**
      * Send a Signal to a worker system process
      *
-     * @since  2.0.0
+     * @since  1.2.0
      * @return void
      */
     public function sendSignal($options)
@@ -878,7 +878,7 @@ class Fresque
     /**
      * Reset worker statuses
      *
-     * @since  2.0.0
+     * @since  1.2.0
      * @return void
      */
     public function reset()
@@ -1088,7 +1088,7 @@ class Fresque
     /**
      * Print help/welcome message
      *
-     * @since  2.0.0
+     * @since  1.2.0
      * @return void
      */
     public function help($command = null)
@@ -1228,7 +1228,7 @@ class Fresque
      *
      * @param string $string Information to print
      *
-     * @since  2.0.0
+     * @since  1.2.0
      * @return void
      */
     public function debug($string)
@@ -1271,7 +1271,7 @@ class Fresque
      * @param string $path Path to the file to tail
      *
      * @codeCoverageIgnore
-     * @since  2.0.0
+     * @since  1.2.0
      * @return void
      */
     protected function tailCommand($path)
@@ -1285,7 +1285,7 @@ class Fresque
      * @param string $cmd Command to pass to system shell
      *
      * @codeCoverageIgnore
-     * @since  2.0.0
+     * @since  1.2.0
      * @return void
      */
     protected function exec($cmd)
@@ -1300,7 +1300,7 @@ class Fresque
      * @param  int    $pid    PID of the process
      *
      * @codeCoverageIgnore
-     * @since  2.0.0
+     * @since  1.2.0
      * @return array with the code and message returned by the command
      */
     protected function kill($signal, $pid)
@@ -1317,7 +1317,7 @@ class Fresque
      * @param  string $path Path to the PID file
      *
      * @codeCoverageIgnore
-     * @since  2.0.0
+     * @since  1.2.0
      * @return false|int The worker process ID, or false if error
      */
     protected function checkStartedWorker($pidFile)
@@ -1338,7 +1338,7 @@ class Fresque
      * @param  array  $menuItems     The menu contents
      *
      * @codeCoverageIgnore
-     * @since  2.0.0
+     * @since  1.2.0
      * @return int The index in the menu that was selected
      */
     protected function getUserChoice($listTitle, $selectMessage, $menuItems)
