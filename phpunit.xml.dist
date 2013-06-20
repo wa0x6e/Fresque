@@ -8,6 +8,7 @@
                 <file>./lib/init.php</file>
                 <file>./lib/DialogMenuValidator.php</file>
                 <file>./lib/SendSignalCommandOptions.php</file>
+                <file>./lib/ResqueStats.php</file>
             </exclude>
         </whitelist>
     </filter>
