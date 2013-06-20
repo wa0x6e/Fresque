@@ -19,11 +19,9 @@
 namespace Fresque;
 
 /**
- * DialogMenuValidator Class
+ * SendSignalCommandOptions Class
  *
- * ezComponent class for validating dialog menu input
- *
- * @since 1.0.0
+ * @since 2.0.0
  */
 class SendSignalCommandOptions
 {
