@@ -29,5 +29,6 @@
 		"email": "kami@kamisama.me",
 		"issues": "https://github.com/kamisama/Fresque/issues",
 		"source": "https://github.com/kamisama/Fresque"
-	}
+	},
+    "bin": ["fresque"]
 }
