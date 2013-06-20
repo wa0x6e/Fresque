@@ -493,7 +493,7 @@ class Fresque
     {
         $ResqueStatus = $this->ResqueStatus;
 
-        $this->debug("Searching for active workers");
+        $this->debug('Searching for active workers');
         $options = new SendSignalCommandOptions();
         $options->title = 'Stopping workers';
         $options->noWorkersMessage = 'There is no workers to stop';
@@ -527,7 +527,7 @@ class Fresque
         );
         $pausedWorkers = call_user_func(array($this->ResqueStatus, 'getPausedWorker'));
 
-        $this->debug("Searching for active workers");
+        $this->debug('Searching for active workers');
         $options = new SendSignalCommandOptions();
         $options->title = 'Pausing workers';
         $options->noWorkersMessage = 'There is no workers to pause';
@@ -594,7 +594,7 @@ class Fresque
             $resqueStats = $this->ResqueStats;
             $listFormatter = function ($worker) use ($resqueStats) {
                 return sprintf(
-                    "%s, started %s ago",
+                    '%s, started %s ago',
                     $worker,
                     $this->formatDateDiff(call_user_func_array(array($resqueStats, 'getWorkerStartDate'), array($worker)))
                 );
@@ -607,7 +607,7 @@ class Fresque
             $this->output->outputLine($options->noWorkersMessage, 'failure');
         } else {
             sort($options->workers);
-            $this->debug("Found " . $options->getWorkersCount() . " workers");
+            $this->debug('Found ' . $options->getWorkersCount() . ' workers');
 
             $workerIndex = array();
             if (!$all && $options->getWorkersCount() > 1) {
@@ -784,7 +784,7 @@ class Fresque
             $class = array_shift($args);
 
             $result = call_user_func_array(self::$Resque . '::enqueue', array($queue, $class, $args));
-            $this->output->outputLine("The job was enqueued successfully", 'success');
+            $this->output->outputLine('The job was enqueued successfully', 'success');
             $this->output->outputLine('Job ID : #' . $result . "\n");
         } else {
             $this->output->outputLine('Enqueue takes at least 2 arguments', 'failure');
@@ -819,8 +819,8 @@ class Fresque
 
         $this->output->outputLine();
         $this->output->outputLine('Jobs Stats', 'subtitle');
-        $this->output->outputLine("   Processed Jobs : " . \Resque_Stat::get('processed'));
-        $this->output->outputLine("   Failed Jobs    : " . \Resque_Stat::get('failed'), 'failure');
+        $this->output->outputLine('   ' . sprintf('Processed Jobs : %10s', number_format(\Resque_Stat::get('processed'))));
+        $this->output->outputLine('   ' . sprintf('Failed Jobs    : %10s', number_format(\Resque_Stat::get('failed'))), 'failure');
         $this->output->outputLine();
 
         $count = array();
@@ -843,14 +843,14 @@ class Fresque
         $this->output->outputLine();
 
         $this->output->outputLine('Workers Stats', 'subtitle');
-        $this->output->outputLine("   Active Workers : " . count($workers));
+        $this->output->outputLine('  Active Workers : ' . count($workers));
 
         if (!empty($workers)) {
 
             $pausedWorkers = call_user_func(array($this->ResqueStatus, 'getPausedWorker'));
 
             foreach ($workers as $worker) {
-                $this->output->outputText("    Worker : " . $worker, 'bold');
+                $this->output->outputText('    Worker : ' . $worker, 'bold');
                 if (in_array((string)$worker, $pausedWorkers)) {
                     $this->output->outputText(' (Paused)', 'success');
                 }
@@ -859,16 +859,16 @@ class Fresque
                 $startDate = call_user_func_array(array($this->ResqueStats, 'getWorkerStartDate'), array($worker));
 
                 $this->output->outputLine(
-                    "     - Started on     : " . $startDate
+                    '     - Started on     : ' . $startDate
                 );
                 $this->output->outputLine(
-                    "     - Uptime         : " .
+                    '     - Uptime         : ' .
                     $this->formatDateDiff(new \DateTime($startDate))
                 );
-                $this->output->outputLine("     - Processed Jobs : " . $worker->getStat('processed'));
+                $this->output->outputLine('     - Processed Jobs : ' . $worker->getStat('processed'));
                 $worker->getStat('failed') == 0
-                    ? $this->output->outputLine("     - Failed Jobs    : " . $worker->getStat('failed'))
-                    : $this->output->outputLine("     - Failed Jobs    : " . $worker->getStat('failed'), 'failure');
+                    ? $this->output->outputLine('     - Failed Jobs    : ' . $worker->getStat('failed'))
+                    : $this->output->outputLine('     - Failed Jobs    : ' . $worker->getStat('failed'), 'failure');
             }
         }
 
@@ -919,12 +919,12 @@ class Fresque
             $this->output->outputLine('['.$cat.']', 'bold');
             foreach ($this->runtime[$cat] as $name => $conf) {
                 if (!is_array($conf)) {
-                    $this->output->outputText("   ".$name . str_repeat(' ', 10 - strlen($name)));
+                    $this->output->outputText('   '.$name . str_repeat(' ', 10 - strlen($name)));
                     $this->output->outputLine($conf);
                 } else {
                     $this->output->outputLine('   '.$name, 'highlight');
                     foreach ($conf as $q => $o) {
-                        $this->output->outputText("      ".$q . str_repeat(' ', 10 - strlen($q)));
+                        $this->output->outputText('      '.$q . str_repeat(' ', 10 - strlen($q)));
                         $this->output->outputLine($o);
                     }
                 }
@@ -1173,31 +1173,31 @@ class Fresque
 
         $format = array();
         if ($interval->y !== 0) {
-            $format[] = "%y ".$doPlural($interval->y, "year");
+            $format[] = '%y '.$doPlural($interval->y, 'year');
         }
         if ($interval->m !== 0) {
-            $format[] = "%m ".$doPlural($interval->m, "month");
+            $format[] = '%m '.$doPlural($interval->m, 'month');
         }
         if ($interval->d !== 0) {
-            $format[] = "%d ".$doPlural($interval->d, "day");
+            $format[] = '%d '.$doPlural($interval->d, 'day');
         }
         if ($interval->h !== 0) {
-            $format[] = "%h ".$doPlural($interval->h, "hour");
+            $format[] = '%h '.$doPlural($interval->h, 'hour');
         }
         if ($interval->i !== 0) {
-            $format[] = "%i ".$doPlural($interval->i, "minute");
+            $format[] = '%i '.$doPlural($interval->i, 'minute');
         }
         if ($interval->s !== 0) {
             if (!count($format)) {
-                return "less than a minute";
+                return 'less than a minute';
             } else {
-                $format[] = "%s ".$doPlural($interval->s, "second");
+                $format[] = '%s '.$doPlural($interval->s, 'second');
             }
         }
 
         // We use the two biggest parts
         if (count($format) > 1) {
-            $format = array_shift($format)." and ".array_shift($format);
+            $format = array_shift($format).' and '.array_shift($format);
         } else {
             $format = array_pop($format);
         }
