@@ -592,11 +592,12 @@ class Fresque
 
         if (!isset($options->formatListItem)) {
             $resqueStats = $this->ResqueStats;
-            $listFormatter = function ($worker) use ($resqueStats) {
+            $fresque = $this;
+            $listFormatter = function ($worker) use ($resqueStats, $fresque) {
                 return sprintf(
                     '%s, started %s ago',
                     $worker,
-                    $this->formatDateDiff(call_user_func_array(array($resqueStats, 'getWorkerStartDate'), array($worker)))
+                    $fresque->formatDateDiff(call_user_func_array(array($resqueStats, 'getWorkerStartDate'), array($worker)))
                 );
             };
         } else {
