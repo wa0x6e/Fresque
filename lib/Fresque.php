@@ -1150,7 +1150,7 @@ class Fresque
      * @link http://www.php.net/manual/en/dateinterval.format.php
      * @return string
      */
-    private function formatDateDiff($start, $end = null)
+    public function formatDateDiff($start, $end = null)
     {
         if (!($start instanceof \DateTime)) {
             $start = new \DateTime($start);
