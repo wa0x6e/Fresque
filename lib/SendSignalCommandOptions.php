@@ -12,7 +12,7 @@
  * @link          https://github.com/kamisama/Fresque
  * @package       Fresque
  * @subpackage    Fresque.lib
- * @since         2.0.0
+ * @since         1.2.0
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
@@ -21,7 +21,7 @@ namespace Fresque;
 /**
  * SendSignalCommandOptions Class
  *
- * @since 2.0.0
+ * @since 1.2.0
  */
 class SendSignalCommandOptions
 {
