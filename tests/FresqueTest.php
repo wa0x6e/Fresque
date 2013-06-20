@@ -19,6 +19,7 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
         $this->shell->input = $this->input;
 
         $this->shell->ResqueStatus = $this->ResqueStatus = $this->getMock('\ResqueStatus\ResqueStatus', array(), array(new \stdClass()));
+        $this->shell->ResqueStats = $this->ResqueStats = $this->getMock('\Fresque\ResqueStats', array(), array(new \stdClass()));
 
         $this->startArgs = array(
 
@@ -656,10 +657,64 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
      */
     public function testStats()
     {
-        $this->shell->expects($this->once())->method('outputTitle')->with($this->stringContains('workers statistics'));
+        $datas = array(
+            array(
+                'host' => 'w1',
+                'pid' => 0,
+                'queue' => 'queue1',
+                'processed' => 15,
+                'failed' => 0
+            ),
+            array(
+                'host' => 'w2',
+                'pid' => 0,
+                'queue' => 'queue2',
+                'processed' => 9,
+                'failed' => 5
+            )
+        );
+
+        $workersList = array(
+            new DummyWorker($datas[0]['host'] . ':' . $datas[0]['pid'] . ':' . $datas[0]['queue'], $datas[0]['processed'], $datas[0]['failed']),
+            new DummyWorker($datas[1]['host'] . ':' . $datas[1]['pid'] . ':' . $datas[1]['queue'], $datas[1]['processed'], $datas[1]['failed']),
+        );
+
+        $this->shell->expects($this->once())->method('outputTitle')->with($this->stringContains('resque statistics'));
+        $this->shell->ResqueStats->expects($this->once())->method('getQueues')->will($this->returnValue(array('queue1', 'queue2', 'queue3', 'queue4')));
+        $this->shell->ResqueStats->expects($this->once())->method('getWorkers')->will($this->returnValue($workersList));
+        $this->ResqueStatus->expects($this->once())->method('getPausedWorker')->will($this->returnValue(array('w1:0:queue1')));
+
+        $this->shell->ResqueStats->expects($this->at(2))->method('getQueueLength')->with($this->stringContains('queue4'))->will($this->returnValue(0));
+        $this->shell->ResqueStats->expects($this->at(3))->method('getQueueLength')->with($this->stringContains('queue3'))->will($this->returnValue(9));
+        $this->shell->ResqueStats->expects($this->at(4))->method('getQueueLength')->with($this->stringContains($datas[1]['queue']))->will($this->returnValue(10));
+        $this->shell->ResqueStats->expects($this->at(5))->method('getQueueLength')->with($this->stringContains($datas[0]['queue']))->will($this->returnValue(3));
+
+        $this->output->expects($this->at(5))->method('outputLine')->with($this->stringContains('queues stats'));
+        $this->output->expects($this->at(6))->method('outputLine')->with($this->stringContains('queues count : 3'));
+        $this->output->expects($this->at(7))->method('outputText')->with($this->stringContains($datas[0]['queue']));
+        $this->output->expects($this->at(7))->method('outputText')->with($this->stringContains('3 pending jobs'));
+        $this->output->expects($this->at(9))->method('outputText')->with($this->stringContains($datas[1]['queue']));
+        $this->output->expects($this->at(9))->method('outputText')->with($this->stringContains('10 pending jobs'));
+        $this->output->expects($this->at(11))->method('outputText')->with($this->stringContains('queue3'));
+        $this->output->expects($this->at(11))->method('outputText')->with($this->stringContains('9 pending jobs'));
+        $this->output->expects($this->at(12))->method('outputText')->with($this->stringContains('(unmonitored queue)'));
+
+        $this->output->expects($this->at(15))->method('outputLine')->with($this->stringContains('workers stats'));
+        $this->output->expects($this->at(16))->method('outputLine')->with($this->stringContains('active workers : ' . count($workersList)));
+
+        $this->output->expects($this->at(17))->method('outputText')->with($this->stringContains('worker : ' . (string)$workersList[0]));
+        $this->output->expects($this->at(18))->method('outputText')->with($this->stringContains('(paused)'));
+        $this->output->expects($this->at(22))->method('outputLine')->with($this->stringContains('processed jobs : ' . $datas[0]['processed']));
+        $this->output->expects($this->at(23))->method('outputLine')->with($this->stringContains('failed jobs    : ' . $datas[0]['failed']));
+
+        $this->output->expects($this->at(24))->method('outputText')->with($this->stringContains('worker : ' . (string)$workersList[1]));
+        $this->output->expects($this->at(28))->method('outputLine')->with($this->stringContains('processed jobs : ' . $datas[1]['processed']));
+        $this->output->expects($this->at(29))->method('outputLine')->with($this->stringContains('failed jobs    : ' . $datas[1]['failed']));
+
+        $this->output->expects($this->at(30))->method('outputLine');
+
 
         $this->shell->stats();
-        $this->markTestIncomplete();
     }
 
     /**
@@ -762,5 +817,29 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
         $this->ResqueStatus->expects($this->once())->method('unregisterSchedulerWorker');
 
         $this->shell->reset();
+    }
+}
+
+
+class DummyWorker
+{
+    public function __construct($name, $processedStat = 0, $failedStat = 0)
+    {
+        $this->name = $name;
+        $this->processedStat = $processedStat;
+        $this->failedStat = $failedStat;
+    }
+
+    public function getStat($cat)
+    {
+        switch($cat) {
+            case 'processed' : return $this->processedStat;
+            case 'failed' : return $this->failedStat;
+        }
+    }
+
+    public function __toString()
+    {
+        return $this->name;
     }
 }
