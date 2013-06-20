@@ -1,0 +1,29 @@
+{
+  "name": "Fresque",
+  "version": "1.2.0",
+  "description": "A command line tool to manage php-resque",
+  "keywords": [
+    "php-resque",
+    "resque",
+    "cli",
+    "background jobs"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/kamisama/Fresque.git"
+  },
+  "homepage": "https://github.com/kamisama/Fresque",
+  "author": {
+    "name": "Wan Qi Chen",
+    "url": "http://www.kamisama.me"
+  },
+  "license": "MIT",
+  "bugs": "https://github.com/kamisama/Fresque/issues",
+  "github": "https://github.com/kamisama/Fresque",
+  "devDependencies": {
+    "grunt-shell": "~0.2.2",
+    "grunt-contrib-watch": "~0.4.0",
+    "grunt-contrib-clean": "~0.4.1",
+    "grunt-phpunit": "~0.2.1"
+  }
+}
