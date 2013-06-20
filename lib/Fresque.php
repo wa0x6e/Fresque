@@ -22,6 +22,7 @@ namespace Fresque;
 define('DS', DIRECTORY_SEPARATOR);
 include __DIR__ . DS . 'DialogMenuValidator.php';
 include __DIR__ . DS . 'SendSignalCommandOptions.php';
+include __DIR__ . DS . 'ResqueStats.php';
 
 /**
  * Fresque Class
@@ -398,6 +399,7 @@ class Fresque
                 );
 
                 $this->ResqueStatus = new \ResqueStatus\ResqueStatus(\Resque::Redis());
+                $this->ResqueStats = new ResqueStats(\Resque::Redis());
                 $this->{$command}();
             }
         }
@@ -589,11 +591,12 @@ class Fresque
         }
 
         if (!isset($options->formatListItem)) {
-            $listFormatter = function ($worker) {
+            $resqueStats = $this->ResqueStats;
+            $listFormatter = function ($worker) use ($resqueStats) {
                 return sprintf(
                     "%s, started %s ago",
                     $worker,
-                    $this->formatDateDiff(\Resque::Redis()->get('worker:' . $worker . ':started'))
+                    $this->formatDateDiff(call_user_func_array(array($resqueStats, 'getWorkerStartDate'), array($worker)))
                 );
             };
         } else {
@@ -801,15 +804,45 @@ class Fresque
      */
     public function stats()
     {
-        $this->outputTitle('Workers statistics');
+        $workers = call_user_func(array($this->ResqueStats, 'getWorkers'));
+        // List of all queues
+        $queues = array_unique(call_user_func(array($this->ResqueStats, 'getQueues')));
+
+        // List of queues monitored by a worker
+        $activeQueues = array();
+        foreach ($workers as $worker) {
+            $tokens = explode(':', $worker);
+            $activeQueues = array_merge($activeQueues, explode(',', array_pop($tokens)));
+        }
+
+        $this->outputTitle('Resque statistics');
 
         $this->output->outputLine();
         $this->output->outputLine('Jobs Stats', 'subtitle');
         $this->output->outputLine("   Processed Jobs : " . \Resque_Stat::get('processed'));
         $this->output->outputLine("   Failed Jobs    : " . \Resque_Stat::get('failed'), 'failure');
         $this->output->outputLine();
+
+        $count = array();
+        $this->output->outputLine('Queues Stats', 'subtitle');
+        for ($i = count($queues) - 1; $i >= 0; --$i) {
+            $count[$queues[$i]] = call_user_func_array(array($this->ResqueStats, 'getQueueLength'), array($queues[$i]));
+            if (!in_array($queues[$i], $activeQueues) && $count[$queues[$i]] == 0) {
+                unset($queues[$i]);
+            }
+        }
+
+        $this->output->outputLine('   ' . sprintf('Queues count : %d', count($queues)));
+        foreach ($queues as $queue) {
+            $this->output->outputText(sprintf("\t- %-20s : %10s pending jobs", $queue, number_format($count[$queue])));
+            if (!in_array($queue, $activeQueues)) {
+                $this->output->outputText(' (unmonitored queue)', 'failure');
+            }
+            $this->output->outputText("\n");
+        }
+        $this->output->outputLine();
+
         $this->output->outputLine('Workers Stats', 'subtitle');
-        $workers = call_user_func(self::$Resque_Worker . '::all');
         $this->output->outputLine("   Active Workers : " . count($workers));
 
         if (!empty($workers)) {
@@ -823,12 +856,14 @@ class Fresque
                 }
                 $this->output->outputText("\n");
 
+                $startDate = call_user_func_array(array($this->ResqueStats, 'getWorkerStartDate'), array($worker));
+
                 $this->output->outputLine(
-                    "     - Started on     : " . \Resque::Redis()->get('worker:' . $worker . ':started')
+                    "     - Started on     : " . $startDate
                 );
                 $this->output->outputLine(
                     "     - Uptime         : " .
-                    $this->formatDateDiff(new \DateTime(\Resque::Redis()->get('worker:' . $worker . ':started')))
+                    $this->formatDateDiff(new \DateTime($startDate))
                 );
                 $this->output->outputLine("     - Processed Jobs : " . $worker->getStat('processed'));
                 $worker->getStat('failed') == 0
