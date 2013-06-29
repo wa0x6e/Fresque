@@ -453,7 +453,7 @@ class Fresque
             $success = false;
             $attempt = 7;
             while ($attempt-- > 0) {
-                for ($i = 0; $i < 3; $i++) {
+                for ($x = 0; $x < 3; $x++) {
                     $this->output->outputText(".", 0);
                     usleep(self::$checkStartedWorkerBufferTime);
                 }
