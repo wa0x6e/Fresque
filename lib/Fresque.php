@@ -1052,7 +1052,7 @@ class Fresque
 
         foreach ($settings as $runtime => $option) {
             if (isset($options[$option])) {
-                $runtime = $options[$option];
+                $this->runtime['Default'][$option] = $options[$option];
             }
         }
 
