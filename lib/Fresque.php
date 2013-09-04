@@ -1056,6 +1056,41 @@ class Fresque
             }
         }
 
+        $settings = array(
+            'Redis' => array(
+                'host',
+                'port',
+                'database',
+                'namespace',
+            ),
+            'Fresque' => array(
+                'lib',
+                'include',
+            ),
+            'Default' => array(
+                'queue',
+                'interval',
+                'workers',
+                'user',
+                'verbose',
+            ),
+            'Log' => array(
+                'filename',
+                'handler',
+                'target',
+            ),
+            'Queues' => array(
+            ),
+        );
+
+        foreach ($settings as $scope => $param_names) {
+            foreach ($param_names as $option) {
+                if (isset($options[$option])) {
+                    $this->runtime[$scope][$option] = $options[$option];
+                }
+            }
+        }
+
         if (isset($this->runtime['Queues']) && !empty($this->runtime['Queues'])) {
             foreach ($this->runtime['Queues'] as $name => $options) {
                 $this->runtime['Queues'][$name]['queue'] = $name;
