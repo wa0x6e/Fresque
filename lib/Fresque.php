@@ -1037,26 +1037,6 @@ class Fresque
         $this->runtime = parse_ini_file($this->config, true);
 
         $settings = array(
-            $this->runtime['Redis']['host'] => 'host',
-            $this->runtime['Redis']['port'] => 'port',
-            $this->runtime['Log']['filename'] => 'log',
-            $this->runtime['Log']['handler'] => 'loghandler',
-            $this->runtime['Log']['target'] => 'handlertarget',
-            $this->runtime['Fresque']['lib'] => 'lib',
-            $this->runtime['Fresque']['include'] => 'autoloader',
-            $this->runtime['Default']['user'] => 'user',
-            $this->runtime['Default']['queue'] => 'queue',
-            $this->runtime['Default']['workers'] => 'workers',
-            $this->runtime['Default']['interval'] => 'interval'
-        );
-
-        foreach ($settings as $runtime => $option) {
-            if (isset($options[$option])) {
-                $this->runtime['Default'][$option] = $options[$option];
-            }
-        }
-
-        $settings = array(
             'Redis' => array(
                 'host',
                 'port',
