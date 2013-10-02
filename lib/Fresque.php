@@ -1037,22 +1037,37 @@ class Fresque
         $this->runtime = parse_ini_file($this->config, true);
 
         $settings = array(
-            $this->runtime['Redis']['host'] => 'host',
-            $this->runtime['Redis']['port'] => 'port',
-            $this->runtime['Log']['filename'] => 'log',
-            $this->runtime['Log']['handler'] => 'loghandler',
-            $this->runtime['Log']['target'] => 'handlertarget',
-            $this->runtime['Fresque']['lib'] => 'lib',
-            $this->runtime['Fresque']['include'] => 'autoloader',
-            $this->runtime['Default']['user'] => 'user',
-            $this->runtime['Default']['queue'] => 'queue',
-            $this->runtime['Default']['workers'] => 'workers',
-            $this->runtime['Default']['interval'] => 'interval'
+            'Redis' => array(
+                'host',
+                'port',
+                'database',
+                'namespace',
+            ),
+            'Fresque' => array(
+                'lib',
+                'include',
+            ),
+            'Default' => array(
+                'queue',
+                'interval',
+                'workers',
+                'user',
+                'verbose',
+            ),
+            'Log' => array(
+                'filename',
+                'handler',
+                'target',
+            ),
+            'Queues' => array(
+            ),
         );
 
-        foreach ($settings as $runtime => $option) {
-            if (isset($options[$option])) {
-                $runtime = $options[$option];
+        foreach ($settings as $scope => $param_names) {
+            foreach ($param_names as $option) {
+                if (isset($options[$option])) {
+                    $this->runtime[$scope][$option] = $options[$option];
+                }
             }
         }
 
