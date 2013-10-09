@@ -327,7 +327,9 @@ class Fresque
      */
     public function callCommand($command)
     {
-        $settings = $this->loadSettings($command);
+        if (($settings = $this->loadSettings($command)) === false) {
+            exit(1);
+        }
 
         $args = $this->input->getArguments();
 
@@ -1020,7 +1022,7 @@ class Fresque
      * Convert options from various source to formatted options
      * understandable by Fresque
      *
-     * @return  void
+     * @return bool true if settings contains no errors
      */
     public function loadSettings($command, $args = null)
     {
@@ -1029,7 +1031,7 @@ class Fresque
         $this->config = isset($options['config']) ? $options['config'] : '.'.DS.'fresque.ini';
         if (!file_exists($this->config)) {
             $this->output->outputLine("The config file '$this->config' was not found", 'failure');
-            die();
+            return false;
         }
 
         $this->debug = isset($options['debug']) ? $options['debug'] : false;
@@ -1058,9 +1060,7 @@ class Fresque
                 'filename',
                 'handler',
                 'target',
-            ),
-            'Queues' => array(
-            ),
+            )
         );
 
         foreach ($settings as $scope => $param_names) {
@@ -1073,7 +1073,9 @@ class Fresque
 
         if (isset($this->runtime['Queues']) && !empty($this->runtime['Queues'])) {
             foreach ($this->runtime['Queues'] as $name => $options) {
-                $this->runtime['Queues'][$name]['queue'] = $name;
+               if (!isset($this->runtime['Queues'][$name]['queue'])) {
+                    $this->runtime['Queues'][$name]['queue'] = $name;
+                }
             }
         }
 
@@ -1095,10 +1097,12 @@ class Fresque
 
                 if ($fail) {
                     $this->output->outputLine();
-                    exit(1);
+                    return false;
                 }
             }
         }
+
+        return true;
     }
 
     /**
