@@ -14,6 +14,12 @@ This tool is intended to facilitate your life by making interfacing with php-res
 You should already have some knowledge about php-resque, and have php-resque installed and running.
 I'll assume in this tutorial that you have sufficient knowledge to start a worker normally with php-resque.
 
+##Requirements
+
+* Redis
+* `sudo` package installed on your system
+
+php-resque will be installed automatically as a composer dependency.
 
 ##What is Fresque
 
@@ -59,7 +65,7 @@ and update the dependencies with `composer update`
 ##Configuration
 
 A fresque.ini file is provided to set the workers default parameters, and other options used by fresque, such as redis connection options.
-it's well documented, and you shouldn't have difficulties editing it.
+It's well documented, and you shouldn't have difficulties editing it.
 
 ##Usage
 
@@ -354,11 +360,18 @@ You just used `stop`, and it stopped a worker. You immediately use `stop` again,
 Logs tell you all you need to know about the issue of a job, and the current status of your php-resque workers. It tells you when a job is enqueued, when a job is about to being performed, and its final state (success/fail). It also display all php related errors that may occurs.
 Check them frequently, as fresque doesn't capture those errors.
 
+##Sudo
+
+> sudo is a program for Unix-like computer operating systems that allows users to run programs with the security privileges of another user
+
+Since you're usually not logged in on the shell under the same user as the one your webserver us running under, `sudo` is required to start and manipulate the workers on behalf of the php user.  
+
+Starting your workers under another user could lead to permission problems.
 
 ##Background
 
 Fresque is a derivated works from my other plugin, [cake-resque](https://github.com/kamisama/Cake-Resque), a command line tool to manage php-resque, but inside cakephp console.
-Very convenient, but limited to only cakephp framework. I wanted to release a tool that can work anywhere.
+Very convenient, but limited to only cakephp framework. I wanted to release a tool that can work anywhere, as long as you have a terminal.
 
 ##Credits
 
