@@ -1,6 +1,12 @@
 ##Changelog
 
-###v1.2.0 (2013-06-xx)
+###v1.2.1 (2013-06-08)
+
+* [new] `load` command now supports starting workers polling multiple queues
+* [fix] Fix bug where multiple workers will not start correctly
+* [fix] Fix load command: each queues should run under its own settings
+
+###v1.2.0 (2013-06-20)
 
 * [new] Add `pause` and `resume` commands
 * [new] Add `--debug` option
