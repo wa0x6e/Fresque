@@ -1054,10 +1054,11 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
 
         $return = $this->shell->loadSettings('');
 
-        $queues = parse_ini_file(__DIR__ . DS . 'test_fresque.ini', true)['Queues'];
-        $queues['activity']['queue'] = 'activity';
+        $config = parse_ini_file(__DIR__ . DS . 'test_fresque.ini', true);
 
-        $this->assertEquals($queues, $this->shell->runtime['Queues']);
+        $config['Queues']['activity']['queue'] = 'activity';
+
+        $this->assertEquals($config['Queues'], $this->shell->runtime['Queues']);
         $this->assertEquals(true, $return);
     }
 
