@@ -951,7 +951,7 @@ class Fresque
 
         $this->runtime['Fresque']['lib'] = $this->absolutePath($this->runtime['Fresque']['lib']);
 
-        if (!is_dir($this->runtime['Fresque']['lib']) || !is_dir($this->runtime['Fresque']['lib'])) {
+        if (!is_dir($this->runtime['Fresque']['lib'])) {
             $results['PHPResque library']
                 = 'Unable to found PHP Resque library. Check that the path is valid, and directory is readable';
         }
@@ -974,7 +974,6 @@ class Fresque
                 . $this->runtime['Redis']['host'] . ':' . $this->runtime['Redis']['port'];
         }
 
-
         $this->runtime['Log']['filename'] = $this->absolutePath($this->runtime['Log']['filename']);
 
         $logPath = pathinfo($this->runtime['Log']['filename'], PATHINFO_DIRNAME);
@@ -988,26 +987,6 @@ class Fresque
         exec('id ' . $this->runtime['Default']['user'] . ' 2>&1', $output, $status);
         if ($status != 0) {
             $results['user'] = sprintf('User %s does not exists', $this->runtime['Default']['user']);
-        }
-
-        $resqueFiles = array(
-                'lib'.DS.'Resque.php',
-                'lib'.DS.'Resque'.DS.'Stat.php',
-                'lib'.DS.'Resque'.DS.'Worker.php'
-        );
-
-
-
-        $found = true;
-        foreach ($resqueFiles as $file) {
-            if (!file_exists($this->runtime['Fresque']['lib'] . DS . $file)) {
-                $found = false;
-                break;
-            }
-        }
-
-        if (!$found) {
-            $results['PHPResque library'] = 'Unable to find PHPResque library';
         }
 
         $this->runtime['Fresque']['include'] = $this->absolutePath($this->runtime['Fresque']['include']);
@@ -1114,7 +1093,7 @@ class Fresque
     public function help($command = null)
     {
         $this->outputTitle('Welcome to Fresque');
-        $this->output->outputLine('Fresque '. Fresque::VERSION.' by Wan Chen (Kamisama) (2013)');
+        $this->output->outputLine('Fresque '. Fresque::VERSION .' by Wan Chen (Kamisama) (2013)');
 
         if (!array_key_exists($command, $this->commandTree)
             && $command !== null
@@ -1193,31 +1172,31 @@ class Fresque
 
         $format = array();
         if ($interval->y !== 0) {
-            $format[] = '%y '.$doPlural($interval->y, 'year');
+            $format[] = '%y ' . $doPlural($interval->y, 'year');
         }
         if ($interval->m !== 0) {
-            $format[] = '%m '.$doPlural($interval->m, 'month');
+            $format[] = '%m ' . $doPlural($interval->m, 'month');
         }
         if ($interval->d !== 0) {
-            $format[] = '%d '.$doPlural($interval->d, 'day');
+            $format[] = '%d ' . $doPlural($interval->d, 'day');
         }
         if ($interval->h !== 0) {
-            $format[] = '%h '.$doPlural($interval->h, 'hour');
+            $format[] = '%h ' . $doPlural($interval->h, 'hour');
         }
         if ($interval->i !== 0) {
-            $format[] = '%i '.$doPlural($interval->i, 'minute');
+            $format[] = '%i ' . $doPlural($interval->i, 'minute');
         }
         if ($interval->s !== 0) {
             if (!count($format)) {
                 return 'less than a minute';
             } else {
-                $format[] = '%s '.$doPlural($interval->s, 'second');
+                $format[] = '%s ' . $doPlural($interval->s, 'second');
             }
         }
 
         // We use the two biggest parts
         if (count($format) > 1) {
-            $format = array_shift($format).' and '.array_shift($format);
+            $format = array_shift($format) . ' and '.array_shift($format);
         } else {
             $format = array_pop($format);
         }
@@ -1235,9 +1214,9 @@ class Fresque
      */
     private function absolutePath($path)
     {
-        if (substr($path, 0, 2) == './') {
+        if (substr($path, 0, 2) === './') {
             $path = dirname(__DIR__) . DS . substr($path, 2);
-        } elseif (substr($path, 0, 1) !== '/' || substr($path, 0, 3) == '../') {
+        } elseif (substr($path, 0, 1) !== '/' || substr($path, 0, 3) === '../') {
             $path = dirname(__DIR__) . DS . $path;
         }
         return rtrim($path, DS);
