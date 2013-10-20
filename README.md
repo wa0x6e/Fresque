@@ -1,4 +1,4 @@
-#Fresque [![Build Status](https://travis-ci.org/kamisama/Fresque.png?branch=master)](https://travis-ci.org/kamisama/Fresque) [![Coverage Status](https://coveralls.io/repos/kamisama/Fresque/badge.png?branch=fix-travis)](https://coveralls.io/r/kamisama/Fresque?branch=fix-travis) [![Dependency Status](https://www.versioneye.com/package/php--fresque--fresque/badge.png)](https://www.versioneye.com/package/php--fresque--fresque)
+#Fresque [![Build Status](https://travis-ci.org/kamisama/Fresque.png?branch=master)](https://travis-ci.org/kamisama/Fresque) [![Coverage Status](https://coveralls.io/repos/kamisama/Fresque/badge.png?branch=fix-travis)](https://coveralls.io/r/kamisama/Fresque?branch=fix-travis) [![Dependency Status](https://www.versioneye.com/package/php--fresque--fresque/badge.png)](https://www.versioneye.com/package/php--fresque--fresque) [![Latest Stable Version](https://poser.pugx.org/fresque/fresque/v/stable.png)](https://packagist.org/packages/fresque/fresque)
 
 > Fresque is a command line tool to manage your php-resque workers.
 
