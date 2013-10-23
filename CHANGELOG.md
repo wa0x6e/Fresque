@@ -1,5 +1,9 @@
 ##Changelog
 
+###v1.2.2 (2013-10-23)
+
+* [fix] Fix #20: the bin script inside composer bin folder can't find library files
+
 ###v1.2.1 (2013-06-08)
 
 * [new] `load` command now supports starting workers polling multiple queues

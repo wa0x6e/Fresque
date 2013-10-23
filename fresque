@@ -17,6 +17,16 @@
  # @version 	0.1
  # @license 	MIT License (http://www.opensource.org/licenses/mit-license.php)
  #
-LIB=${0/%fresque/}
-exec php -q ${LIB}/lib/init.php "$@"
+
+# Resolve symlink path
+# @link: http://stackoverflow.com/questions/7665/how-to-resolve-symbolic-links-in-a-shell-script/697552#697552
+SELF_PATH=$(cd -P -- "$(dirname -- "$0")" && pwd -P) && SELF_PATH=$SELF_PATH/$(basename -- "$0")
+
+while [ -h $SELF_PATH ]; do
+    DIR=$(dirname -- "$SELF_PATH")
+    SYM=$(readlink $SELF_PATH)
+    SELF_PATH=$(cd $DIR && cd $(dirname -- "$SYM") && pwd)/$(basename -- "$SYM")
+done
+
+exec php -q ${SELF_PATH/%fresque/}lib/init.php "$@"
 exit;
