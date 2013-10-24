@@ -421,7 +421,7 @@ class Fresque
             $this->runtime = $args;
         }
 
-        $pidFile = (isset($this->runtime['Fresque']['tmpdir'] ?
+        $pidFile = (isset($this->runtime['Fresque']['tmpdir']) ?
                         $this->runtime['Fresque']['tmpdir'] : dirname(__DIR__) . DS . 'tmp' )
                         . DS . str_replace('.', '', microtime(true));
         $count = $this->runtime['Default']['workers'];
