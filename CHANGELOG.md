@@ -1,5 +1,9 @@
 ##Changelog
 
+###v1.2.3 (2013-10-26)
+
+* [new] Fix #21: Add new tmpdir to fresque.ini to specify where to save the PID files [@pwhelan]
+
 ###v1.2.2 (2013-10-23)
 
 * [fix] Fix #20: the bin script inside composer bin folder can't find library files
