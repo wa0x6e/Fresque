@@ -1,5 +1,9 @@
 ##Changelog
 
+###v1.2.4 (2013-10-30)
+
+* [new] Don't use `sudo` to start workers if the current user is already the target user
+
 ###v1.2.3 (2013-10-26)
 
 * [new] Fix #21: Add new tmpdir to fresque.ini to specify where to save the PID files [@pwhelan]

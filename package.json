@@ -1,6 +1,6 @@
 {
   "name": "Fresque",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "A command line tool to manage php-resque",
   "keywords": [
     "php-resque",
