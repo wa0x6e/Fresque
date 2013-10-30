@@ -186,7 +186,7 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
     public function testStart()
     {
 
-        $this->shell = $this->getMock('\Fresque\Fresque', array('callCommand', 'outputTitle', 'exec', 'checkStartedWorker'));
+        $this->shell = $this->getMock('\Fresque\Fresque', array('callCommand', 'outputTitle', 'exec', 'checkStartedWorker', 'getProcessOwner'));
         $this->shell->output = $this->output;
 
         $this->shell->expects($this->never())->method('outputTitle');

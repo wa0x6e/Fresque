@@ -430,7 +430,7 @@ class Fresque
 
         for ($i = 1; $i <= $count; $i++) {
 
-            $cmd = 'nohup sudo -u '. escapeshellarg($this->runtime['Default']['user']) . " \\\n".
+            $cmd = 'nohup ' . ($this->runtime['Default']['user'] !== $this->getProcessOwner() ? ('sudo -u '. escapeshellarg($this->runtime['Default']['user'])) : "") . " \\\n".
             'bash -c "cd ' .
             escapeshellarg($this->runtime['Fresque']['lib']) . '; ' . " \\\n".
             (($this->runtime['Default']['verbose']) ? 'VVERBOSE' : 'VERBOSE') . '=true ' . " \\\n".
@@ -1358,5 +1358,27 @@ class Fresque
         } while ($menuDialog->hasValidResult() === false);
 
         return $menuDialog->getResult();
+    }
+
+/**
+ * Return the user owning the current process
+ *
+ * @codeCoverageIgnore
+ * @since 1.2.4
+ * @return string Username of the current process owner if found, else false
+ */
+    private function __getProcessOwner() {
+        if (function_exists('posix_getpwuid')) {
+            $a = posix_getpwuid(posix_getuid());
+            return $a['name'];
+        } else {
+            $user = trim(exec('whoami', $o, $code));
+            if ($code === 0) {
+                return $user;
+            }
+            return false;
+        }
+
+        return false;
     }
 }
