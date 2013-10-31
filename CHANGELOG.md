@@ -1,5 +1,9 @@
 ##Changelog
 
+###v1.2.5 (2013-10-30)
+
+* [fix] Fix wrong method name
+
 ###v1.2.4 (2013-10-30)
 
 * [new] Don't use `sudo` to start workers if the current user is already the target user
