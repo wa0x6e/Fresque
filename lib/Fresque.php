@@ -1367,7 +1367,7 @@ class Fresque
  * @since 1.2.4
  * @return string Username of the current process owner if found, else false
  */
-    private function __getProcessOwner() {
+    private function getProcessOwner() {
         if (function_exists('posix_getpwuid')) {
             $a = posix_getpwuid(posix_getuid());
             return $a['name'];
