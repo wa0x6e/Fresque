@@ -436,6 +436,7 @@ class Fresque
             (($this->runtime['Default']['verbose']) ? 'VVERBOSE' : 'VERBOSE') . '=true ' . " \\\n".
             'QUEUE=' . escapeshellarg($this->runtime['Default']['queue']) . " \\\n".
             'PIDFILE=' . escapeshellarg($pidFile) . " \\\n".
+            'RESQUE_PHP=' . escapeshellarg($this->runtime['Fresque']['lib'].'/lib/Resque.php') . " \\\n".
             'APP_INCLUDE=' . escapeshellarg($this->runtime['Fresque']['include']) . " \\\n".
             'INTERVAL=' . escapeshellarg($this->runtime['Default']['interval']) . " \\\n".
             'REDIS_BACKEND=' . escapeshellarg($this->runtime['Redis']['host'] . ':' . $this->runtime['Redis']['port']) . " \\\n".
@@ -444,7 +445,12 @@ class Fresque
             'COUNT=' . 1 . " \\\n".
             'LOGHANDLER=' . escapeshellarg($this->runtime['Log']['handler']) . " \\\n".
             'LOGHANDLERTARGET=' . escapeshellarg($this->runtime['Log']['target']) . " \\\n".
-            'php ' . $this->getResqueBinFile($this->runtime['Fresque']['lib']) . " \\\n";
+            'php ' . 
+                (
+                    isset($this->runtime['Fresque']['bin']) > 0 ?
+                        $this->runtime['Fresque']['bin'] :
+                        $this->getResqueBinFile($this->runtime['Fresque']['lib']) . " \\\n"
+                );
             $cmd .= ' >> '. escapeshellarg($this->runtime['Log']['filename']).' 2>&1" >/dev/null 2>&1 &';
 
             $this->debug('Starting worker (' . $i . ')');
@@ -1029,6 +1035,7 @@ class Fresque
             'Fresque' => array(
                 'lib',
                 'include',
+                'bin'
             ),
             'Default' => array(
                 'queue',
