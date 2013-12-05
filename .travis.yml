@@ -8,10 +8,6 @@ php:
 services:
   - redis
 
-matrix:
-  allow_failures:
-    - php: 5.5
-
 before_script:
   - composer self-update
   - composer install --dev
