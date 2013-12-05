@@ -1,4 +1,4 @@
-#Fresque [![Build Status](https://travis-ci.org/kamisama/Fresque.png?branch=master)](https://travis-ci.org/kamisama/Fresque) [![Coverage Status](https://coveralls.io/repos/kamisama/Fresque/badge.png?branch=fix-travis)](https://coveralls.io/r/kamisama/Fresque?branch=fix-travis) [![Dependency Status](https://www.versioneye.com/package/php--fresque--fresque/badge.png)](https://www.versioneye.com/package/php--fresque--fresque) [![Latest Stable Version](https://poser.pugx.org/fresque/fresque/v/stable.png)](https://packagist.org/packages/fresque/fresque)
+#Fresque [![Build Status](https://travis-ci.org/kamisama/Fresque.png?branch=master)](https://travis-ci.org/kamisama/Fresque) [![Coverage Status](https://coveralls.io/repos/kamisama/Fresque/badge.png?branch=fix-travis)](https://coveralls.io/r/kamisama/Fresque?branch=fix-travis) [![Dependency Status](https://www.versioneye.com/php/fresque:fresque/badge.png)](https://www.versioneye.com/php/fresque:fresque) [![Latest Stable Version](https://poser.pugx.org/fresque/fresque/v/stable.png)](https://packagist.org/packages/fresque/fresque)
 
 > Fresque is a command line tool to manage your php-resque workers.
 
@@ -10,7 +10,7 @@ If you don't know what is *resque* or *redis*, take a look at their official web
 - Resque : https://github.com/defunkt/resque/
 - Php-Resque : https://github.com/chrisboulton/php-resque/
 
-This tool is intended to facilitate your life by making interfacing with php-resque more easier and more friendly.  
+This tool is intended to facilitate your life by making interfacing with php-resque more easier and more friendly.
 You should already have some knowledge about php-resque, and have php-resque installed and running.
 I'll assume in this tutorial that you have sufficient knowledge to start a worker normally with php-resque.
 
@@ -31,7 +31,7 @@ Fresque is a command line tool to manage your php-resque workers
     # Starting a worker with fresque
     $ fresque start -q file_serve
 
-It's more friendly, and provides more options, like `restart`, `stop`, etc …  
+It's more friendly, and provides more options, like `restart`, `stop`, etc …
 Php-resque, and resque, by default doesn't provide an out-of-the-box way to stop your workers. You have to directly kill the worker process. With Fresque, you'll enjoy stopping and restarting your workers at gogo. No more system process handling!
 
 ##Installation
@@ -99,9 +99,20 @@ To start a new resque worker. By default, it will use the default configuration 
 
 > `-n` or `--workers` : Number of workers working on the same queues.
 
-> `-l` or `--log` : Absolute or relative path to the log file. You can set a different log for each worker. 
+> `-l` or `--log` : Absolute or relative path to the log file. You can set a different log for each worker.
 > The `--user` must have permission to read and write to that file (and the parent folder, since the file will be created if non-existent).
 > Relative path is relative to the fresque folder.
+
+
+* **startScheduler**
+
+To start the scheduler worker.
+
+> `-i` or `--interval` : Polling frequency. Number of seconds between each polling.
+
+Scheduler worker is disabled by default, enable it in the configuration file, in the [Scheduler] section. When enabled, it'll be automatically started when using `load()`.
+
+*Only one scheduler worker can run at the same time*
 
 
 * **stop**
@@ -143,8 +154,8 @@ Tail a worker's log. If you have more than one log file, you'll be prompted with
 
 Add a job to a queue. Takes 3 arguments :
 
-> **queuename**  : Name of the queue you will enqueue this job to  
-> **jobclass** : Name of the class that will perform the job, and that your application autoloader will have to load.  
+> **queuename**  : Name of the queue you will enqueue this job to
+> **jobclass** : Name of the class that will perform the job, and that your application autoloader will have to load.
 > **arguments** : comma separated list of arguments, passed to the job.
 
 Will print the **Job ID** if the job is successfully enqueued.
@@ -364,7 +375,7 @@ Check them frequently, as fresque doesn't capture those errors.
 
 > sudo is a program for Unix-like computer operating systems that allows users to run programs with the security privileges of another user
 
-Since you're usually not logged in on the shell under the same user as the one your webserver us running under, `sudo` is required to start and manipulate the workers on behalf of the php user.  
+Since you're usually not logged in on the shell under the same user as the one your webserver us running under, `sudo` is required to start and manipulate the workers on behalf of the php user.
 
 Starting your workers under another user could lead to permission problems.
 
