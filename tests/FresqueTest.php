@@ -44,6 +44,10 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
                 'handler' => '',
                 'target' => '',
                 'filename' => ''
+            ),
+            'Scheduler' => array(
+                'lib' => './vendor/kamisama/phhp-resque-ex-scheduler',
+                'log' => ''
             )
         );
 
@@ -214,6 +218,46 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
         $this->shell->start($this->startArgs);
     }
 
+    /**
+     * Start a scheduler worker
+     *
+     * @covers \Fresque\Fresque::startScheduler
+     * @return void
+     */
+    public function testStartScheduler() {
+        $this->shell = $this->getMock('\Fresque\Fresque', array('callCommand', 'outputTitle', 'exec', 'checkStartedWorker', 'getProcessOwner'));
+        $this->shell->output = $this->output;
+
+        $pid = rand(0, 100);
+
+        $this->shell->expects($this->never())->method('outputTitle');
+
+        $this->shell->expects($this->once())->method('exec')->will($this->returnValue(true));
+        $this->shell->expects($this->once())->method('checkStartedWorker')->will($this->returnValue(true));
+
+        $this->output->expects($this->at(0))->method('outputText')->with($this->stringContains('Starting scheduler worker'));
+        $this->output->expects($this->at(1))->method('outputText')->with($this->stringContains('.'));
+        $this->output->expects($this->at(2))->method('outputText')->with($this->stringContains('.'));
+        $this->output->expects($this->at(3))->method('outputText')->with($this->stringContains('.'));
+        $this->output->expects($this->at(4))->method('outputLine')->with($this->stringContains('done'));
+        $this->output->expects($this->exactly(1))->method('outputLine');
+        $this->output->expects($this->exactly(4))->method('outputText');
+
+        $this->ResqueStatus = $this->getMock(
+            'ResqueStatus\ResqueStatus',
+            array('isRunningSchedulerWorker', 'registerSchedulerWorker', 'addWorker'),
+            array(new \stdClass())
+        );
+
+        $this->ResqueStatus->expects($this->once())->method('isRunningSchedulerWorker')->will($this->returnValue(false));
+        $this->ResqueStatus->expects($this->once())->method('registerSchedulerWorker')->with($this->equalTo($pid));
+        $this->ResqueStatus->expects($this->once())->method('addWorker');
+        $this->shell->ResqueStatus = $this->ResqueStatus;
+
+        $this->startArgs['Scheduler']['enabled'] = true;
+        $this->shell->start($this->startArgs, true);
+    }
+
     public function testRestartWhenNoStartedWorkers()
     {
         $this->shell = $this->getMock('\Fresque\Fresque', array('callCommand', 'start', 'stop', 'outputTitle'));
@@ -266,6 +310,8 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
 
         $this->shell->ResqueStatus = $this->ResqueStatus;
         $this->shell->runtime['Queues'] = array();
+        $this->shell->runtime['Scheduler']['enabled'] = false;
+
         $this->shell->load();
     }
 
@@ -289,6 +335,7 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
             'debug' => false
         );
         $this->shell->runtime['Queues'] = array($queue, $queue);
+        $this->shell->runtime['Scheduler']['enabled'] = false;
         $this->shell->load();
     }
 
