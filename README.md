@@ -42,7 +42,7 @@ Php-resque, and resque, by default doesn't provide an out-of-the-box way to stop
 
  `cd` to the Fresque folder you just cloned
 
-	$ cd the/fresque/folder/you/just/cloned
+	$ cd Fresque
 
 Then download Composer
 
