@@ -7,7 +7,7 @@
 If you don't know what is *resque* or *redis*, take a look at their official website :
 
 - Redis : http://redis.io/
-- Resque : https://github.com/defunkt/resque/
+- Resque : https://github.com/resque/resque/
 - Php-Resque : https://github.com/chrisboulton/php-resque/
 
 This tool is intended to facilitate your life by making interfacing with php-resque more easier and more friendly.
