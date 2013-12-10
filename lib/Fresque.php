@@ -424,7 +424,14 @@ class Fresque
      * @since 1.3.0
      */
     public function startScheduler($args = null) {
-        return $this->start($args, true);
+        return $this->start(
+            array_replace_recursive(
+                $this->runtime, 
+                $args, 
+                array('Default' => array('workers' => 1))
+            ),
+            true
+        );
     }
 
 
