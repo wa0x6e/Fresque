@@ -57,7 +57,7 @@ Finally, install dependencies
 If your application is already using Composer, just add Fresque in your composer dependencies
 
     "require": {
-        "kamisama/fresque": "~1.2.0"
+        "fresque/fresque": "~1.2.0"
     }
 
 and update the dependencies with `composer update`
@@ -117,7 +117,7 @@ Scheduler worker is disabled by default, enable it in the configuration file, in
 
 * **stop**
 
-To stop workers. Will wait for all jobs to finish, then stop the worker. If more than one worker is running, a list of worker will be displayed, to choose the worker to stop.
+To stop workers. Will wait for all jobs to finish, then stop the worker. If more than one worker is running, a list of workers will be displayed, to choose the worker to stop.
 
 > `-f` or `--force` : Stop worker immediately, without waiting for the current job to finish processing. This will fail the current job.
 > `-w` or `--all` : Stop all workers at once, skipping the worker menu.
