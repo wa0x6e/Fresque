@@ -427,7 +427,7 @@ class Fresque
         return $this->start(
             array_replace_recursive(
                 $this->runtime, 
-                $args, 
+                (!empty($args) ? $args : array()), 
                 array('Default' => array('workers' => 1))
             ),
             true
