@@ -1184,7 +1184,10 @@ class Fresque
                 }
             }
         }
-
+        
+        $this->runtime['Fresque']['include'] = ($this->input->getOption('autoloader')->value)
+        	? $this->input->getOption('autoloader')->value : $this->settings['Fresque']['include'];
+        
         $this->runtime['Default']['verbose'] = ($this->input->getOption('verbose')->value)
             ? $this->input->getOption('verbose')->value : $this->settings['Default']['verbose'];
 
