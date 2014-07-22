@@ -280,7 +280,7 @@ class Fresque
             'start' => array(
                     'help' => 'Start a new worker',
                     'options' => array('u' => 'username', 'q' => 'queue name',
-                            'i' => 'num', 'n' => 'num', 'l' => 'path', 'v', 'g')),
+                            'i' => 'num', 'n' => 'num', 'l' => 'path', 'a' => 'autoloader', 'v', 'g')),
             'startScheduler' => array(
                     'help' => 'Start the scheduler worker',
                     'options' => array('i' => 'num')),
@@ -1186,7 +1186,7 @@ class Fresque
         }
         
         if ($this->input->getOption('autoloader')->value) {
-        	$this->runtime['Fresque']['include'] = $this->input->getOption('autoloader')->value;
+            $this->runtime['Fresque']['include'] = $this->input->getOption('autoloader')->value;
         }
         
         $this->runtime['Default']['verbose'] = ($this->input->getOption('verbose')->value)
