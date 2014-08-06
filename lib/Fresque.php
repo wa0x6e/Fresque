@@ -60,6 +60,18 @@ class Fresque
         $this->output = new \ezcConsoleOutput();
 
         $this->input->registerOption(
+        	new \ezcConsoleOption(
+        		't',
+        		'environment',
+        		\ezcConsoleInput::TYPE_STRING,
+        		null,
+        		false,
+        		'Application environment',
+                'Application environment'
+            )
+        );
+        
+        $this->input->registerOption(
             new \ezcConsoleOption(
                 'u',
                 'user',
@@ -319,7 +331,11 @@ class Fresque
                     'help' => 'Print help',
                     'options' => array()),
         );
-
+        
+        if ($this->input->getOption('environment')->value) {
+        	putenv($this->input->getOption('environment')->value);
+        }
+        
         $this->callCommand($command);
     }
 
