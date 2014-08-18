@@ -491,7 +491,7 @@ class Fresque
             'bash -c "cd ' .
             escapeshellarg($libraryPath) . '; ' . " \\\n".
             (($this->runtime['Default']['verbose']) ? 'VVERBOSE' : 'VERBOSE') . '=true ' . " \\\n".
-            'APPLICATION_ENV=' . escapeshellarg($this->runtime['Default']['environment']) . " \\\n".
+            'APPLICATION_ENV=' . escapeshellarg($this->runtime['Fresque']['environment']) . " \\\n".
             'QUEUE=' . escapeshellarg($this->runtime['Default']['queue']) . " \\\n".
             'PIDFILE=' . escapeshellarg($pidFile) . " \\\n".
             'APP_INCLUDE=' . escapeshellarg($this->runtime['Fresque']['include']) . " \\\n".
