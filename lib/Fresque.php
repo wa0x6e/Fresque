@@ -487,7 +487,7 @@ class Fresque
             'bash -c "cd ' .
             escapeshellarg($libraryPath) . '; ' . " \\\n".
             (($this->runtime['Default']['verbose']) ? 'VVERBOSE' : 'VERBOSE') . '=true ' . " \\\n".
-            'APPLICATION_ENV=' . escapeshellarg($this->runtime['Fresque']['environment']) . " \\\n".
+            'APPLICATION_ENV=' . escapeshellarg($this->runtime['Default']['environment']) . " \\\n".
             'QUEUE=' . escapeshellarg($this->runtime['Default']['queue']) . " \\\n".
             'PIDFILE=' . escapeshellarg($pidFile) . " \\\n".
             'APP_INCLUDE=' . escapeshellarg($this->runtime['Fresque']['include']) . " \\\n".
@@ -1158,8 +1158,7 @@ class Fresque
             ),
             'Fresque' => array(
                 'lib',
-                'include',
-            	'environment'
+                'include'
             ),
             'Default' => array(
                 'queue',
@@ -1167,6 +1166,7 @@ class Fresque
                 'workers',
                 'user',
                 'verbose',
+            	'environment'
             ),
             'Log' => array(
                 'filename',
@@ -1204,7 +1204,7 @@ class Fresque
         }
 
         if ($this->input->getOption('environment')->value) {
-            $this->runtime['Fresque']['environment'] = $this->input->getOption('environment')->value;
+            $this->runtime['Default']['environment'] = $this->input->getOption('environment')->value;
         }
 
         $this->runtime['Default']['verbose'] = ($this->input->getOption('verbose')->value)
