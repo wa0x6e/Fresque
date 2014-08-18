@@ -70,7 +70,7 @@ class Fresque
                 'Application environment'
             )
         );
-        
+
         $this->input->registerOption(
             new \ezcConsoleOption(
                 'u',
@@ -331,11 +331,11 @@ class Fresque
                     'help' => 'Print help',
                     'options' => array()),
         );
-        
+
         if ($this->input->getOption('environment')->value) {
         	putenv($this->input->getOption('environment')->value);
         }
-        
+
         $this->callCommand($command);
     }
 
@@ -491,6 +491,7 @@ class Fresque
             'bash -c "cd ' .
             escapeshellarg($libraryPath) . '; ' . " \\\n".
             (($this->runtime['Default']['verbose']) ? 'VVERBOSE' : 'VERBOSE') . '=true ' . " \\\n".
+            'APPLICATION_ENV=' . escapeshellarg($this->runtime['Default']['environment']) . " \\\n".
             'QUEUE=' . escapeshellarg($this->runtime['Default']['queue']) . " \\\n".
             'PIDFILE=' . escapeshellarg($pidFile) . " \\\n".
             'APP_INCLUDE=' . escapeshellarg($this->runtime['Fresque']['include']) . " \\\n".
@@ -1200,11 +1201,15 @@ class Fresque
                 }
             }
         }
-        
+
         if ($this->input->getOption('autoloader')->value) {
             $this->runtime['Fresque']['include'] = $this->input->getOption('autoloader')->value;
         }
-        
+
+        if ($this->input->getOption('environment')->value) {
+            $this->runtime['Fresque']['environment'] = $this->input->getOption('environment')->value;
+        }
+
         $this->runtime['Default']['verbose'] = ($this->input->getOption('verbose')->value)
             ? $this->input->getOption('verbose')->value : $this->settings['Default']['verbose'];
 
