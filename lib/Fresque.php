@@ -291,7 +291,7 @@ class Fresque
         $this->commandTree = array(
             'start' => array(
                     'help' => 'Start a new worker',
-                    'options' => array('u' => 'username', 'q' => 'queue name',
+                    'options' => array('u' => 'username', 'q' => 'queue name', 't' => 'environment',
                             'i' => 'num', 'n' => 'num', 'l' => 'path', 'a' => 'autoloader', 'v', 'g')),
             'startScheduler' => array(
                     'help' => 'Start the scheduler worker',
@@ -331,10 +331,6 @@ class Fresque
                     'help' => 'Print help',
                     'options' => array()),
         );
-
-        if ($this->input->getOption('environment')->value) {
-        	putenv("APPLICATION_ENV={$this->input->getOption('environment')->value}");
-        }
 
         $this->callCommand($command);
     }
@@ -491,7 +487,7 @@ class Fresque
             'bash -c "cd ' .
             escapeshellarg($libraryPath) . '; ' . " \\\n".
             (($this->runtime['Default']['verbose']) ? 'VVERBOSE' : 'VERBOSE') . '=true ' . " \\\n".
-            'APPLICATION_ENV=' . escapeshellarg(getenv("APPLICATION_ENV")) . " \\\n".
+            'APPLICATION_ENV=' . escapeshellarg($this->runtime['Fresque']['environment']) . " \\\n".
             'QUEUE=' . escapeshellarg($this->runtime['Default']['queue']) . " \\\n".
             'PIDFILE=' . escapeshellarg($pidFile) . " \\\n".
             'APP_INCLUDE=' . escapeshellarg($this->runtime['Fresque']['include']) . " \\\n".
@@ -1163,6 +1159,7 @@ class Fresque
             'Fresque' => array(
                 'lib',
                 'include',
+            	'environment'
             ),
             'Default' => array(
                 'queue',
