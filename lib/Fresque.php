@@ -333,7 +333,7 @@ class Fresque
         );
 
         if ($this->input->getOption('environment')->value) {
-        	putenv($this->input->getOption('environment')->value);
+        	putenv("APPLICATION_ENV={$this->input->getOption('environment')->value}");
         }
 
         $this->callCommand($command);
