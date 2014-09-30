@@ -43,6 +43,14 @@ class ResqueStats
     }
 
     /**
+     * Remove a worker
+     */
+    public function removeWorker($pid)
+    {
+        return \Resque_Worker::delete($pid);
+    }
+
+    /**
      * Return the number of jobs in a queue
      *
      * @param string $queue name of the queue
@@ -61,13 +69,13 @@ class ResqueStats
      */
     public function getWorkers()
     {
-        return (array)\Resque_Worker::all();
+        return (array) \Resque_Worker::all();
     }
 
     /**
      * Return the start date of a worker
      *
-     * @param string $worker Name of the worker
+     * @param  string $worker Name of the worker
      * @return string ISO-8601 formatted date
      */
     public function getWorkerStartDate($worker)
