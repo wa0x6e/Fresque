@@ -329,7 +329,7 @@ class Fresque
     /**
      *
      * @since  1.2.0
-     * @return void
+     * @return  void
      */
     public function callCommand($command)
     {
@@ -406,6 +406,7 @@ class Fresque
                     )
                 );
 
+
                 if ($this->runtime['Scheduler']['enabled'] === true) {
                     require_once realpath($this->runtime['Scheduler']['lib'] . DS . 'lib' . DS . 'ResqueScheduler' . DS . 'ResqueScheduler.php');
                     require_once realpath($this->runtime['Scheduler']['lib'] . DS . 'lib' . DS . 'ResqueScheduler' . DS . 'Stat.php');
@@ -421,19 +422,19 @@ class Fresque
     /**
      * Start the scheduler worker
      *
-     * @param  array $args If present, start the worker with these args.
-     * @return bool  True if the scheduler was created
+     * @param array $args If present, start the worker with these args.
+     * @return bool True if the scheduler was created
      * @since 1.3.0
      */
-    public function startScheduler($args = null)
-    {
+    public function startScheduler($args = null) {
         return $this->start($args, true);
     }
+
 
     /**
      * Start workers
      *
-     * @return void
+     * @return  void
      */
     public function start($args = null, $scheduler = false)
     {
@@ -446,18 +447,17 @@ class Fresque
         if ($scheduler) {
             if ($this->runtime['Scheduler']['enabled'] !== true) {
                 $this->output->outputLine('Scheduler Worker is not enabled', 'failure');
-
                 return false;
             }
 
             if ($this->ResqueStatus->isRunningSchedulerWorker()) {
                 $this->output->outputLine('The scheduler worker is already running', 'warning');
-
                 return false;
             }
 
             $args['type'] = 'scheduler';
         }
+
 
         $pidFile = (isset($this->runtime['Fresque']['tmpdir']) ?
                         $this->runtime['Fresque']['tmpdir'] : dirname(__DIR__) . DS . 'tmp' )
@@ -546,10 +546,11 @@ class Fresque
         }
     }
 
+
     /**
      * Stop workers
      *
-     * @return void
+     * @return  void
      */
     public function stop()
     {
@@ -570,7 +571,7 @@ class Fresque
             $this->remove_stats($pid, $workerName, $ResqueStats, $ResqueStatus);
         };
         $options->schedulerWorkerActionMessage = 'Stopping the Scheduler Worker';
-        $options->schedulerWorkerAction = function ($worker) use ($ResqueStatus) {
+        $options->schedulerWorkerAction = function($worker) use ($ResqueStatus) {
             $ResqueStatus->unregisterSchedulerWorker();
         };
 
@@ -593,7 +594,7 @@ class Fresque
     /**
      * Pause workers
      *
-     * @return void
+     * @return  void
      */
     public function pause()
     {
@@ -603,7 +604,7 @@ class Fresque
         array_walk(
             $activeWorkers,
             function (&$worker) {
-                return $worker = (string) $worker;
+                return $worker = (string)$worker;
             }
         );
         $pausedWorkers = call_user_func(array($this->ResqueStatus, 'getPausedWorker'));
@@ -628,7 +629,7 @@ class Fresque
     /**
      * Resume workers
      *
-     * @return void
+     * @return  void
      */
     public function resume()
     {
@@ -650,6 +651,7 @@ class Fresque
 
         $this->sendSignal($options);
     }
+
 
     /**
      * Send a Signal to a worker system process
@@ -722,7 +724,7 @@ class Fresque
             foreach ($workerIndex as $index) {
                 $worker = $options->workers[$index - 1];
 
-                list($hostname, $pid, $queue) = explode(':', (string) $worker);
+                list($hostname, $pid, $queue) = explode(':', (string)$worker);
 
                 $this->debug('Sending -' . $options->signal . ' signal to process ID ' . $pid);
 
@@ -736,8 +738,10 @@ class Fresque
                     $this->output->outputText($options->actionMessage . ' ' . $pid . ' ... ');
                 }
 
+
+
                 $killResponse = $this->kill($options->signal, $pid);
-                $options->onSuccess($pid, (string) $worker);
+                $options->onSuccess($pid, (string)$worker);
 
                 if ($killResponse['code'] === 0) {
                     $this->output->outputLine('Done', 'success');
@@ -750,10 +754,11 @@ class Fresque
         $this->output->outputLine();
     }
 
+
     /**
      * Load workers from configuration
      *
-     * @return void
+     * @return  void
      */
     public function load()
     {
@@ -782,10 +787,11 @@ class Fresque
         $this->output->outputLine();
     }
 
+
     /**
      * Restart all workers
      *
-     * @return void
+     * @return  void
      */
     public function restart()
     {
@@ -894,7 +900,7 @@ class Fresque
      * If more than one log file exists, will display a menu dialog with a list
      * of log files to choose from.
      *
-     * @return void
+     * @return  void
      */
     public function tail()
     {
@@ -920,7 +926,6 @@ class Fresque
         $this->outputTitle('Tailing log file');
         if (empty($logs)) {
             $this->output->outputLine('No log file to tail', 'failure');
-
             return;
         } elseif (count($logs) == 1) {
             $index = 1;
@@ -944,10 +949,11 @@ class Fresque
         $this->tailCommand($logs[$index - 1]);
     }
 
+
     /**
      * Add a job to a queue
      *
-     * @return void
+     * @return  void
      */
     public function enqueue()
     {
@@ -972,10 +978,11 @@ class Fresque
         }
     }
 
+
     /**
      * Print some stats about the workers
      *
-     * @return void
+     * @return  void
      */
     public function stats()
     {
@@ -1036,7 +1043,7 @@ class Fresque
                 }
 
                 $this->output->outputText('    Worker : ' . $worker, 'bold');
-                if (in_array((string) $worker, $pausedWorkers)) {
+                if (in_array((string)$worker, $pausedWorkers)) {
                     $this->output->outputText(' (Paused)', 'success');
                 }
                 $this->output->outputText("\n");
@@ -1061,7 +1068,7 @@ class Fresque
 
         if (!empty($schedulerWorkers)) {
             $this->output->outputText(ucwords('    scheduler worker'), 'bold');
-            if (in_array((string) $schedulerWorkers[0], $pausedWorkers)) {
+            if (in_array((string)$schedulerWorkers[0], $pausedWorkers)) {
                 $this->output->outputText(' (Paused)', 'success');
             }
             $this->output->outputText("\n");
@@ -1104,10 +1111,11 @@ class Fresque
         $this->output->outputLine('Fresque state has been reseted', 'success');
     }
 
+
     /**
      * Test and validate the configuration file
      *
-     * @return void
+     * @return  void
      */
     public function test()
     {
@@ -1163,6 +1171,7 @@ class Fresque
         }
 
         $this->runtime['Fresque']['lib'] = $this->absolutePath($this->runtime['Fresque']['lib']);
+
         if (!is_dir($this->runtime['Fresque']['lib'])) {
             $results['PHPResque library']
                 = 'Unable to found PHP Resque library. Check that the path is valid, and directory is readable';
@@ -1224,7 +1233,6 @@ class Fresque
         $this->config = isset($options['config']) ? $options['config'] : '.'.DS.'fresque.ini';
         if (!file_exists($this->config)) {
             $this->output->outputLine("The config file '$this->config' was not found", 'failure');
-
             return false;
         }
 
@@ -1288,7 +1296,7 @@ class Fresque
         $this->runtime['Default']['verbose'] = ($this->input->getOption('verbose')->value)
             ? $this->input->getOption('verbose')->value : $this->settings['Default']['verbose'];
 
-        $this->runtime['Scheduler']['enabled'] = (bool) $this->runtime['Scheduler']['enabled'];
+        $this->runtime['Scheduler']['enabled'] = (bool)$this->runtime['Scheduler']['enabled'];
 
         if ($this->runtime['Scheduler']['enabled']) {
             if (!empty($this->runtime['Scheduler']['handler']) && $this->runtime['Scheduler']['type'] === 'scheduler') {
@@ -1319,7 +1327,6 @@ class Fresque
 
                 if ($fail) {
                     $this->output->outputLine();
-
                     return false;
                 }
             }
@@ -1357,6 +1364,7 @@ class Fresque
         $this->output->outputLine("\nUse <command> --help to get more infos about a command\n");
     }
 
+
     /**
      * Print a pretty title
      *
@@ -1364,7 +1372,7 @@ class Fresque
      * @param bool   $primary True to print a big title, else print a small title
      *
      * @since 1.0.0
-     * @return void
+     * @return  void
      */
     public function outputTitle($title, $primary = true)
     {
@@ -1384,7 +1392,7 @@ class Fresque
      * On big intervals, you get months and days.
      * Only the two biggest parts are used.
      *
-     * @param \DateTime      $start
+     * @param \DateTime $start
      * @param \DateTime|null $end
      *
      * @codeCoverageIgnore
@@ -1462,7 +1470,6 @@ class Fresque
         } elseif (substr($path, 0, 1) !== '/' || substr($path, 0, 3) === '../') {
             $path = dirname(__DIR__) . DS . $path;
         }
-
         return rtrim($path, DS);
     }
 
@@ -1505,7 +1512,6 @@ class Fresque
                 return '.' . DS . $path;
             }
         }
-
         return '.' . DS . 'resque.php';
     }
 
@@ -1540,8 +1546,8 @@ class Fresque
     /**
      * Send a signal to a process
      *
-     * @param String $signal Signal to send
-     * @param int    $pid    PID of the process
+     * @param  String $signal Signal to send
+     * @param  int    $pid    PID of the process
      *
      * @codeCoverageIgnore
      * @since  1.2.0
@@ -1551,7 +1557,6 @@ class Fresque
     {
         $output = array();
         $message = exec(sprintf('/bin/kill -%s %s 2>&1', $signal, $pid), $output, $code);
-
         return array('code' => $code, 'message' => $message);
     }
 
@@ -1559,7 +1564,7 @@ class Fresque
      * Check the content of the PID file created by the worker
      * to retrieve its process PID
      *
-     * @param string $path Path to the PID file
+     * @param  string $path Path to the PID file
      *
      * @codeCoverageIgnore
      * @since  1.2.0
@@ -1570,19 +1575,17 @@ class Fresque
         $pid = false;
         if (file_exists($pidFile) && false !== $pid = file_get_contents($pidFile)) {
             unlink($pidFile);
-
-            return (int) $pid;
+            return (int)$pid;
         }
-
         return false;
     }
 
     /**
      * Display a Dialog menu, and retrieve the user selection
      *
-     * @param string $listTitle     Title of the menu dialog
-     * @param string $selectMessage Select option message
-     * @param array  $menuItems     The menu contents
+     * @param  string $listTitle     Title of the menu dialog
+     * @param  string $selectMessage Select option message
+     * @param  array  $menuItems     The menu contents
      *
      * @codeCoverageIgnore
      * @since  1.2.0
@@ -1613,18 +1616,15 @@ class Fresque
  * @since 1.2.4
  * @return string Username of the current process owner if found, else false
  */
-    private function getProcessOwner()
-    {
+    private function getProcessOwner() {
         if (function_exists('posix_getpwuid')) {
             $a = posix_getpwuid(posix_getuid());
-
             return $a['name'];
         } else {
             $user = trim(exec('whoami', $o, $code));
             if ($code === 0) {
                 return $user;
             }
-
             return false;
         }
 
