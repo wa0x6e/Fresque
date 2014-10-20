@@ -452,7 +452,7 @@ class Fresque
                 return false;
             }
 
-            $args['type'] = 'scheduler';
+            $this->runtime['type'] = 'scheduler';
         }
 
 
