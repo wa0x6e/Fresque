@@ -976,7 +976,7 @@ class Fresque
                 $this->output->outputLine('    - Delayed Jobs    : ' . number_format($delayedJobCount));
 
                 if ($delayedJobCount > 0) {
-                    $this->output->outputLine('    - Next Job on     : ' . strftime('%a %b %d %H:%M:%S %Z %Y', $schedulerWorker->nextDelayedTimestamp()));
+                    $this->output->outputLine('    - Next Job on     : ' . strftime('%a %b %d %H:%M:%S %Z %Y', $schedulerWorker->nextDelayedTimestamp(time()+(60*60*24*365))));
                 }
             }
             $this->output->outputLine("\n");
