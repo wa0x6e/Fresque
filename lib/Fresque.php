@@ -19,6 +19,8 @@
 
 namespace Fresque;
 
+date_default_timezone_set('UTC');
+
 define('DS', DIRECTORY_SEPARATOR);
 include __DIR__ . DS . 'DialogMenuValidator.php';
 include __DIR__ . DS . 'SendSignalCommandOptions.php';
