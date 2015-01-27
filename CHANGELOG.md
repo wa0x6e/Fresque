@@ -1,5 +1,12 @@
 ##Changelog
 
+###v1.3.0 (2015-01-27)
+
+* [new] Add support for Resque-Scheduler
+* [new] Merge #36: Install phpunit using Composer
+* [fix] Fix #40: Fix `kill` when user differs to process owner
+* Various doc typos fixes
+
 ###v1.2.5 (2013-10-30)
 
 * [fix] Fix wrong method name
