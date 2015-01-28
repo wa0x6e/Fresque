@@ -19,6 +19,8 @@
 
 namespace Fresque;
 
+date_default_timezone_set('UTC');
+
 define('DS', DIRECTORY_SEPARATOR);
 include __DIR__ . DS . 'DialogMenuValidator.php';
 include __DIR__ . DS . 'SendSignalCommandOptions.php';
@@ -452,7 +454,7 @@ class Fresque
                 return false;
             }
 
-            $args['type'] = 'scheduler';
+            $this->runtime['type'] = 'scheduler';
         }
 
 
@@ -752,7 +754,7 @@ class Fresque
         }
 
         if ($this->runtime['Scheduler']['enabled'] === true) {
-            $this->startscheduler(array('debug' => $debug));
+            $this->startscheduler($this->runtime);
         }
 
         $this->output->outputLine();
@@ -974,7 +976,7 @@ class Fresque
                 $this->output->outputLine('    - Delayed Jobs    : ' . number_format($delayedJobCount));
 
                 if ($delayedJobCount > 0) {
-                    $this->output->outputLine('    - Next Job on     : ' . strftime('%a %b %d %H:%M:%S %Z %Y', $schedulerWorker->nextDelayedTimestamp()));
+                    $this->output->outputLine('    - Next Job on     : ' . strftime('%a %b %d %H:%M:%S %Z %Y', $schedulerWorker->nextDelayedTimestamp(time()+(60*60*24*365))));
                 }
             }
             $this->output->outputLine("\n");
