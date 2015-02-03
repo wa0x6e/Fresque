@@ -251,6 +251,18 @@ class Fresque
             )
         );
 
+        $this->input->registerOption(
+            new \ezcConsoleOption(
+                'o',
+                'count',
+                \ezcConsoleInput::TYPE_INT,
+                null,
+                false,
+                'Workers to stop',
+                'Number of workers to stop for the queue'
+            )
+        );
+        
         $this->input->registerOption(new \ezcConsoleOption('h', 'help'));
 
         $this->output->formats->title->color = 'yellow';
@@ -286,7 +298,7 @@ class Fresque
                     'options' => array('i' => 'num')),
             'stop' => array(
                     'help' => 'Stop workers',
-                    'options' => array('f', 'w', 'g')),
+                    'options' => array('f', 'w', 'g', 'q', 'o')),
             'pause' => array(
                     'help' => 'Pause workers',
                     'options' => array('w', 'g')),
@@ -636,7 +648,9 @@ class Fresque
 
         $force = $this->input->getOption('force')->value;
         $all = $this->input->getOption('all')->value;
-
+        $workerQueueName = $this->input->getOption('queue')->value;
+        $count = $this->input->getOption('count')->value;
+        
         if ($force) {
             $this->debug("'FORCE' option detected");
         }
@@ -644,7 +658,15 @@ class Fresque
         if ($all) {
             $this->debug("'ALL' option detected");
         }
+        
+        if ($workerQueueName) {
+            $this->debug("'QUEUE' option detected");
+        }
 
+        if ($count) {
+            $this->debug("'COUNT' option detected");
+        }
+        
         if (!isset($options->formatListItem)) {
             $resqueStats = $this->ResqueStats;
             $ResqueStatus = $this->ResqueStatus;
@@ -668,24 +690,38 @@ class Fresque
 
             $workerIndex = array();
             if (!$all && $options->getWorkersCount() > 1) {
-                $i = 1;
-                $menuItems = array();
-                foreach ($options->workers as $worker) {
-                    $menuItems[$i++] = $listFormatter($worker);
-                }
-
-                $menuItems['all'] = $options->allOption;
-
-                $index = $this->getUserChoice(
-                    $options->listTitle,
-                    $options->selectMessage . ':',
-                    $menuItems
-                );
-
-                if ($index === 'all') {
-                    $workerIndex = range(1, $options->getWorkersCount());
+                if ($workerQueueName) {
+                    foreach ($options->workers as $index => $worker) {
+                        list($hostname, $pid, $queue) = explode(':', (string)$worker);
+                        if ($queue == $workerQueueName) {
+                            $workerIndex[] = $index;
+                        }
+                    }
+                    
+                    if ($count > 0) {
+                        $workerIndex = array_slice($workerIndex, 0, $count);
+                    }
+                    
                 } else {
-                    $workerIndex[] = $index;
+                    $i = 1;
+                    $menuItems = array();
+                    foreach ($options->workers as $worker) {
+                        $menuItems[$i++] = $listFormatter($worker);
+                    }
+                    
+                    $menuItems['all'] = $options->allOption;
+                    
+                    $index = $this->getUserChoice(
+                        $options->listTitle,
+                        $options->selectMessage . ':',
+                        $menuItems
+                    );
+                    
+                    if ($index === 'all') {
+                        $workerIndex = range(1, $options->getWorkersCount());
+                    } else {
+                        $workerIndex[] = $index;
+                    }
                 }
 
             } else {
