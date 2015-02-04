@@ -691,10 +691,10 @@ class Fresque
             $workerIndex = array();
             if (!$all && $options->getWorkersCount() > 1) {
                 if ($workerQueueName) {
-                    foreach ($options->workers as $index => $worker) {
+                    foreach ($options->workers as $i => $worker) {
                         list($hostname, $pid, $queue) = explode(':', (string)$worker);
                         if ($queue == $workerQueueName) {
-                            $workerIndex[] = $index;
+                            $workerIndex[] = $i;
                         }
                     }
                     
@@ -703,10 +703,9 @@ class Fresque
                     }
                     
                 } else {
-                    $i = 1;
                     $menuItems = array();
-                    foreach ($options->workers as $worker) {
-                        $menuItems[$i++] = $listFormatter($worker);
+                    foreach ($options->workers as $i => $worker) {
+                        $menuItems[$i] = $listFormatter($worker);
                     }
                     
                     $menuItems['all'] = $options->allOption;
@@ -729,7 +728,7 @@ class Fresque
             }
 
             foreach ($workerIndex as $index) {
-                $worker = $options->workers[$index - 1];
+                $worker = $options->workers[$index];
 
                 list($hostname, $pid, $queue) = explode(':', (string)$worker);
 
