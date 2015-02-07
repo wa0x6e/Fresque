@@ -120,9 +120,12 @@ Scheduler worker is disabled by default, enable it in the configuration file, in
 To stop workers. Will wait for all jobs to finish, then stop the worker. If more than one worker is running, a list of workers will be displayed, to choose the worker to stop.
 
 > `-f` or `--force` : Stop worker immediately, without waiting for the current job to finish processing. This will fail the current job.
+
 > `-w` or `--all` : Stop all workers at once, skipping the worker menu.
+
 > `-q` or `--queue` : Stop all workers attributed to the specified queue name.
-> `-o` or `--count` : An additional which can be specified along with the `--queue` option to stop fix number of workers from the queue.
+
+> `-o` or `--count` : An additional optional which can be specified along with the `--queue` option to stop a fixed number of workers from the queue.
 
 * **pause**
 
