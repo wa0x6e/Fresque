@@ -702,6 +702,10 @@ class Fresque
                         $workerIndex = array_slice($workerIndex, 0, $count);
                     }
                     
+                    if (empty($workerIndex)) {
+                        $this->output->outputLine($options->noWorkersMessage, 'failure');
+                    }
+                                        
                 } else {
                     $menuItems = array();
                     foreach ($options->workers as $i => $worker) {
