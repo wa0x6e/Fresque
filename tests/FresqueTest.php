@@ -414,8 +414,8 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
                     'options' => array('u' => 'username', 'q' => 'queue name',
                             'i' => 'num', 'n' => 'num', 'l' => 'path', 'v', 'g')),
             'stop' => array(
-                    'help' => 'Shutdown all workers',
-                    'options' => array('f', 'w', 'g'))
+                    'help' => 'Stop workers',
+                    'options' => array('f', 'w', 'g', 'q', 'o'))
         );
 
         $this->output->expects($this->at(2))->method('outputLine')->with($this->stringContains('Available commands'));
@@ -519,7 +519,9 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
 
         $this->input->expects($this->at(0))->method('getOption')->with($this->equalTo('force'))->will($this->returnValue($option));
         $this->input->expects($this->at(1))->method('getOption')->with($this->equalTo('all'))->will($this->returnValue($option));
-        $this->input->expects($this->exactly(2))->method('getOption');
+        $this->input->expects($this->at(2))->method('getOption')->with($this->equalTo('queue'))->will($this->returnValue($option));
+        $this->input->expects($this->at(3))->method('getOption')->with($this->equalTo('count'))->will($this->returnValue($option));
+        $this->input->expects($this->exactly(4))->method('getOption');
 
         $this->shell->expects($this->once())->method('outputTitle')->with($this->stringContains('testing workers'));
         $this->output->expects($this->at(0))->method('outputText')->with($this->stringContains('testing 100 ...'));
@@ -553,7 +555,9 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
 
         $this->input->expects($this->at(0))->method('getOption')->with($this->equalTo('force'))->will($this->returnValue($option));
         $this->input->expects($this->at(1))->method('getOption')->with($this->equalTo('all'))->will($this->returnValue($option));
-        $this->input->expects($this->exactly(2))->method('getOption');
+        $this->input->expects($this->at(2))->method('getOption')->with($this->equalTo('queue'))->will($this->returnValue($option));
+        $this->input->expects($this->at(3))->method('getOption')->with($this->equalTo('count'))->will($this->returnValue($option));
+        $this->input->expects($this->exactly(4))->method('getOption');
 
         $this->shell->expects($this->once())->method('outputTitle')->with($this->stringContains('testing workers'));
         $this->output->expects($this->at(0))->method('outputText')->with($this->stringContains('testing 100 ...'));
@@ -587,7 +591,9 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
 
         $this->input->expects($this->at(0))->method('getOption')->with($this->equalTo('force'))->will($this->returnValue($option));
         $this->input->expects($this->at(1))->method('getOption')->with($this->equalTo('all'))->will($this->returnValue($option));
-        $this->input->expects($this->exactly(2))->method('getOption');
+        $this->input->expects($this->at(2))->method('getOption')->with($this->equalTo('queue'))->will($this->returnValue($option));
+        $this->input->expects($this->at(3))->method('getOption')->with($this->equalTo('count'))->will($this->returnValue($option));
+        $this->input->expects($this->exactly(4))->method('getOption');
 
         $this->shell->expects($this->once())->method('outputTitle')->with($this->stringContains('testing workers'));
         $this->output->expects($this->at(0))->method('outputText')->with($this->stringContains('testing 101 ...'));
@@ -651,7 +657,7 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
 
         $shell->stop();
     }
-
+    
     /**
      * Pause will send the USR2 signal and the active workers list to sendSignal()
      *
