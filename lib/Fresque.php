@@ -471,9 +471,15 @@ class Fresque
 
             $libraryPath = rtrim($libraryPath, '/');
 
+            $env_vars = "";
+            foreach($_ENV as $env_name => $env_value) {
+                $env_vars .= $env_name . '=' . escapeshellarg($env_value) . " \\\n";
+            }
+
             $cmd = 'nohup ' . ($this->runtime['Default']['user'] !== $this->getProcessOwner() ? ('sudo -u '. escapeshellarg($this->runtime['Default']['user'])) : "") . " \\\n".
             'bash -c "cd ' .
             escapeshellarg($libraryPath) . '; ' . " \\\n".
+            $env_vars .
             (($this->runtime['Default']['verbose']) ? 'VVERBOSE' : 'VERBOSE') . '=true ' . " \\\n".
             'QUEUE=' . escapeshellarg($this->runtime['Default']['queue']) . " \\\n".
             'PIDFILE=' . escapeshellarg($pidFile) . " \\\n".
