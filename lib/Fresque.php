@@ -1454,7 +1454,7 @@ class Fresque
     protected function kill($signal, $pid)
     {
         $output = array();
-        $message = exec(sprintf('/bin/kill -%s %s 2>&1', $signal, $pid), $output, $code);
+        $message = exec(sprintf(($this->runtime['Default']['user'] !== $this->getProcessOwner() ? ('sudo -u '. escapeshellarg($this->runtime['Default']['user'])) . ' ' : "") . '/bin/kill -%s %s 2>&1', $signal, $pid), $output, $code);
         return array('code' => $code, 'message' => $message);
     }
 
