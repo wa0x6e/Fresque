@@ -49,7 +49,7 @@ class Fresque
 
     public static $checkStartedWorkerBufferTime = 100000;
 
-    const VERSION = '1.3.0';
+    const VERSION = '1.3.1';
 
     public function __construct()
     {

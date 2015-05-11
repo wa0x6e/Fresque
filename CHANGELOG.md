@@ -1,5 +1,9 @@
 ##Changelog
 
+###v1.3.1 (2015-05-11)
+
+* [fix] Update php-resque-ex required version
+
 ###v1.3.0 (2015-01-27)
 
 * [new] Add support for Resque-Scheduler
