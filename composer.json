@@ -16,7 +16,7 @@
 		"zetacomponents/console-tools" : ">=1.6",
 		"zetacomponents/base" : ">=1.8",
         "kamisama/resque-status": ">=0.0.1",
-        "kamisama/php-resque-ex": "~1.2.5",
+        "kamisama/php-resque-ex": ">=1.2.5",
         "kamisama/php-resque-ex-scheduler": "~1.2.2"
 	},
     "require-dev": {
