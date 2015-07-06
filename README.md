@@ -38,7 +38,7 @@ Php-resque, and resque, by default doesn't provide an out-of-the-box way to stop
 
 ### By cloning the git repo
 
-	$ git clone git://github.com/kamisama/Fresque.git
+	$ git clone git://github.com/fahernandez/Fresque.git
 
  `cd` to the Fresque folder you just cloned
 
@@ -149,6 +149,10 @@ Display total number of failed/processed jobs, as well as various stats for each
 * **tail**
 
 Tail a worker's log. If you have more than one log file, you'll be prompted with list of log.
+
+* **Monitor**
+
+Monitor the state of started workers. If it detects that a worker is missing, the monitor start the worker with the initial configuration.
 
 * **enqueue**
 
@@ -301,6 +305,11 @@ Just set all your workers settings in the config file in the [Queues] section (w
 
 	$ fresque load
 
+###Monitoring your workers
+You can add the monitor functionality as a cron job to keep monitored all your workers. Let's say that we want to check each 2 minutes if our workers are alive.
+
+	# m h  dom mon dow   command
+	*/2 *  *   *   *     fresque monitor
 
 ##Notes
 
@@ -379,13 +388,8 @@ Since you're usually not logged in on the shell under the same user as the one y
 
 Starting your workers under another user could lead to permission problems.
 
-##Background
-
-Fresque is a derivated works from my other plugin, [cake-resque](https://github.com/kamisama/Cake-Resque), a command line tool to manage php-resque, but inside cakephp console.
-Very convenient, but limited to only cakephp framework. I wanted to release a tool that can work anywhere, as long as you have a terminal.
-
 ##Credits
 
 * [PHP-Resque](https://github.com/chrisboulton/php-resque) is written by Chris Boulton
 * Based on [Resque](https://github.com/defunkt/resque) by defunkt
-* Fresque by Wan Qi Chen (kamisama)
+* Based on original Fresque by Wan Qi Chen (kamisama)
