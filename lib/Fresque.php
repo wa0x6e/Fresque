@@ -535,6 +535,7 @@ class Fresque
                     $workerSettings['workers'] = 1;
 
                     // Add this fields to the workers to be tracker later
+                    $workerSettings['Default']['workers'] = 1;
                     $workerSettings['Fresque']['pid'] = $pid;
                     $workerSettings['Fresque']['id'] = php_uname('n') . ':'. $pid . ':' . $workerSettings['Default']['queue'];
 
@@ -575,7 +576,7 @@ class Fresque
         $options->selectMessage = 'Worker to stop';
         $options->actionMessage = 'stopping';
         $options->workers = call_user_func(self::$Resque_Worker. '::all');
-        $options->signal = $this->input->getOption('force')->value === true ? 'TERM' : 'QUIT';
+        $options->signal = 'TERM';
         $options->successCallback = function ($pid, $workerName) use ($ResqueStatus, $ResqueStats) {
             // Remove all the tracked stats for the stopped worker
             $this->remove_stats($pid, $workerName, $ResqueStats, $ResqueStatus);
@@ -772,7 +773,7 @@ class Fresque
         $debug = $this->debug;
 
         if (!isset($this->runtime['Queues']) || empty($this->runtime['Queues'])) {
-            $this->output->outputLine("You have no configured workers to load.\n", 'failure');
+            $this->output->outputLine("You have not configured workers to load.\n", 'failure');
         } else {
             $this->output->outputLine(sprintf('Loading %s workers', count($this->runtime['Queues'])));
 
@@ -827,9 +828,15 @@ class Fresque
     public function monitor()
     {
         $this->outputTitle('Fresque monitor');
-        $this->review_active($this->ResqueStats, $this->ResqueStatus);
-        $this->reload_task($this->ResqueStats, $this->ResqueStatus);
-        $this->output->outputLine("Ok");
+        if (!isset($this->runtime['Queues']) || empty($this->runtime['Queues'])) {
+            $this->output->outputLine("You have not configured workers to monitor.\n", 'failure');
+        } else {
+            $this->review_active($this->ResqueStats, $this->ResqueStatus);
+            $this->reload_task($this->ResqueStats, $this->ResqueStatus);
+
+            $this->output->outputLine(' Done', 'success');
+        }
+
     }
 
      /**
@@ -841,7 +848,7 @@ class Fresque
      */
     public function review_active($resqueStats, $resqueStatus)
     {
-        $workers = call_user_func(array($this->ResqueStatus, 'getWorkers'));
+        $workers = call_user_func(array($resqueStatus, 'getWorkers'));
         foreach ($workers as $worker) {
             $pid = $worker['Fresque']['pid'];
             $id = $worker['Fresque']['id'];
@@ -853,7 +860,7 @@ class Fresque
 
             if (!isset($output[1]) || !preg_match('/resque/', $output[1])) {
                 $this->output->outputText('Process '. $worker['Fresque']['id'] . ' not alive, deleted from stats');
-                $this->output->outputText("\n");
+                $this->output->outputLine();
 
                 // Remove the process from the stats
                 $this->remove_stats($pid, $id, $resqueStats, $resqueStatus);
@@ -889,16 +896,19 @@ class Fresque
             $workers = $config['workers'];
             if (!isset($queueCount[$name]) || $queueCount[$name] < $workers) {
                 $numWorkers = isset($queueCount[$name]) ? $queueCount[$name] : 0;
-                $this->output->outputText('Workers on queue ' . $name . ' must be ' . $workers . ' ...found ' . $numWorkers);
-                $this->output->outputText("\n");
+                $this->output->outputText('Workers on queue ' . $name . ' must be ' . $workers . ' ...found ' . $numWorkers, 'failure');
+                $this->output->outputLine();
                 $config['config'] = $this->config;
                 $config['debug'] = $this->debug;
                 $config['queue'] = $name;
                 $config['workers'] = $workers - $numWorkers;
                 $this->loadSettings('load', $config);
                 $this->start($this->runtime);
-                $this->output->outputText('Created ' . $config['workers'] . ' new workers for queue ' . $name);
-                $this->output->outputText("\n");
+                $this->output->outputText('Created ' . $config['workers'] . ' new workers for queue ' . $name, 'success');
+                $this->output->outputLine();
+            } else {
+                $this->output->outputText(sprintf('Queue %s completed with %s worker(s)', $name, $workers), 'success');
+                $this->output->outputLine();
             }
         }
 
@@ -1032,7 +1042,7 @@ class Fresque
             if (!in_array($queue, $activeQueues)) {
                 $this->output->outputText(' (unmonitored queue)', 'failure');
             }
-            $this->output->outputText("\n");
+            $this->output->outputLine();
         }
         $this->output->outputLine();
 
@@ -1055,7 +1065,7 @@ class Fresque
                 if (in_array((string) $worker, $pausedWorkers)) {
                     $this->output->outputText(' (Paused)', 'success');
                 }
-                $this->output->outputText("\n");
+                $this->output->outputLine();
 
                 $startDate = call_user_func_array(array($this->ResqueStats, 'getWorkerStartDate'), array($worker));
 
@@ -1080,7 +1090,7 @@ class Fresque
             if (in_array((string) $schedulerWorkers[0], $pausedWorkers)) {
                 $this->output->outputText(' (Paused)', 'success');
             }
-            $this->output->outputText("\n");
+            $this->output->outputLine();
 
             foreach ($schedulerWorkers as $worker) {
                 $schedulerWorker = new \ResqueScheduler\ResqueScheduler();
@@ -1568,7 +1578,9 @@ class Fresque
     protected function kill($signal, $pid)
     {
         $output = array();
-        $message = exec(sprintf(($this->runtime['Default']['user'] !== $this->getProcessOwner() ? ('sudo -u '. escapeshellarg($this->runtime['Default']['user'])) . ' ' : "") . '/bin/kill -%s %s 2>&1', $signal, $pid), $output, $code);
+        $message = exec(sprintf(($this->runtime['Default']['user'] !== $this->getProcessOwner()
+            ? ('sudo -u '. escapeshellarg($this->runtime['Default']['user'])) . ' '
+            : "") . '/bin/kill -%s %s 2>&1', $signal, $pid), $output, $code);
 
         return array('code' => $code, 'message' => $message);
     }

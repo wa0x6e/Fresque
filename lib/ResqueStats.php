@@ -74,13 +74,13 @@ class ResqueStats
      */
     public function getWorkers()
     {
-        return (array)\Resque_Worker::all();
+        return (array) \Resque_Worker::all();
     }
 
     /**
      * Return the start date of a worker
      *
-     * @param string $worker Name of the worker
+     * @param  string $worker Name of the worker
      * @return string ISO-8601 formatted date
      */
     public function getWorkerStartDate($worker)
