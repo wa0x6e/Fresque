@@ -465,7 +465,7 @@ class Fresque
 
         // Set permission for resque pid files(Be sure the defined user will be have write permission
         // on the pid file location)
-        $pidTmpPath = pathinfo($pidFile, PATHINFO_DIRNAME);;
+        $pidTmpPath = pathinfo($pidFile, PATHINFO_DIRNAME);
         chown($pidTmpPath, $this->runtime['Default']['user']) && chgrp($pidTmpPath, $this->runtime['Default']['user']);
 
         $count = $this->runtime['Default']['workers'];

@@ -28,7 +28,7 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
                 'workers' => 1,
                 'interval' => 5,
                 'verbose' => true,
-                'user' => 'www-data'
+                'user' => 'home'
             ),
             'Fresque' => array(
                 'lib' => '../vendor/kamisama/php-resque-ex',

@@ -1,8 +1,7 @@
 {
-	"name": "fresque/fresque",
+	"name": "fahernandez/fresque",
 	"description" : "A command line tool to manage your php-resque workers",
 	"keywords": ["php-resque", "resque", "cli", "redis"],
-	"homepage": "http://kamisama.github.com/Fresque/",
 	"authors": [
 		{
 			"name": "Wan Chen",

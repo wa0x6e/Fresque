@@ -57,7 +57,7 @@ Finally, install dependencies
 If your application is already using Composer, just add Fresque in your composer dependencies
 
     "require": {
-        "fresque/fresque": "~1.2.0"
+        "fresque/fresque": "~1.3.1"
     }
 
 and update the dependencies with `composer update`
@@ -150,7 +150,7 @@ Display total number of failed/processed jobs, as well as various stats for each
 
 Tail a worker's log. If you have more than one log file, you'll be prompted with list of log.
 
-* **Monitor**
+* **monitor**
 
 Monitor the state of started workers. If it detects that a worker is missing, the monitor start the worker with the initial configuration.
 
