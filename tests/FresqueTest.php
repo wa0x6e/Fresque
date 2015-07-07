@@ -28,7 +28,7 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
                 'workers' => 1,
                 'interval' => 5,
                 'verbose' => true,
-                'user' => 'home'
+                'user' => 'www-data'
             ),
             'Fresque' => array(
                 'lib' => '../vendor/kamisama/php-resque-ex',
@@ -48,7 +48,8 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
             'Scheduler' => array(
                 'lib' => '../vendor/kamisama/phhp-resque-ex-scheduler',
                 'log' => '../log/resque-scheduler.log'
-            )
+            ),
+            'Env' => array()
         );
 
         $this->sendSignalOptions = new \Fresque\SendSignalCommandOptions();
@@ -348,7 +349,7 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
      */
     public function testEnqueueJobWithoutArguments()
     {
-        $Resque = $this->getMock('\Fresque');
+        $Resque = $this->getMock('\Fresque\Fresque', array('callCommand', 'start', 'stop', 'outputTitle', 'loadSettings'));
         $Resque::staticExpects($this->never())->method('enqueue');
 
         $this->shell->expects($this->once())->method('outputTitle')->with($this->stringContains('Queuing a job'));
@@ -366,7 +367,7 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
      */
     public function testEnqueueJobWithWrongNumberOfArguments()
     {
-        $Resque = $this->getMock('\Fresque');
+        $Resque = $this->getMock('\Fresque\Fresque', array('callCommand', 'start', 'stop', 'outputTitle', 'loadSettings'));
         $Resque::staticExpects($this->never())->method('enqueue');
 
         $this->shell->expects($this->once())->method('outputTitle')->with($this->stringContains('Queuing a job'));
@@ -613,6 +614,7 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
     {
         $shell = $this->getMock('\Fresque\Fresque', array('callCommand', 'outputTitle', 'kill', 'getUserChoice', 'sendSignal'));
         $shell->ResqueStatus = $this->ResqueStatus = $this->getMock('\ResqueStatus\ResqueStatus', array(), array(new \stdClass()));
+        $shell->ResqueStats = $this->ResqueStats = $this->getMock('\ResqueStats');
 
         $workers = array('test', 'testOne');
 
@@ -643,6 +645,7 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
         $shell->input = $this->input;
         $shell->input->expects($this->at(0))->method('getOption')->with($this->equalTo('force'))->will($this->returnValue($option));
         $shell->ResqueStatus = $this->ResqueStatus = $this->getMock('\ResqueStatus\ResqueStatus', array(), array(new \stdClass()));
+        $shell->ResqueStats = $this->ResqueStats = $this->getMock('\ResqueStats');
 
         $shell->expects($this->once())->method('sendSignal')->with(
             $this->attributeEqualTo('signal', 'TERM')
@@ -762,26 +765,6 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
         $this->output->expects($this->at(30))->method('outputLine');
 
         $this->shell->stats();
-    }
-
-    /**
-     * @covers \Fresque\Fresque::test
-     */
-    public function testTest()
-    {
-        $this->shell->expects($this->once())->method('outputTitle')->with($this->stringContains('testing configuration'));
-
-        // $this->shell->test();
-        $this->markTestIncomplete();
-    }
-
-    /**
-     * @covers \Fresque\Fresque::testConfig
-     */
-    public function testTestConfig()
-    {
-        //$this->shell->testConfig();
-        $this->markTestIncomplete();
     }
 
     /**
@@ -1093,13 +1076,12 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
     {
         $option = new \stdClass();
         $option->value = false;
-        $this->input->expects($this->once())->method('getOptionValues')->will($this->returnValue(array('config' => __DIR__ . DS . 'test_fresque.ini')));
+        $this->input->expects($this->once())->method('getOptionValues')->will($this->returnValue(array('config' => __DIR__ . DS . 'fresque.ini')));
         $this->input->expects($this->once())->method('getOption')->with($this->equalTo('verbose'))->will($this->returnValue($option));
 
         $return = $this->shell->loadSettings('');
 
-        $config = parse_ini_file(__DIR__ . DS . 'test_fresque.ini', true);
-
+        $config = parse_ini_file(__DIR__ . DS . 'fresque.ini', true);
         $config['Queues']['activity']['queue'] = 'activity';
 
         $this->assertEquals($config['Queues'], $this->shell->runtime['Queues']);
