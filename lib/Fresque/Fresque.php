@@ -20,9 +20,6 @@
 namespace Fresque;
 
 define('DS', DIRECTORY_SEPARATOR);
-include __DIR__ . DS . 'DialogMenuValidator.php';
-include __DIR__ . DS . 'SendSignalCommandOptions.php';
-include __DIR__ . DS . 'ResqueStats.php';
 
 /**
  * Fresque Class
@@ -459,13 +456,11 @@ class Fresque
             $args['type'] = 'scheduler';
         }
 
-        $pidFile = (isset($this->runtime['Fresque']['tmpdir']) ?
-                        $this->runtime['Fresque']['tmpdir'] : dirname(__DIR__) . DS . 'tmp' )
-                        . DS . str_replace('.', '', microtime(true));
+        $pidFile = $this->runtime['Fresque']['tmpdir'] . DS . str_replace('.', '', microtime(true));
 
         // Set permission for resque pid files(Be sure the defined user will be have write permission
         // on the pid file location)
-        $pidTmpPath = pathinfo($pidFile, PATHINFO_DIRNAME);
+        $pidTmpPath = pathinfo($this->runtime['Fresque']['tmpdir'], PATHINFO_DIRNAME);
         chown($pidTmpPath, $this->runtime['Default']['user']) && chgrp($pidTmpPath, $this->runtime['Default']['user']);
 
         $count = $this->runtime['Default']['workers'];
@@ -1159,6 +1154,11 @@ class Fresque
 
         foreach ($this->runtime as $cat => $confs) {
             $this->output->outputLine('['.$cat.']', 'bold');
+
+            if (!is_array($this->runtime[$cat])) {
+                continue;
+            }
+
             foreach ($this->runtime[$cat] as $name => $conf) {
                 if (!is_array($conf)) {
                     $this->output->outputText('   '.$name . str_repeat(' ', 10 - strlen($name)));
@@ -1193,6 +1193,13 @@ class Fresque
         if (!is_dir($this->runtime['Fresque']['lib'])) {
             $results['PHPResque library']
                 = 'Unable to found PHP Resque library. Check that the path is valid, and directory is readable';
+        }
+
+        $this->runtime['Fresque']['tmpdir'] = $this->absolutePath($this->runtime['Fresque']['tmpdir']);
+
+        if (!is_dir($this->runtime['Fresque']['tmpdir'])) {
+            $results['Tmp Directory']
+                = 'Unable to found tmp directory. Check that the path is valid, and directory is readable';
         }
 
         try {
@@ -1260,7 +1267,7 @@ class Fresque
         $this->runtime = parse_ini_file($this->config, true);
 
         if (!isset($this->runtime['type'])) {
-            $this->runtime['type'] = 'regular';
+            $this->runtime['type'] = ['regular'];
         }
 
         $settings = array(
@@ -1273,6 +1280,7 @@ class Fresque
             'Fresque' => array(
                 'lib',
                 'include',
+                'tmpdir'
             ),
             'Default' => array(
                 'queue',

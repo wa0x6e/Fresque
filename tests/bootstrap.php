@@ -10,6 +10,4 @@ if (!class_exists('Composer\Autoload\ClassLoader', false)) {
     );
 }
 
-require dirname(__DIR__) . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'Fresque.php';
-
 putenv('ENV=tests');

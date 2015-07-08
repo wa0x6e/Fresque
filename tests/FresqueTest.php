@@ -3,6 +3,7 @@ namespace Fresque\Test;
 
 // Used to mock the filesystem
 use org\bovigo\vfs\vfsStream;
+use \Fresque\Fresque;
 
 class FresqueTest extends \PHPUnit_Framework_TestCase
 {
@@ -32,7 +33,8 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
             ),
             'Fresque' => array(
                 'lib' => '../vendor/kamisama/php-resque-ex',
-                'include' => '../vendor/autoload.php'
+                'include' => '../vendor/autoload.php',
+                'tmpdir' => '../tmp/'
             ),
             'Redis' => array(
                 'host' => 'localhost',
@@ -64,6 +66,7 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
         $this->sendSignalOptions->signal = 'TEST';
         $this->sendSignalOptions->successCallback = function ($pid) {
         };
+
     }
 
     /**
@@ -307,7 +310,7 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
         $workers = array(0, 1);
 
         $this->shell->expects($this->once())->method('outputTitle')->with($this->stringContains('Loading predefined workers'));
-        $this->output->expects($this->at(0))->method('outputLine')->with($this->stringContains('You have no configured workers to load'));
+        $this->output->expects($this->at(0))->method('outputLine')->with($this->stringContains('You have not configured workers to load'));
         $this->output->expects($this->exactly(2))->method('outputLine');
 
         $this->shell->ResqueStatus = $this->ResqueStatus;
@@ -620,36 +623,13 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
 
         $shell->expects($this->once())->method('sendSignal')->with(
             $this->logicalAnd(
-                $this->attributeEqualTo('signal', 'QUIT'),
+                $this->attributeEqualTo('signal', 'TERM'),
                 $this->attributeEqualTo('workers', $workers)
             )
         );
 
         $shell::$Resque_Worker = $Resque_Worker = $this->getMockClass('\Resque_Worker', array('all'));
         $Resque_Worker::staticExpects($this->once())->method('all')->will($this->returnValue($workers));
-
-        $shell->stop();
-    }
-
-    /**
-     * Stop will send the TERM signal if 'force' option is selected
-     *
-     * @covers \Fresque\Fresque::stop
-     */
-    public function testForceStop()
-    {
-        $option = new \stdClass();
-        $option->value = true;
-
-        $shell = $this->getMock('\Fresque\Fresque', array('callCommand', 'outputTitle', 'kill', 'getUserChoice', 'sendSignal'));
-        $shell->input = $this->input;
-        $shell->input->expects($this->at(0))->method('getOption')->with($this->equalTo('force'))->will($this->returnValue($option));
-        $shell->ResqueStatus = $this->ResqueStatus = $this->getMock('\ResqueStatus\ResqueStatus', array(), array(new \stdClass()));
-        $shell->ResqueStats = $this->ResqueStats = $this->getMock('\ResqueStats');
-
-        $shell->expects($this->once())->method('sendSignal')->with(
-            $this->attributeEqualTo('signal', 'TERM')
-        );
 
         $shell->stop();
     }
