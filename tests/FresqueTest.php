@@ -33,13 +33,14 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
             ),
             'Fresque' => array(
                 'lib' => '../vendor/kamisama/php-resque-ex',
+                'lib_fault_back' => '../../../kamisama/php-resque-ex',
                 'include' => '../vendor/autoload.php',
+                'include_fault_back' => '../../../autoload.php',
                 'tmpdir' => '../tmp/'
             ),
             'Redis' => array(
-                'host' => 'localhost',
+                'host' => 'localhost:6379',
                 'database' => 0,
-                'port' => 6379,
                 'namespace' => 'resque'
             ),
             'Log' => array(
@@ -49,6 +50,7 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
             ),
             'Scheduler' => array(
                 'lib' => '../vendor/kamisama/phhp-resque-ex-scheduler',
+                'lib_fault_back' => '../../../kamisama/php-resque-ex-scheduler',
                 'log' => '../log/resque-scheduler.log'
             ),
             'Env' => array()
@@ -1042,9 +1044,6 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
         // New settings from CLI
         $this->assertEquals($cliOption['host'], $this->shell->runtime['Redis']['host']);
         $this->assertEquals($cliOption['include'], $this->shell->runtime['Fresque']['include']);
-
-        // Other settings did not change
-        $this->assertEquals(6379, $this->shell->runtime['Redis']['port']);
 
         $this->assertEquals(true, $return);
     }

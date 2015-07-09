@@ -57,7 +57,7 @@ Finally, install dependencies
 If your application is already using Composer, just add Fresque in your composer dependencies
 
     "require": {
-        "fresque/fresque": "~1.3.1"
+        "fahernandez/fresque": "~1.3.1"
     }
 
 and update the dependencies with `composer update`
@@ -172,9 +172,7 @@ Test your configuration. If no options are provided, it will test your *fresque.
 
 Finally, there's some global options, that can be used for all commands. Default value in your config file will be used unless you use these.
 
-> `-s` or `--host` : Redis hostname
-
-> `-p` or `--port` : Redis port
+> `-s` or `--host` : Redis hostname and port (default localhost:6379)
 
 > `-b` or `--lib` : Absolute path to the php-resque library. Used when you already have your own, and don't want to use the one shipped with fresque.
 
@@ -199,10 +197,9 @@ If we want another worker, working on the queues *default* and *activity* at the
 
 Oh wait, we have another resque on another redis server. we'll want to log its activities in another log file: remote.log
 
-	$ fresque start -s 192.168.1.26 -p 6390 -q myspecialqueue -l /path/to/remote.log
+	$ fresque start -s 192.168.1.26:6390 -q myspecialqueue -l /path/to/remote.log
 
-- -s 192.168.1.26 is the address of the redis server
-- -p 6390 is the redis server port
+- -s 192.168.1.26:6390 is the address of the redis server
 - -q is the queuename
 - -l is the path to the log file
 
@@ -264,7 +261,7 @@ It should output something like that
 		 - Failed Jobs    : 0
 
 
-Remember that you can use the global options (-s, -p etc …) with any command
+Remember that you can use the global options (-s, etc …) with any command
 
 	$ fresque stop -c /path/to/my-config.ini -s 192.168.1.26
 
@@ -326,7 +323,7 @@ It will test the minimum requirements to run fresque :
 
 You can test more than the settings inside your config file, by passing options. An option will override the setting defined in the config
 
-	$ fresque test -s 195.168.1.26 -p 6890
+	$ fresque test -s 195.168.1.26:6890
 
 This will test your config file, but with the specified redis hostname and port.
 

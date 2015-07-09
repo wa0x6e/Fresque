@@ -21,6 +21,9 @@ namespace Fresque;
 
 define('DS', DIRECTORY_SEPARATOR);
 
+use \ResqueScheduler\ResqueScheduler;
+use \ResqueScheduler\Stat;
+
 /**
  * Fresque Class
  *
@@ -147,20 +150,8 @@ class Fresque
                 \ezcConsoleInput::TYPE_STRING,
                 null,
                 false,
-                'Redis server hostname',
-                'Redis server hostname (eg. localhost, 127.0.0.1, etc ...)'
-            )
-        );
-
-        $this->input->registerOption(
-            new \ezcConsoleOption(
-                'p',
-                'port',
-                \ezcConsoleInput::TYPE_INT,
-                null,
-                false,
-                'Redis server port',
-                'Redis server port'
+                'Redis server hostname and port',
+                'Redis server hostname (eg. localhost, 127.0.0.1:6379, etc ...)'
             )
         );
 
@@ -336,7 +327,7 @@ class Fresque
 
         $args = $this->input->getArguments();
 
-        $globalOptions = array('s' => 'host', 'p' => 'port', 'b' => 'path',
+        $globalOptions = array('s' => 'host', 'b' => 'path',
             'c' => 'path', 'a' => 'path', 'd' => 'handler', 'r' => 'args,'
         );
 
@@ -397,16 +388,11 @@ class Fresque
                 call_user_func_array(
                     self::$Resque . '::setBackend',
                     array(
-                        $this->runtime['Redis']['host'] . ':' . $this->runtime['Redis']['port'],
+                        $this->runtime['Redis']['host'],
                         $this->runtime['Redis']['database'],
                         $this->runtime['Redis']['namespace']
                     )
                 );
-
-                if ($this->runtime['Scheduler']['enabled'] === true) {
-                    require_once realpath($this->runtime['Scheduler']['lib'] . DS . 'lib' . DS . 'ResqueScheduler' . DS . 'ResqueScheduler.php');
-                    require_once realpath($this->runtime['Scheduler']['lib'] . DS . 'lib' . DS . 'ResqueScheduler' . DS . 'Stat.php');
-                }
 
                 $this->ResqueStatus = new \ResqueStatus\ResqueStatus(\Resque::Redis());
                 $this->ResqueStats = new ResqueStats(\Resque::Redis());
@@ -495,7 +481,7 @@ class Fresque
             'APP_INCLUDE=' . escapeshellarg($this->runtime['Fresque']['include']) . " \\\n".
             'RESQUE_PHP=' . escapeshellarg($this->runtime['Fresque']['lib'] . DS . 'lib' . DS . 'Resque.php') . " \\\n".
             'INTERVAL=' . escapeshellarg($this->runtime['Default']['interval']) . " \\\n".
-            'REDIS_BACKEND=' . escapeshellarg($this->runtime['Redis']['host'] . ':' . $this->runtime['Redis']['port']) . " \\\n".
+            'REDIS_BACKEND=' . escapeshellarg($this->runtime['Redis']['host']) . " \\\n".
             'REDIS_DATABASE=' . escapeshellarg($this->runtime['Redis']['database']) . " \\\n".
             'REDIS_NAMESPACE=' . escapeshellarg($this->runtime['Redis']['namespace']) . " \\\n".
             'COUNT=' . 1 . " \\\n".
@@ -1184,15 +1170,39 @@ class Fresque
             'Application autoloader' => true
         );
 
-        if (!isset($this->runtime['Redis']['host']) || !isset($this->runtime['Redis']['port'])) {
-            $results['Redis configuration'] = 'Unable to read redis server configuration';
-        }
+        $redis_host_and_port = isset($this->runtime['Redis']['host'])
+            ? explode(':', $this->runtime['Redis']['host'])
+            : [];
+
+        $host = isset($redis_host_and_port[0]) ? $redis_host_and_port[0] : 'localhost';
+        $port = isset($redis_host_and_port[1]) ? $redis_host_and_port[1] : 6379;
 
         $this->runtime['Fresque']['lib'] = $this->absolutePath($this->runtime['Fresque']['lib']);
+        $this->runtime['Fresque']['lib_fault_back'] = $this->absolutePath($this->runtime['Fresque']['lib_fault_back']);
 
         if (!is_dir($this->runtime['Fresque']['lib'])) {
-            $results['PHPResque library']
-                = 'Unable to found PHP Resque library. Check that the path is valid, and directory is readable';
+
+            // Use the fault back library if the dafault library doesn't exists
+            if (is_dir($this->runtime['Fresque']['lib_fault_back'])) {
+                $this->runtime['Fresque']['lib'] = $this->runtime['Fresque']['lib_fault_back'];
+
+            } else {
+                $results['PHPResque library']
+                    = 'Unable to found PHP Resque library. Check that the path is valid, and directory is readable';
+            }
+        }
+        $this->runtime['Scheduler']['lib'] = $this->absolutePath($this->runtime['Scheduler']['lib']);
+        $this->runtime['Scheduler']['lib_fault_back'] = $this->absolutePath($this->runtime['Scheduler']['lib_fault_back']);
+
+        if (!is_dir($this->runtime['Scheduler']['lib'])) {
+
+            // Use the fault back library if the dafault library doesn't exists
+            if (is_dir($this->runtime['Scheduler']['lib_fault_back'])) {
+                $this->runtime['Scheduler']['lib'] = $this->runtime['Scheduler']['lib_fault_back'];
+            } else {
+                $results['PHPResque library']
+                = 'Unable to found PHP Resque Scheduler library. Check that the path is valid, and directory is readable';
+            }
         }
 
         $this->runtime['Fresque']['tmpdir'] = $this->absolutePath($this->runtime['Fresque']['tmpdir']);
@@ -1204,22 +1214,22 @@ class Fresque
 
         try {
             if (file_exists($this->runtime['Fresque']['lib'] . DS . 'lib' . DS . 'Resque' . DS.'Redis.php')) {
-                require_once($this->runtime['Fresque']['lib'] . DS . 'lib' . DS . 'Resque' . DS.'Redis.php');
-                $redis = @new \Resque_Redis($this->runtime['Redis']['host'], (int) $this->runtime['Redis']['port']);
+                $redis = @new \Resque_Redis($host, (int) $port);
 
             } elseif (class_exists('Redis')) {
                 $redis = new \Redis();
-                @$redis->connect($this->runtime['Redis']['host'], (int) $this->runtime['Redis']['port']);
+                @$redis->connect($host, (int) $port);
             } elseif (class_exists('Redisent')) {
-                $redis = @new \Redisent($this->runtime['Redis']['host'], (int) $this->runtime['Redis']['port']);
+                $redis = @new \Redisent($host, (int) $port);
             } else {
                 $results['Redis server'] = 'Unable to find Redis Api';
             }
         } catch (\RedisException $e) {
             $results['Redis server'] = 'Unable to connect to Redis server at '
-                . $this->runtime['Redis']['host'] . ':' . $this->runtime['Redis']['port'];
+                . $this->runtime['Redis']['host'];
         }
 
+        // Set path to fresque log file
         $this->runtime['Log']['filename'] = $this->absolutePath($this->runtime['Log']['filename']);
 
         $logPath = pathinfo($this->runtime['Log']['filename'], PATHINFO_DIRNAME);
@@ -1231,15 +1241,40 @@ class Fresque
             $results['Log File'] = 'The directory for the log file is not writable';
         }
 
+        // Set path to resque scheduler log file
+        $this->runtime['Scheduler']['log'] = $this->absolutePath($this->runtime['Scheduler']['log']);
+
+        $logPath = pathinfo($this->runtime['Scheduler']['log'], PATHINFO_DIRNAME);
+        // Create the log path if its not defined
+        $this->create_path($logPath);
+        if (!is_dir($logPath)) {
+            $results['Log File'] = 'The directory for the scheduler resque log file does not exists';
+        } elseif (!is_writable($logPath)) {
+            $results['Log File'] = 'The directory for the scheduler resque log file is not writable';
+        }
+
         $output = array();
         exec('id ' . $this->runtime['Default']['user'] . ' 2>&1', $output, $status);
         if ($status != 0) {
             $results['user'] = sprintf('User %s does not exists', $this->runtime['Default']['user']);
         }
 
-        $this->runtime['Fresque']['include'] = $this->absolutePath($this->runtime['Fresque']['include']);
+        $this->runtime['Fresque']['include'] = $this->absolutePath(
+            $this->runtime['Fresque']['include']
+        );
+        $this->runtime['Fresque']['include_fault_back'] = $this->absolutePath(
+            $this->runtime['Fresque']['include_fault_back']
+        );
+
         if (!file_exists($this->runtime['Fresque']['include'])) {
-            $results['Application autoloader'] = 'Your application autoloader file was not found';
+
+            // Use the fault back library if the default library doesn't exists
+            if (file_exists($this->runtime['Fresque']['include_fault_back'])) {
+                $this->runtime['Fresque']['include'] = $this->runtime['Fresque']['include_fault_back'];
+            } else {
+                $results['Application autoloader'] = 'Your application autoloader file was not found';
+            }
+
         }
 
         return $results;
@@ -1273,13 +1308,14 @@ class Fresque
         $settings = array(
             'Redis' => array(
                 'host',
-                'port',
                 'database',
                 'namespace',
             ),
             'Fresque' => array(
                 'lib',
+                'lib_fault_back',
                 'include',
+                'include_fault_back',
                 'tmpdir'
             ),
             'Default' => array(
@@ -1297,6 +1333,7 @@ class Fresque
             'Scheduler' => array(
                 'enabled',
                 'lib',
+                'lib_fault_back',
                 'log',
                 'interval',
                 'handler',

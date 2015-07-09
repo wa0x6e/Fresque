@@ -36,7 +36,7 @@ class DialogMenuValidator implements \ezcConsoleMenuDialogValidator
 
     public function fixup($result)
     {
-        return (string)$result;
+        return (string) $result;
     }
 
     public function getElements()
@@ -51,6 +51,14 @@ class DialogMenuValidator implements \ezcConsoleMenuDialogValidator
 
     public function validate($result)
     {
-        return in_array($result, array_keys($this->elements));
+        $valid = false;
+        foreach ($this->elements as $key => $value) {
+            if ((string) $result === (string) $key) {
+                $valid = true;
+                break;
+            }
+        }
+
+        return $valid;
     }
 }
