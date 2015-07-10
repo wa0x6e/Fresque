@@ -842,7 +842,7 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
 
         $this->shell->loadSettings('');
 
-        $this->assertEquals('./fresque.ini', $this->shell->config);
+        $this->assertEquals(FRESQUE_INI_PATH, $this->shell->config);
     }
 
     /**

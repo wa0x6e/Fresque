@@ -10,4 +10,9 @@ if (!class_exists('Composer\Autoload\ClassLoader', false)) {
     );
 }
 
+// Define the fresque ini path
+if (!defined('FRESQUE_INI_PATH')) {
+    define('FRESQUE_INI_PATH', realpath('.' . DIRECTORY_SEPARATOR . 'fresque.ini'));
+}
+
 putenv('ENV=tests');
