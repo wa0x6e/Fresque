@@ -26,6 +26,8 @@ $files = array(
     __DIR__ . '/../vendor/autoload.php',
 );
 
+use \Fresque\Fresque;
+
 foreach ($files as $file) {
     if (file_exists($file)) {
         require_once $file;
@@ -41,6 +43,4 @@ if (!class_exists('Composer\Autoload\ClassLoader', false)) {
     );
 }
 
-require __DIR__ . DIRECTORY_SEPARATOR . 'Fresque.php';
-
-$fresque = new Fresque\Fresque();
+$fresque = new Fresque();

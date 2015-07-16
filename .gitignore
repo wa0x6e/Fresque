@@ -1,5 +1,7 @@
 composer.phar
 composer.lock
 vendor/
+log/
+tmp/
 /node_modules/
 /build/

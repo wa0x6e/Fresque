@@ -3,6 +3,7 @@ namespace Fresque\Test;
 
 // Used to mock the filesystem
 use org\bovigo\vfs\vfsStream;
+use \Fresque\Fresque;
 
 class FresqueTest extends \PHPUnit_Framework_TestCase
 {
@@ -28,27 +29,31 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
                 'workers' => 1,
                 'interval' => 5,
                 'verbose' => true,
-                'user' => ''
+                'user' => 'www-data'
             ),
             'Fresque' => array(
-                'lib' => '',
-                'include' => ''
+                'lib' => '../vendor/kamisama/php-resque-ex',
+                'lib_fault_back' => '../../../kamisama/php-resque-ex',
+                'include' => '../vendor/autoload.php',
+                'include_fault_back' => '../../../autoload.php',
+                'tmpdir' => '../tmp/'
             ),
             'Redis' => array(
-                'host' => '',
+                'host' => 'localhost:6379',
                 'database' => 0,
-                'port' => 0,
-                'namespace' => ''
+                'namespace' => 'resque'
             ),
             'Log' => array(
                 'handler' => '',
                 'target' => '',
-                'filename' => ''
+                'filename' => '../log/fresque.log'
             ),
             'Scheduler' => array(
-                'lib' => './vendor/kamisama/phhp-resque-ex-scheduler',
-                'log' => ''
-            )
+                'lib' => '../vendor/kamisama/phhp-resque-ex-scheduler',
+                'lib_fault_back' => '../../../kamisama/php-resque-ex-scheduler',
+                'log' => '../log/resque-scheduler.log'
+            ),
+            'Env' => array()
         );
 
         $this->sendSignalOptions = new \Fresque\SendSignalCommandOptions();
@@ -63,13 +68,14 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
         $this->sendSignalOptions->signal = 'TEST';
         $this->sendSignalOptions->successCallback = function ($pid) {
         };
+
     }
 
     /**
      * Should not print debug information when debug is enabled
      *
      * @covers \Fresque\Fresque::debug
-     * @return  void
+     * @return void
      */
     public function testDebug()
     {
@@ -82,7 +88,7 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
      * Should not print debug information when debug is disabled
      *
      * @covers \Fresque\Fresque::debug
-     * @return  void
+     * @return void
      */
     public function testDebugWhenDisabled()
     {
@@ -94,7 +100,7 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
      * Check if a resque bin file is in the bin folder
      *
      * @covers \Fresque\Fresque::getResqueBinFile
-     * @return  void
+     * @return void
      */
     public function testGetResqueBin()
     {
@@ -115,7 +121,7 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
      * but with a .php extension
      *
      * @covers \Fresque\Fresque::getResqueBinFile
-     * @return  void
+     * @return void
      */
     public function testGetResqueBinWithExtension()
     {
@@ -135,7 +141,7 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
      * For old version of php-resque, when the file is in the root
      *
      * @covers \Fresque\Fresque::getResqueBinFile
-     * @return  void
+     * @return void
      */
     public function testGetResqueBinFallbtestStopWhenNoWorkersackInRoot()
     {
@@ -150,7 +156,7 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
      * Print a title
      *
      * @covers \Fresque\Fresque::outputTitle
-     * @return  void
+     * @return void
      */
     public function testOutputMainTitle()
     {
@@ -169,7 +175,7 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
      * Print a subtitle
      *
      * @covers \Fresque\Fresque::outputTitle
-     * @return  void
+     * @return void
      */
     public function testOutputSubTitle()
     {
@@ -224,7 +230,8 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
      * @covers \Fresque\Fresque::startScheduler
      * @return void
      */
-    public function testStartScheduler() {
+    public function testStartScheduler()
+    {
         $this->shell = $this->getMock('\Fresque\Fresque', array('callCommand', 'outputTitle', 'exec', 'checkStartedWorker', 'getProcessOwner'));
         $this->shell->output = $this->output;
 
@@ -305,7 +312,7 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
         $workers = array(0, 1);
 
         $this->shell->expects($this->once())->method('outputTitle')->with($this->stringContains('Loading predefined workers'));
-        $this->output->expects($this->at(0))->method('outputLine')->with($this->stringContains('You have no configured workers to load'));
+        $this->output->expects($this->at(0))->method('outputLine')->with($this->stringContains('You have not configured workers to load'));
         $this->output->expects($this->exactly(2))->method('outputLine');
 
         $this->shell->ResqueStatus = $this->ResqueStatus;
@@ -343,11 +350,11 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
      * Queuing a job without arguments, will fail
      *
      * @covers \Fresque\Fresque::enqueue
-     * @return  void
+     * @return void
      */
     public function testEnqueueJobWithoutArguments()
     {
-        $Resque = $this->getMock('\Fresque');
+        $Resque = $this->getMock('\Fresque\Fresque', array('callCommand', 'start', 'stop', 'outputTitle', 'loadSettings'));
         $Resque::staticExpects($this->never())->method('enqueue');
 
         $this->shell->expects($this->once())->method('outputTitle')->with($this->stringContains('Queuing a job'));
@@ -361,11 +368,11 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
      * Queuing a job with wrong number of arguments, will fail
      *
      * @covers \Fresque\Fresque::enqueue
-     * @return  void
+     * @return void
      */
     public function testEnqueueJobWithWrongNumberOfArguments()
     {
-        $Resque = $this->getMock('\Fresque');
+        $Resque = $this->getMock('\Fresque\Fresque', array('callCommand', 'start', 'stop', 'outputTitle', 'loadSettings'));
         $Resque::staticExpects($this->never())->method('enqueue');
 
         $this->shell->expects($this->once())->method('outputTitle')->with($this->stringContains('Queuing a job'));
@@ -379,7 +386,7 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
      * Queuing a job with wrong number of arguments, will fail
      *
      * @covers \Fresque\Fresque::enqueue
-     * @return  void
+     * @return void
      */
     public function testEnqueueJob()
     {
@@ -403,7 +410,7 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
      * Printing help message
      *
      * @covers \Fresque\Fresque::help
-     * @return  void
+     * @return void
      */
     public function testHelp()
     {
@@ -431,12 +438,11 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
         $this->shell->help();
     }
 
-
     /**
      * Printing help message when calling a unrecognized command
      *
      * @covers \Fresque\Fresque::help
-     * @return  void
+     * @return void
      */
     public function testPrintHelpWhenCallingUnhrecognizedCommand()
     {
@@ -449,7 +455,7 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers \Fresque\Fresque::sendSignal
-     * @return  void
+     * @return void
      */
     public function testSendSignalWhenNoWorkers()
     {
@@ -466,7 +472,7 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers \Fresque\Fresque::sendSignal
-     * @return  void
+     * @return void
      */
     public function testSendSignalWhenOnlyOneWorker()
     {
@@ -487,7 +493,7 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers \Fresque\Fresque::sendSignal
-     * @return  void
+     * @return void
      */
     public function testSendSignalDisplayErrorMessageOnFail()
     {
@@ -510,7 +516,7 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers \Fresque\Fresque::sendSignal
-     * @return  void
+     * @return void
      */
     public function testSendSignalToAllWorkersWithAllOption()
     {
@@ -542,7 +548,7 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers \Fresque\Fresque::sendSignal
-     * @return  void
+     * @return void
      */
     public function testSendSignalToAllWorkersWithAllInput()
     {
@@ -576,7 +582,7 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers \Fresque\Fresque::sendSignal
-     * @return  void
+     * @return void
      */
     public function testSendSignalToOneWorkerWhenMultipleWorker()
     {
@@ -604,7 +610,6 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
         $this->shell->sendSignal($this->sendSignalOptions);
     }
 
-
     /**
      * Stop will send the QUIT signal and the active workers list to sendSignal()
      *
@@ -614,40 +619,19 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
     {
         $shell = $this->getMock('\Fresque\Fresque', array('callCommand', 'outputTitle', 'kill', 'getUserChoice', 'sendSignal'));
         $shell->ResqueStatus = $this->ResqueStatus = $this->getMock('\ResqueStatus\ResqueStatus', array(), array(new \stdClass()));
+        $shell->ResqueStats = $this->ResqueStats = $this->getMock('\ResqueStats');
 
         $workers = array('test', 'testOne');
 
         $shell->expects($this->once())->method('sendSignal')->with(
             $this->logicalAnd(
-                $this->attributeEqualTo('signal', 'QUIT'),
+                $this->attributeEqualTo('signal', 'TERM'),
                 $this->attributeEqualTo('workers', $workers)
             )
         );
 
         $shell::$Resque_Worker = $Resque_Worker = $this->getMockClass('\Resque_Worker', array('all'));
         $Resque_Worker::staticExpects($this->once())->method('all')->will($this->returnValue($workers));
-
-        $shell->stop();
-    }
-
-    /**
-     * Stop will send the TERM signal if 'force' option is selected
-     *
-     * @covers \Fresque\Fresque::stop
-     */
-    public function testForceStop()
-    {
-        $option = new \stdClass();
-        $option->value = true;
-
-        $shell = $this->getMock('\Fresque\Fresque', array('callCommand', 'outputTitle', 'kill', 'getUserChoice', 'sendSignal'));
-        $shell->input = $this->input;
-        $shell->input->expects($this->at(0))->method('getOption')->with($this->equalTo('force'))->will($this->returnValue($option));
-        $shell->ResqueStatus = $this->ResqueStatus = $this->getMock('\ResqueStatus\ResqueStatus', array(), array(new \stdClass()));
-
-        $shell->expects($this->once())->method('sendSignal')->with(
-            $this->attributeEqualTo('signal', 'TERM')
-        );
 
         $shell->stop();
     }
@@ -701,7 +685,6 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
         $shell->resume();
     }
 
-
     /**
      * @covers \Fresque\Fresque::stats
      */
@@ -752,39 +735,18 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
         $this->output->expects($this->at(15))->method('outputLine')->with($this->stringContains('workers stats'));
         $this->output->expects($this->at(16))->method('outputLine')->with($this->stringContains('active workers : ' . count($workersList)));
 
-        $this->output->expects($this->at(17))->method('outputText')->with($this->stringContains('worker : ' . (string)$workersList[0]));
+        $this->output->expects($this->at(17))->method('outputText')->with($this->stringContains('worker : ' . (string) $workersList[0]));
         $this->output->expects($this->at(18))->method('outputText')->with($this->stringContains('(paused)'));
         $this->output->expects($this->at(22))->method('outputLine')->with($this->stringContains('processed jobs : ' . $datas[0]['processed']));
         $this->output->expects($this->at(23))->method('outputLine')->with($this->stringContains('failed jobs    : ' . $datas[0]['failed']));
 
-        $this->output->expects($this->at(24))->method('outputText')->with($this->stringContains('worker : ' . (string)$workersList[1]));
+        $this->output->expects($this->at(24))->method('outputText')->with($this->stringContains('worker : ' . (string) $workersList[1]));
         $this->output->expects($this->at(28))->method('outputLine')->with($this->stringContains('processed jobs : ' . $datas[1]['processed']));
         $this->output->expects($this->at(29))->method('outputLine')->with($this->stringContains('failed jobs    : ' . $datas[1]['failed']));
 
         $this->output->expects($this->at(30))->method('outputLine');
 
-
         $this->shell->stats();
-    }
-
-    /**
-     * @covers \Fresque\Fresque::test
-     */
-    public function testTest()
-    {
-        $this->shell->expects($this->once())->method('outputTitle')->with($this->stringContains('testing configuration'));
-
-        // $this->shell->test();
-        $this->markTestIncomplete();
-    }
-
-    /**
-     * @covers \Fresque\Fresque::testConfig
-     */
-    public function testTestConfig()
-    {
-        //$this->shell->testConfig();
-        $this->markTestIncomplete();
     }
 
     /**
@@ -880,7 +842,7 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
 
         $this->shell->loadSettings('');
 
-        $this->assertEquals('./fresque.ini', $this->shell->config);
+        $this->assertEquals(FRESQUE_INI_PATH, $this->shell->config);
     }
 
     /**
@@ -1083,9 +1045,6 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($cliOption['host'], $this->shell->runtime['Redis']['host']);
         $this->assertEquals($cliOption['include'], $this->shell->runtime['Fresque']['include']);
 
-        // Other settings did not change
-        $this->assertEquals(6379, $this->shell->runtime['Redis']['port']);
-
         $this->assertEquals(true, $return);
     }
 
@@ -1096,22 +1055,19 @@ class FresqueTest extends \PHPUnit_Framework_TestCase
     {
         $option = new \stdClass();
         $option->value = false;
-        $this->input->expects($this->once())->method('getOptionValues')->will($this->returnValue(array('config' => __DIR__ . DS . 'test_fresque.ini')));
+        $this->input->expects($this->once())->method('getOptionValues')->will($this->returnValue(array('config' => __DIR__ . DS . 'fresque.ini')));
         $this->input->expects($this->once())->method('getOption')->with($this->equalTo('verbose'))->will($this->returnValue($option));
 
         $return = $this->shell->loadSettings('');
 
-        $config = parse_ini_file(__DIR__ . DS . 'test_fresque.ini', true);
-
+        $config = parse_ini_file(__DIR__ . DS . 'fresque.ini', true);
         $config['Queues']['activity']['queue'] = 'activity';
 
         $this->assertEquals($config['Queues'], $this->shell->runtime['Queues']);
         $this->assertEquals(true, $return);
     }
 
-
 }
-
 
 class DummyWorker
 {
@@ -1124,7 +1080,7 @@ class DummyWorker
 
     public function getStat($cat)
     {
-        switch($cat) {
+        switch ($cat) {
             case 'processed' : return $this->processedStat;
             case 'failed' : return $this->failedStat;
         }

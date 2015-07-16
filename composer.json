@@ -1,13 +1,16 @@
 {
-	"name": "fresque/fresque",
+	"name": "fahernandez/fresque",
 	"description" : "A command line tool to manage your php-resque workers",
 	"keywords": ["php-resque", "resque", "cli", "redis"],
-	"homepage": "http://kamisama.github.com/Fresque/",
 	"authors": [
 		{
 			"name": "Wan Chen",
 			"email": "kami@kamisama.me",
 			"homepage": "http://www.kamisama.me"
+		},
+		{
+			"name": "Fabian Hernandez",
+			"email": "fabian.hernandez@hulihealth.com"
 		}
 	],
 	"license": "MIT",
@@ -27,10 +30,15 @@
 	"suggest": {
 		"chrisboulton/php-resque" : "PHP port of resque (Workers and Queueing)"
 	},
+	"autoload": {
+		"psr-0": {
+			"Fresque": "lib"
+		}
+	},
 	"support": {
-		"email": "kami@kamisama.me",
-		"issues": "https://github.com/kamisama/Fresque/issues",
-		"source": "https://github.com/kamisama/Fresque"
+		"email": "fabian.hernandez@hulihealth.com",
+		"issues": "https://github.com/fahernandez/Fresque/issues",
+		"source": "https://github.com/fahernandez/Fresque"
 	},
     "bin": ["fresque"]
 }

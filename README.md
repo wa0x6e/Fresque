@@ -38,7 +38,7 @@ Php-resque, and resque, by default doesn't provide an out-of-the-box way to stop
 
 ### By cloning the git repo
 
-	$ git clone git://github.com/kamisama/Fresque.git
+	$ git clone git://github.com/fahernandez/Fresque.git
 
  `cd` to the Fresque folder you just cloned
 
@@ -57,7 +57,7 @@ Finally, install dependencies
 If your application is already using Composer, just add Fresque in your composer dependencies
 
     "require": {
-        "fresque/fresque": "~1.2.0"
+        "fahernandez/fresque": "~1.3.1"
     }
 
 and update the dependencies with `composer update`
@@ -150,6 +150,10 @@ Display total number of failed/processed jobs, as well as various stats for each
 
 Tail a worker's log. If you have more than one log file, you'll be prompted with list of log.
 
+* **monitor**
+
+Monitor the state of started workers. If it detects that a worker is missing, the monitor start the worker with the initial configuration.
+
 * **enqueue**
 
 Add a job to a queue. Takes 3 arguments :
@@ -168,9 +172,7 @@ Test your configuration. If no options are provided, it will test your *fresque.
 
 Finally, there's some global options, that can be used for all commands. Default value in your config file will be used unless you use these.
 
-> `-s` or `--host` : Redis hostname
-
-> `-p` or `--port` : Redis port
+> `-s` or `--host` : Redis hostname and port (default localhost:6379)
 
 > `-b` or `--lib` : Absolute path to the php-resque library. Used when you already have your own, and don't want to use the one shipped with fresque.
 
@@ -195,10 +197,9 @@ If we want another worker, working on the queues *default* and *activity* at the
 
 Oh wait, we have another resque on another redis server. we'll want to log its activities in another log file: remote.log
 
-	$ fresque start -s 192.168.1.26 -p 6390 -q myspecialqueue -l /path/to/remote.log
+	$ fresque start -s 192.168.1.26:6390 -q myspecialqueue -l /path/to/remote.log
 
-- -s 192.168.1.26 is the address of the redis server
-- -p 6390 is the redis server port
+- -s 192.168.1.26:6390 is the address of the redis server
 - -q is the queuename
 - -l is the path to the log file
 
@@ -260,7 +261,7 @@ It should output something like that
 		 - Failed Jobs    : 0
 
 
-Remember that you can use the global options (-s, -p etc …) with any command
+Remember that you can use the global options (-s, etc …) with any command
 
 	$ fresque stop -c /path/to/my-config.ini -s 192.168.1.26
 
@@ -301,6 +302,11 @@ Just set all your workers settings in the config file in the [Queues] section (w
 
 	$ fresque load
 
+###Monitoring your workers
+You can add the monitor functionality as a cron job to keep monitored all your workers. Let's say that we want to check each 2 minutes if our workers are alive.
+
+	# m h  dom mon dow   command
+	*/2 *  *   *   *     fresque monitor
 
 ##Notes
 
@@ -317,7 +323,7 @@ It will test the minimum requirements to run fresque :
 
 You can test more than the settings inside your config file, by passing options. An option will override the setting defined in the config
 
-	$ fresque test -s 195.168.1.26 -p 6890
+	$ fresque test -s 195.168.1.26:6890
 
 This will test your config file, but with the specified redis hostname and port.
 
@@ -379,13 +385,8 @@ Since you're usually not logged in on the shell under the same user as the one y
 
 Starting your workers under another user could lead to permission problems.
 
-##Background
-
-Fresque is a derivated works from my other plugin, [cake-resque](https://github.com/kamisama/Cake-Resque), a command line tool to manage php-resque, but inside cakephp console.
-Very convenient, but limited to only cakephp framework. I wanted to release a tool that can work anywhere, as long as you have a terminal.
-
 ##Credits
 
 * [PHP-Resque](https://github.com/chrisboulton/php-resque) is written by Chris Boulton
 * Based on [Resque](https://github.com/defunkt/resque) by defunkt
-* Fresque by Wan Qi Chen (kamisama)
+* Based on original Fresque by Wan Qi Chen (kamisama)

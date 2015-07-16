@@ -10,6 +10,9 @@ if (!class_exists('Composer\Autoload\ClassLoader', false)) {
     );
 }
 
-require dirname(__DIR__) . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'Fresque.php';
+// Define the fresque ini path
+if (!defined('FRESQUE_INI_PATH')) {
+    define('FRESQUE_INI_PATH', realpath('.' . DIRECTORY_SEPARATOR . 'fresque.ini'));
+}
 
 putenv('ENV=tests');
