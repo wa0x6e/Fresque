@@ -1,5 +1,5 @@
 {
-	"name": "craklabs/fresque",
+	"name": "fresque/fresque",
 	"description" : "A command line tool to manage your php-resque workers",
 	"keywords": ["php-resque", "resque", "cli", "redis"],
 	"homepage": "http://kamisama.github.com/Fresque/",

@@ -399,7 +399,8 @@ class Fresque
                     array(
                         $this->runtime['Redis']['host'] . ':' . $this->runtime['Redis']['port'],
                         $this->runtime['Redis']['database'],
-                        $this->runtime['Redis']['namespace']
+                        $this->runtime['Redis']['namespace'],
+                        $this->runtime['Redis']['password']
                     )
                 );
 
@@ -494,6 +495,7 @@ class Fresque
             'REDIS_BACKEND=' . escapeshellarg($this->runtime['Redis']['host'] . ':' . $this->runtime['Redis']['port']) . " \\\n".
             'REDIS_DATABASE=' . escapeshellarg($this->runtime['Redis']['database']) . " \\\n".
             'REDIS_NAMESPACE=' . escapeshellarg($this->runtime['Redis']['namespace']) . " \\\n".
+            'REDIS_PASSWORD=' . escapeshellarg($this->runtime['Redis']['password']) . " \\\n".
             'COUNT=' . 1 . " \\\n".
             'LOGHANDLER=' . escapeshellarg($this->runtime['Log']['handler']) . " \\\n".
             'LOGHANDLERTARGET=' . escapeshellarg($this->runtime['Log']['target']) . " \\\n".
