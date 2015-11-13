@@ -99,6 +99,8 @@ To start a new resque worker. By default, it will use the default configuration 
 
 > `-n` or `--workers` : Number of workers working on the same queues.
 
+> `-a` or `--autoloader` : The absolute path to the boostrap/autoloader.
+
 > `-l` or `--log` : Absolute or relative path to the log file. You can set a different log for each worker.
 > The `--user` must have permission to read and write to that file (and the parent folder, since the file will be created if non-existent).
 > Relative path is relative to the fresque folder.

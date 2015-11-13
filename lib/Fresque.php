@@ -60,6 +60,18 @@ class Fresque
         $this->output = new \ezcConsoleOutput();
 
         $this->input->registerOption(
+        	new \ezcConsoleOption(
+        		't',
+        		'environment',
+        		\ezcConsoleInput::TYPE_STRING,
+        		null,
+        		false,
+        		'Application environment',
+                'Application environment'
+            )
+        );
+
+        $this->input->registerOption(
             new \ezcConsoleOption(
                 'u',
                 'user',
@@ -279,8 +291,8 @@ class Fresque
         $this->commandTree = array(
             'start' => array(
                     'help' => 'Start a new worker',
-                    'options' => array('u' => 'username', 'q' => 'queue name',
-                            'i' => 'num', 'n' => 'num', 'l' => 'path', 'v', 'g')),
+                    'options' => array('u' => 'username', 'q' => 'queue name', 't' => 'environment',
+                            'i' => 'num', 'n' => 'num', 'l' => 'path', 'a' => 'autoloader', 'v', 'g')),
             'startScheduler' => array(
                     'help' => 'Start the scheduler worker',
                     'options' => array('i' => 'num')),
@@ -487,6 +499,7 @@ class Fresque
             escapeshellarg($libraryPath) . '; ' . " \\\n".
             $env_vars .
             (($this->runtime['Default']['verbose']) ? 'VVERBOSE' : 'VERBOSE') . '=true ' . " \\\n".
+            'APPLICATION_ENV=' . escapeshellarg($this->runtime['Default']['environment']) . " \\\n".
             'QUEUE=' . escapeshellarg($this->runtime['Default']['queue']) . " \\\n".
             'PIDFILE=' . escapeshellarg($pidFile) . " \\\n".
             'APP_INCLUDE=' . escapeshellarg($this->runtime['Fresque']['include']) . " \\\n".
@@ -1158,7 +1171,7 @@ class Fresque
             ),
             'Fresque' => array(
                 'lib',
-                'include',
+                'include'
             ),
             'Default' => array(
                 'queue',
@@ -1166,6 +1179,7 @@ class Fresque
                 'workers',
                 'user',
                 'verbose',
+            	'environment'
             ),
             'Log' => array(
                 'filename',
@@ -1197,6 +1211,14 @@ class Fresque
                     $this->runtime['Queues'][$name]['queue'] = $name;
                 }
             }
+        }
+
+        if ($this->input->getOption('autoloader')->value) {
+            $this->runtime['Fresque']['include'] = $this->input->getOption('autoloader')->value;
+        }
+
+        if ($this->input->getOption('environment')->value) {
+            $this->runtime['Default']['environment'] = $this->input->getOption('environment')->value;
         }
 
         $this->runtime['Default']['verbose'] = ($this->input->getOption('verbose')->value)
