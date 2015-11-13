@@ -120,7 +120,12 @@ Scheduler worker is disabled by default, enable it in the configuration file, in
 To stop workers. Will wait for all jobs to finish, then stop the worker. If more than one worker is running, a list of workers will be displayed, to choose the worker to stop.
 
 > `-f` or `--force` : Stop worker immediately, without waiting for the current job to finish processing. This will fail the current job.
+
 > `-w` or `--all` : Stop all workers at once, skipping the worker menu.
+
+> `-q` or `--queue` : Stop all workers attributed to the specified queue name.
+
+> `-o` or `--count` : An additional optional which can be specified along with the `--queue` option to stop a fixed number of workers from the queue.
 
 * **pause**
 
@@ -259,11 +264,15 @@ It should output something like that
 		 - Processed Jobs : 0
 		 - Failed Jobs    : 0
 
+Let's stop all workers from the *default* queue and one from the *activity* queue
+
+	$ fresque stop -c /path/to/my-config.ini -q default
+	$ fresque stop -c /path/to/my-config.ini -q activity -o 1
 
 Remember that you can use the global options (-s, -p etc …) with any command
 
 	$ fresque stop -c /path/to/my-config.ini -s 192.168.1.26
-
+	
 Let's enqueue a job to the *activity* queue
 
 	$ fresque enqueue activity PageVisit "5,/index.php,158745693"
