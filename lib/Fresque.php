@@ -425,7 +425,14 @@ class Fresque
      * @since 1.3.0
      */
     public function startScheduler($args = null) {
-        return $this->start($args, true);
+        return $this->start(
+            array_replace_recursive(
+                $this->runtime, 
+                (!empty($args) ? $args : array()), 
+                array('Default' => array('workers' => 1))
+            ),
+            true
+        );
     }
 
 
@@ -452,8 +459,6 @@ class Fresque
                 $this->output->outputLine('The scheduler worker is already running', 'warning');
                 return false;
             }
-
-            $args['type'] = 'scheduler';
         }
 
 
@@ -1203,6 +1208,7 @@ class Fresque
             ? $this->input->getOption('verbose')->value : $this->settings['Default']['verbose'];
 
         $this->runtime['Scheduler']['enabled'] = (bool)$this->runtime['Scheduler']['enabled'];
+        $this->runtime['Scheduler']['type'] = 'scheduler';
 
         if ($this->runtime['Scheduler']['enabled']) {
             if (!empty($this->runtime['Scheduler']['handler']) && $this->runtime['Scheduler']['type'] === 'scheduler') {
