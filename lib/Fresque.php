@@ -330,9 +330,6 @@ class Fresque
      */
     public function callCommand($command)
     {
-        if (($settings = $this->loadSettings($command)) === false) {
-            exit(1);
-        }
 
         $args = $this->input->getArguments();
 
@@ -343,7 +340,7 @@ class Fresque
         if ($command === null || !array_key_exists($command, $this->commandTree)) {
             $this->help($command);
         } else {
-            if ($this->input->getOption('help')->value === true) {
+            if ($this->input->getOption('help')->value === true or $command == 'help' ) {
                 $this->output->outputLine();
                 $this->output->outputLine($this->commandTree[$command]['help']);
 
@@ -377,6 +374,9 @@ class Fresque
                     if (!is_numeric($name)) {
                         $arg = $name;
                     }
+                }
+                if (($settings = $this->loadSettings($command)) === false) {
+                    exit(1);
                 }
 
                 $unrecognized = array_diff(array_keys($this->input->getOptionValues()), array_values($allowed));
