@@ -1,8 +1,8 @@
-#Fresque [![Build Status](https://travis-ci.org/kamisama/Fresque.png?branch=master)](https://travis-ci.org/kamisama/Fresque) [![Coverage Status](https://coveralls.io/repos/kamisama/Fresque/badge.png?branch=fix-travis)](https://coveralls.io/r/kamisama/Fresque?branch=fix-travis) [![Dependency Status](https://www.versioneye.com/php/fresque:fresque/badge.png)](https://www.versioneye.com/php/fresque:fresque) [![Latest Stable Version](https://poser.pugx.org/fresque/fresque/v/stable.png)](https://packagist.org/packages/fresque/fresque)
+# Fresque [![Build Status](https://travis-ci.org/kamisama/Fresque.png?branch=master)](https://travis-ci.org/kamisama/Fresque) [![Coverage Status](https://coveralls.io/repos/kamisama/Fresque/badge.png?branch=fix-travis)](https://coveralls.io/r/kamisama/Fresque?branch=fix-travis) [![Dependency Status](https://www.versioneye.com/php/fresque:fresque/badge.png)](https://www.versioneye.com/php/fresque:fresque) [![Latest Stable Version](https://poser.pugx.org/fresque/fresque/v/stable.png)](https://packagist.org/packages/fresque/fresque)
 
 > Fresque is a command line tool to manage your php-resque workers.
 
-##Prerequisites
+## Prerequisites
 
 If you don't know what is *resque* or *redis*, take a look at their official website :
 
@@ -14,14 +14,14 @@ This tool is intended to facilitate your life by making interfacing with php-res
 You should already have some knowledge about php-resque, and have php-resque installed and running.
 I'll assume in this tutorial that you have sufficient knowledge to start a worker normally with php-resque.
 
-##Requirements
+## Requirements
 
 * Redis
 * `sudo` package installed on your system
 
 php-resque will be installed automatically as a composer dependency.
 
-##What is Fresque
+## What is Fresque?
 
 Fresque is a command line tool to manage your php-resque workers
 
@@ -34,7 +34,7 @@ Fresque is a command line tool to manage your php-resque workers
 It's more friendly, and provides more options, like `restart`, `stop`, etc …
 Php-resque, and resque, by default doesn't provide an out-of-the-box way to stop your workers. You have to directly kill the worker process. With Fresque, you'll enjoy stopping and restarting your workers at gogo. No more system process handling!
 
-##Installation
+## Installation
 
 ### By cloning the git repo
 
@@ -62,12 +62,12 @@ If your application is already using Composer, just add Fresque in your composer
 
 and update the dependencies with `composer update`
 
-##Configuration
+## Configuration
 
 A fresque.ini file is provided to set the workers default parameters, and other options used by fresque, such as redis connection options.
 It's well documented, and you shouldn't have difficulties editing it.
 
-##Usage
+## Usage
 
 For convenience, you should add the fresque executable to your system path.
 You can just then call fresque with
@@ -179,7 +179,7 @@ Finally, there's some global options, that can be used for all commands. Default
 > `-a` or `--autoloader` : Absolute path to your application entry point. Usually, it should be the file that will autoload all your job classes.
 
 
-##Examples
+## Examples
 
 Let's start a worker with the default settings defined in the config file (fresque.ini):
 
@@ -293,7 +293,7 @@ It'll spout something like that
 	Killing 33233 … Done
 	Killing 33223 … Done
 
-###Starting all your favorites workers at once
+### Starting all your favorites workers at once
 
 We've just created 6 workers, calling `start` 5 times (remember, the second `start` create 2 workers with `-n 2`). But there's a way to start all of them with only one command, useful when you have a lot of workers that you have to start each time.
 
@@ -302,9 +302,9 @@ Just set all your workers settings in the config file in the [Queues] section (w
 	$ fresque load
 
 
-##Notes
+## Notes
 
-###You can test your config with `test`
+### You can test your config with `test`
 
 A testing tool for testing your configuration file is provided, by calling `test`.
 It will test the minimum requirements to run fresque :
@@ -339,9 +339,9 @@ A test result will looks like
 
 	Your settings seems ok
 
-##Known issues
+## Known issues
 
-###`stop` command doesn't behave as expected
+### `stop` command doesn't behave as expected
 
 #### Case 1: it says 'no such process' when stopping a worker
 
@@ -364,14 +364,14 @@ You just used `stop`, and it stopped a worker. You immediately use `stop` again,
 
 **Solution:** Do nothing. It's perfectly normal, stopping a worker can take some time (it'll wait for the job to finish, or wait for the next polling to stop).
 
-##Notes
+## Notes
 
-###Consult your logs
+### Consult your logs
 
 Logs tell you all you need to know about the issue of a job, and the current status of your php-resque workers. It tells you when a job is enqueued, when a job is about to being performed, and its final state (success/fail). It also display all php related errors that may occurs.
 Check them frequently, as fresque doesn't capture those errors.
 
-##Sudo
+## Sudo
 
 > sudo is a program for Unix-like computer operating systems that allows users to run programs with the security privileges of another user
 
@@ -379,12 +379,12 @@ Since you're usually not logged in on the shell under the same user as the one y
 
 Starting your workers under another user could lead to permission problems.
 
-##Background
+## Background
 
 Fresque is a derivated works from my other plugin, [cake-resque](https://github.com/kamisama/Cake-Resque), a command line tool to manage php-resque, but inside cakephp console.
 Very convenient, but limited to only cakephp framework. I wanted to release a tool that can work anywhere, as long as you have a terminal.
 
-##Credits
+## Credits
 
 * [PHP-Resque](https://github.com/chrisboulton/php-resque) is written by Chris Boulton
 * Based on [Resque](https://github.com/defunkt/resque) by defunkt
